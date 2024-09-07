@@ -1,0 +1,15 @@
+<launch>
+  <set_env name="TURTLEBOT3_MODEL" value="burger"/>
+
+  <set_env name="params_file"   value="$(find-pkg-share emcl2)/config/emcl2_quick_start.param.yaml"/>
+  <set_env name="map"           value="$(find-pkg-share nav2_bringup)/maps/turtlebot3_world.yaml"/>
+  <set_env name="use_sim_time"  value="true"/>
+
+  <executable cmd="bash -c 'ros2 launch emcl2 emcl2.launch.py params_file:=$params_file map:=$map use_sim_time:=$use_sim_time'" cwd="/" launch-prefix="" output="screen"/>
+
+  <include file="$(find-pkg-share turtlebot3_gazebo)/launch/turtlebot3_world.launch.py"/>
+
+  <include file="$(find-pkg-share nav2_bringup)/launch/rviz_launch.py"/>
+
+  <executable cmd="bash -c 'ros2 launch nav2_bringup navigation_launch.py use_sim_time:=true'" cwd="/" launch-prefix="" output="screen"/>
+</launch>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include "head.html" %}
+
+<body class="noselect">
+
+	{% include "iconbar.html" %}
+
+	<div id="view_container" class="noselect">
+		<!-- View templates get rendered in here -->
+	</div>
+
+	<div id="modal_container" class="noselect">
+		<!-- Modals templates get rendered in here -->
+	</div>
+
+	<script>
+		const base_url = "{{ base_url }}";
+	</script>
+
+	<div id="script_container">
+
+	</div>
+
+	<!-- global libraries -->
+	<script src="{{ url_for('serve_static', path='js/lib/quaternion.min.js') }}"></script>
+	
+	<!-- modules -->
+	<script type="module" src="{{ url_for('serve_static', path='js/modules/rosbridge.js') }}"></script>
+	<script type="module" src="{{ url_for('serve_static', path='js/modules/persistent.js') }}"></script>
+	<script type="module" src="{{ url_for('serve_static', path='js/modules/elements.js') }}"></script>
+	<script type="module" src="{{ url_for('serve_static', path='js/modules/view.js') }}"></script>
+	<script type="module" src="{{ url_for('serve_static', path='js/modules/tf.js') }}"></script>
+
+	<!-- app -->
+	<script src="{{ url_for('serve_static', path='js/setup.js') }}"></script>
+	<script type="module" src="{{ url_for('serve_static', path='js/main.js') }}"></script>
+
+
+</body>
+</html>

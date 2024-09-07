@@ -1,0 +1,60 @@
+<div id="{uniqueID}_modal" class="modal_outer noselect">
+
+	<div id="{uniqueID}_joypreview" style="position: fixed; bottom: calc( 15vh - 50px ); left: calc( 50vw - 50px )" class="noselect">
+		<img  src="assets/joypos.svg" alt="Joystick Preview" width="100" height="100">
+	</div> 
+
+	<div class="modal_inner noselect">
+		<h3>Joystick Teleop</h3>
+		<p id="{uniqueID}_status" class="status">Status: Ok.</p>
+		<hr>
+		<label for="{uniqueID}_topic">Topic:</label>
+		<select id="{uniqueID}_topic" name="topic">
+			<!-- add topics here-->
+		</select>
+
+		<p>Adds a joystick overlay to the main view that can be used to send geometry_msgs/Twist movement commands.</p>
+
+		<p style="color:#b4b4b4;">Scroll up and drag the preview box to position the joystick on the screen.</p>
+
+
+		<label for="{uniqueID}_linear_velocity">Linear Velocity (m/s):</label>
+		<span id="{uniqueID}_linear_velocity_value">0.5</span>
+		<input type="range" value="0.4" step="0.05" min="0.05" max="3.0" id="{uniqueID}_linear_velocity">
+
+		<br>
+
+		<label for="{uniqueID}_angular_velocity">Angular Velocity (m/s):</label>
+		<span id="{uniqueID}_angular_velocity_value">0.5</span>
+		<input type="range" value="0.8" step="0.05" min="0.05" max="6.0" id="{uniqueID}_angular_velocity">
+
+		<br>
+
+		<label for="{uniqueID}_accel">Linear Acceleration (m/s²):</label>
+		<span id="{uniqueID}_accel_value">0.05</span>
+		<input type="range" value="0.05" step="0.01" min="0.01" max="1.0" id="{uniqueID}_accel">
+
+
+		<label>Invert angular velocity when reversing:</label>
+		<input type="checkbox" checked id="{uniqueID}_invert_angular">
+
+		<br>
+
+		<label>Use holonomic linear Y instead of angular Z:</label>
+		<input type="checkbox" id="{uniqueID}_holonomic">
+
+		<br>
+
+		<hr>
+
+		<br>
+
+		<button id="{uniqueID}_remove" class="delete_button" onclick="removeWidget('{uniqueID}')">Remove Widget</button>
+
+	</div>
+
+	<div style="height: 180vh; width: 1px;">
+		<!-- Scroll spacer-->
+	</div>
+
+</div>

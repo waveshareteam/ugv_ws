@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ai Chat</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/tokyo-night-dark.min.css">
+    <script defer src="/static/interface.js"></script>
+    <script defer src="/static/chat.js"></script>
+  </head>
+  <body>
+    <!--div class="menubar">
+      <label class="slider-container">
+        <input type="checkbox" id="model-toggle" autocomplete="off">
+        <span class="slider-track">
+          <span class="model-label" id="model-label-left">GPT-3.5</span>
+          <div class="slider"></div>
+          <span class="model-label" id="model-label-right">GPT-4</span>
+        </span>
+      </label> 
+    </div-->
+    <div class="chat-container">
+      <h1 class="heading">Chat</h1>
+      <div class="chat-wrapper">
+        <div id="chat-messages" class="chat-box"></div>
+        <form id="chat-form" class="input-form">
+          <textarea
+          type="text"
+          class="input"
+          id="user-input"
+          name="user_input"
+          placeholder="Type your message..."></textarea>
+          <button class="button" type="submit" id="submitBtn">Send</button>
+        </form>
+      </div>
+    </div>
+    <script defer src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="rasp_rover">
+  <link name="base_footprint"></link>
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.000162422869269728 4.57988681701327E-15 0.0452361557646266"
+        rpy="0 0 0" />
+      <mass
+        value="1.04143299444137" />
+      <inertia
+        ixx="0.00130964432205038"
+        ixy="-2.24104232540393E-17"
+        ixz="2.87884702855107E-05"
+        iyy="0.00259816035443436"
+        iyz="-1.97265629397348E-17"
+        izz="0.00240218497851418" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/base_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/base_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0.000460087791654118 6.50856019576702E-10 0.03" rpy="0 0 0"/> 
+  </joint>
+
+  <link name="base_imu_link"> 
+      <origin xyz="0 0 0" rpy="0 0 0"/> 
+  </link>
+  
+  <joint name="imu_joint" type="fixed">
+      <parent link="base_link" />
+      <child link="base_imu_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+      
+  <link
+    name="left_up_wheel_link">
+    <inertial>
+      <origin
+        xyz="-6.24500451351651E-16 0.0267900126654631 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.210587238755431" />
+      <inertia
+        ixx="0.000115401806837977"
+        ixy="-1.32501719335198E-18"
+        ixz="-4.34981020424034E-35"
+        iyy="0.000168890965481856"
+        iyz="2.371691443642E-21"
+        izz="0.000115401806837977" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/left_up_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/left_up_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_up_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="0.0494657123506755 0.0380100014305094 0.00674802802973084"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_up_wheel_link" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+  <link
+    name="left_down_wheel_link">
+    <inertial>
+      <origin
+        xyz="-6.27969898303604E-16 0.0267900126654662 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.210587238755431" />
+      <inertia
+        ixx="0.000115401806837977"
+        ixy="-1.32808581259249E-18"
+        ixz="1.27628957046806E-32"
+        iyy="0.000168890965481856"
+        iyz="-5.16307112015383E-19"
+        izz="0.000115401806837977" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/left_down_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/left_down_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_down_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0475324306493252 0.0380100014305063 0.00674802802973084"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_down_wheel_link" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+  <link
+    name="right_up_wheel_link">
+    <inertial>
+      <origin
+        xyz="1.85962356624714E-15 -0.0267900015875978 8.99280649946377E-15"
+        rpy="0 0 0" />
+      <mass
+        value="0.210587238755431" />
+      <inertia
+        ixx="0.000115401806837977"
+        ixy="-1.32501719335198E-18"
+        ixz="-4.34981020424034E-35"
+        iyy="0.000168890965481856"
+        iyz="2.371691443642E-21"
+        izz="0.000115401806837977" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/right_up_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/right_up_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_up_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="0.0494657123506773 -0.0380100014304871 0.00674802802973084"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_up_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="right_down_wheel_link">
+    <inertial>
+      <origin
+        xyz="1.81799020282369E-15 -0.0267900015875967 9.39526234589039E-15"
+        rpy="0 0 0" />
+      <mass
+        value="0.210587238755431" />
+      <inertia
+        ixx="0.000115401806837977"
+        ixy="-1.32501720355927E-18"
+        ixz="1.27637476075258E-32"
+        iyy="0.000168890965481856"
+        iyz="-5.18688069050555E-19"
+        izz="0.000115401806837977" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/right_down_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/right_down_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_down_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0475324306493234 -0.0380100014304901 0.00674802802973144"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_down_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="base_lidar_link">
+    <inertial>
+      <origin
+        xyz="0 -8.5259736538555E-19 0.0165546434494574"
+        rpy="0 0 0" />
+      <mass
+        value="0.0418000091653573" />
+      <inertia
+        ixx="8.26853377699878E-06"
+        ixy="2.40188591344428E-23"
+        ixz="-8.79312987446486E-22"
+        iyy="8.26853377699876E-06"
+        iyz="2.55603864237559E-22"
+        izz="8.32524607487378E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/base_lidar_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/base_lidar_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_lidar_link_joint"
+    type="fixed">
+    <origin
+      xyz="0.0316958390518911 -0.00101477740749894 0.0976480280297308"
+      rpy="0 0 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="base_lidar_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="pt_base_link">
+    <inertial>
+      <origin
+        xyz="0.000134379819489959 2.90833197105934E-16 0.0182617060774291"
+        rpy="0 0 0" />
+      <mass
+        value="0.0945048921416348" />
+      <inertia
+        ixx="2.38145161249806E-05"
+        ixy="2.8154367304661E-19"
+        ixz="-2.31618131911413E-07"
+        iyy="4.1008262732435E-05"
+        iyz="-5.24766720164598E-19"
+        izz="4.37961106646478E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_base_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_base_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_base_link_joint"
+    type="fixed">
+    <origin
+      xyz="-0.02571 -0.0010148 0.097648"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pt_base_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="pt_link1">
+    <inertial>
+      <origin
+        xyz="-0.0033812921652727 -8.75612604489907E-15 0.0176096758355075"
+        rpy="0 0 0" />
+      <mass
+        value="0.00710917409663916" />
+      <inertia
+        ixx="3.89716322571471E-06"
+        ixy="-2.93525486696339E-19"
+        ixz="2.32919366130508E-07"
+        iyy="2.4980668051168E-06"
+        iyz="-2.81783604495276E-19"
+        izz="2.60402792588347E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_link1.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_link1.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_base_link_to_pt_link1"
+    type="revolute">
+    <origin
+      xyz="-0.010151 0 0.0383"
+      rpy="0 0 0" />
+    <parent
+      link="pt_base_link" />
+    <child
+      link="pt_link1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="pt_link2">
+    <inertial>
+      <origin
+        xyz="0.0218201278828442 0.0119590002643802 0.0200000000000005"
+        rpy="0 0 0" />
+      <mass
+        value="0.0970496053012515" />
+      <inertia
+        ixx="3.07158301509253E-05"
+        ixy="-9.60865010663691E-07"
+        ixz="2.64790390663251E-19"
+        iyy="3.74067734460566E-05"
+        iyz="-1.69709121639232E-18"
+        izz="4.94991610517831E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_link2.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_link2.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_link1_to_pt_link2"
+    type="revolute">
+    <origin
+      xyz="0 0.02 0.043003"
+      rpy="1.5708 0 0" />
+    <parent
+      link="pt_link1" />
+    <child
+      link="pt_link2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5233333"
+      upper="1.5707963"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="pt_camera_link">
+    <inertial>
+      <origin
+        xyz="0.00630730338217479 1.15370105053482E-16 0.000950308188413934"
+        rpy="0 0 0" />
+      <mass
+        value="0.00623651844028495" />
+      <inertia
+        ixx="5.11295942352593E-07"
+        ixy="2.50916422532913E-21"
+        ixz="-4.00917493406375E-08"
+        iyy="3.99078324787848E-07"
+        iyz="-6.43452110015932E-22"
+        izz="4.02518684222241E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_camera_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/rasp_rover/pt_camera_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_camera_link_joint"
+    type="fixed">
+    <origin
+      xyz="0.047686 -0.000569 0.02"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="pt_link2" />
+    <child
+      link="pt_camera_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

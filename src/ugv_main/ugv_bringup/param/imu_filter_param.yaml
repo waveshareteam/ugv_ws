@@ -1,0 +1,7 @@
+imu_filter_madgwick:
+    ros__parameters:
+        fixed_frame: "base_link"
+        use_mag: false
+        publish_tf: false
+        world_frame: "enu"
+        orientation_stddev: 0.05

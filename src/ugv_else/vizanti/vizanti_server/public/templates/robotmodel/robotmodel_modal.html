@@ -1,0 +1,40 @@
+<div id="{uniqueID}_modal" class="modal_outer noselect">
+	<div class="modal_inner noselect">
+		<h3>Robot Model</h3>
+		<p id="{uniqueID}_status" class="status">Status: Ok.</p>
+		<hr>
+
+		<label for="{uniqueID}_frame">Frame:</label>
+		<select id="{uniqueID}_frame" name="topic">
+			<option value='base_link'>base_link</option>
+		</select>
+
+		<br>
+
+		<label for="{uniqueID}_sprite">Robot Sprite:</label>
+		<select id="{uniqueID}_sprite" name="topic">
+			<option value='4wd'>4wd</option>
+		</select>
+
+		<br>
+
+		<img src="assets/robot_model/_4wd.png" alt="modelimg" width="80%" id="{uniqueID}_previewimg">
+
+		<br>
+
+		<label for="{uniqueID}_length">Robot Length (m):</label>
+		<input type="number" value="0.5" step="0.01" min="0.01" max="100" id="{uniqueID}_length">
+
+		<br>
+
+		
+		<p>Add your custom sprite into </p><input type="text" value="vizanti/public/assets/robot_model/" readonly><br><br>
+		<p>The files should start with an underscore, must be in .png format and will rotate around the image center.</p>
+
+		<hr>
+
+		<button id="{uniqueID}_remove" class="delete_button" onclick="removeWidget('{uniqueID}')">Remove Widget</button>
+
+		
+	</div>
+</div>

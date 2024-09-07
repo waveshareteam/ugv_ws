@@ -1,0 +1,6 @@
+map_server:
+    ros__parameters:
+        frame_id: map
+        topic_name: map
+        use_sim_time: true
+        yaml_filename: /home/ws/ugv_ws/src/ugv_main/ugv_nav/maps/map.yaml

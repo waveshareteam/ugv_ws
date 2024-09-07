@@ -1,0 +1,26 @@
+/**:
+  ros__parameters:
+    odom_freq: 20
+    transform_tolerance: 0.2
+    global_frame_id: "map"
+    odom_frame_id: "odom"
+    base_frame_id: "base_link"
+    footprint_frame_id: "base_footprint"
+    laser_min_range: 0.0
+    laser_max_range: 100000000.0
+    scan_increment: 1
+    initial_pose_x: -2.0
+    initial_pose_y: -0.5
+    initial_pose_a: 0.0
+    num_particles: 500
+    alpha_threshold: 0.5
+    expansion_radius_position: 0.1
+    expansion_radius_orientation: 0.2
+    extraction_rate: 0.05
+    range_threshold: 0.1
+    sensor_reset: false
+    odom_fw_dev_per_fw: 0.19
+    odom_fw_dev_per_rot: 0.0001
+    odom_rot_dev_per_fw: 0.13
+    odom_rot_dev_per_rot: 0.2
+    laser_likelihood_max_dist: 0.1
