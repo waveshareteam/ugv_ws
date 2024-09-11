@@ -65,7 +65,7 @@ class ApriltagTracker(Node):
             cv2.polylines(frame, [corners], isClosed=True, color=(0, 255, 0), thickness=2)
         
             center_x, center_y = int(r['center'][0]), int(r['center'][1])
-            cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1))
+            cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
 
             print(f'Tag ID: {r.tag_id}, Center: ({center_x}, {center_y})')
 

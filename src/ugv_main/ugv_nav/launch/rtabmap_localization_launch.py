@@ -54,7 +54,7 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='true', description='Launch RVIZ (optional).'),
 
         IncludeLaunchDescription(PythonLaunchDescriptionSource(
-                [os.path.join(get_package_share_directory('ugv_slam'), 'launch'),
+                [os.path.join(get_package_share_directory('ugv_vision'), 'launch'),
                      '/oak_d_lite.launch.py']
         )),
 

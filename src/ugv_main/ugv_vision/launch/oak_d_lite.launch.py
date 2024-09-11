@@ -57,7 +57,7 @@ def generate_launch_description():
         DeclareLaunchArgument("name", default_value="oak"),
         DeclareLaunchArgument(
             "params_file",
-            default_value=os.path.join(get_package_share_directory("ugv_slam"), "launch", "oak_d_lite.yaml"),
+            default_value=os.path.join(get_package_share_directory("ugv_vision"), "config", "oak_d_lite.yaml"),
         ),
         DeclareLaunchArgument("rectify_rgb", default_value="True"),
     ]

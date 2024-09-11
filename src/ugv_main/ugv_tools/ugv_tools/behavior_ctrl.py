@@ -181,7 +181,7 @@ class BehaviorController(Node):
         self.behavior_done = True
 
     def save_points_to_file(self):
-        with open('map_points.txt', 'w') as file:
+        with open('/home/ws/ugv_ws/map_points.txt', 'w') as file:
             for point_name, pose in self.points.items():
                 file.write(f'{point_name}: Position(x={pose.position.x}, y={pose.position.y}, z={pose.position.z}), Orientation(x={pose.orientation.x}, y={pose.orientation.y}, z={pose.orientation.z}, w={pose.orientation.w})\n')
         self.get_logger().info('Saved points to map_points.txt')
