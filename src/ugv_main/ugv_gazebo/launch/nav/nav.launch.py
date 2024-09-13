@@ -9,19 +9,20 @@ from launch.conditions import IfCondition, UnlessCondition, LaunchConfigurationE
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
+# Function to get the localplan config file path based on the launch configuration
 def get_localplan_config_file(context):
     use_localplan = context.launch_configurations['use_localplan']
     use_localization = context.launch_configurations['use_localization']
 
     ugv_nav_dir = get_package_share_directory('ugv_gazebo')
 
-    # 定义四种组合的参数文件路径
+    # Get the path to the parameter files
     amcl_teb_param_path = os.path.join(ugv_nav_dir, 'param', 'amcl_teb.yaml')
     amcl_dwa_param_path = os.path.join(ugv_nav_dir, 'param', 'amcl_dwa.yaml')
     emcl_teb_param_path = os.path.join(ugv_nav_dir, 'param', 'emcl_teb.yaml')
     emcl_dwa_param_path = os.path.join(ugv_nav_dir, 'param', 'emcl_dwa.yaml')
 
-    # 定义一个组合映射
+    # Create a mapping of localization and localplan to parameter file paths
     config_map = {
         ('amcl', 'teb'): amcl_teb_param_path,
         ('amcl', 'dwa'): amcl_dwa_param_path,
@@ -29,10 +30,11 @@ def get_localplan_config_file(context):
         ('emcl', 'dwa'): emcl_dwa_param_path
     }
 
-    # 根据选择返回对应的参数文件路径
+    # Return the parameter file path based on the launch configuration
     return config_map.get((use_localization, use_localplan), amcl_teb_param_path)
 
 
+# Function to set up the launch description
 def launch_setup(context, *args, **kwargs):
 
     use_localplan = context.launch_configurations['use_localplan']
@@ -44,11 +46,12 @@ def launch_setup(context, *args, **kwargs):
     nav2_bringup_dir = get_package_share_directory('nav2_bringup')
     emcl_dir = get_package_share_directory('emcl2')
 
-    # 定义启动参数
+    # Get the path to the map file
     map_yaml_path = LaunchConfiguration('map', default=os.path.join(ugv_gazebo_dir, 'maps', 'map.yaml'))
     rviz_slam_2d_config = os.path.join(ugv_gazebo_dir, 'rviz', 'view_nav_2d.rviz')
     emcl_param_file = os.path.join(emcl_dir, 'config', 'emcl2_quick_start.param.yaml')
-    # 包含AMCL启动文件
+
+    # Get the path to the AMCL parameter file
     nav2_bringup_amcl_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(nav2_bringup_dir, 'launch', 'bringup_launch.py')),
         launch_arguments={
@@ -59,7 +62,7 @@ def launch_setup(context, *args, **kwargs):
         condition=LaunchConfigurationEquals('use_localization', 'amcl')
      )
 
-    # 包含EMCL启动文件
+    # Get the path to the EMCL parameter file
     nav2_bringup_emcl_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(ugv_gazebo_dir, 'launch/nav_bringup', 'nav2_bringup.launch.py')),
         launch_arguments={
@@ -79,7 +82,7 @@ def launch_setup(context, *args, **kwargs):
         condition=LaunchConfigurationEquals('use_localization', 'emcl')
     )
     
-    # 包含Cartographer启动文件
+    # Get the path to the Cartographer parameter file
     nav2_bringup_cartographer_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('ugv_gazebo'), 'launch/nav_bringup', 'bringup_launch_cartographer.launch.py')),
          launch_arguments={
@@ -89,6 +92,7 @@ def launch_setup(context, *args, **kwargs):
         condition=LaunchConfigurationEquals('use_localization', 'cartographer')
     )
     
+    # Create the RViz2 node
     rviz2_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -97,6 +101,7 @@ def launch_setup(context, *args, **kwargs):
         arguments=['-d', rviz_slam_2d_config]
     )
 
+    # Create the robot pose publisher node
     robot_pose_publisher_node = Node(package="robot_pose_publisher", executable="robot_pose_publisher",
             name="robot_pose_publisher",
             output="screen",
@@ -118,6 +123,7 @@ def launch_setup(context, *args, **kwargs):
         robot_pose_publisher_node
     ]
 
+# Function to generate the launch description
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('use_localplan', default_value='teb', description='Choose which localplan to use: dwa,teb'),

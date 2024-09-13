@@ -10,6 +10,7 @@ import os
 
 def generate_launch_description():
 
+    # Launch configuration variables
     use_sim_time = LaunchConfiguration('use_sim_time')
     queue_size = LaunchConfiguration('queue_size')
     qos = LaunchConfiguration('qos')
@@ -39,6 +40,7 @@ def generate_launch_description():
     use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='false',
                                      description='Whether to launch RViz2')  
 
+    # Parameters for the rtabmap_slam node
     parameters={
           'frame_id':'base_footprint',
           'use_sim_time':use_sim_time,
@@ -53,6 +55,7 @@ def generate_launch_description():
           'Optimizer/GravitySigma':'0' # Disable imu constraints (we are already in 2D)
     }
 
+    # Remappings for the topics
     remappings=[
           ('rgb/image', '/camera/image_raw'),
           ('rgb/camera_info', '/camera/camera_info'),
@@ -79,9 +82,12 @@ def generate_launch_description():
         remappings=remappings
     )
     
+    # Get the path to the ugv_gazebo package
     ugv_slam_dir = get_package_share_directory('ugv_gazebo')
+    # Get the path to the rviz config file
     rviz_slam_3d_config = os.path.join(ugv_slam_dir, 'rviz', 'view_slam_3d.rviz')
     
+    # Launch rviz2 node if use_rviz is true
     rviz2_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -91,6 +97,7 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('use_rviz'))
     )
     
+    # Launch rtabmap_viz node if use_rviz is false
     rtabmap_viz_node = Node(
         package='rtabmap_viz', executable='rtabmap_viz', output='screen',
         parameters=[parameters],
@@ -98,6 +105,7 @@ def generate_launch_description():
         condition=UnlessCondition(LaunchConfiguration('use_rviz'))
     )
 
+    # Launch robot_pose_publisher node
     robot_pose_publisher_node = Node(package="robot_pose_publisher", executable="robot_pose_publisher",
             name="robot_pose_publisher",
             output="screen",

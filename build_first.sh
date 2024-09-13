@@ -3,6 +3,6 @@ colcon build --packages-select apriltag apriltag_msgs apriltag_ros cartographer 
 colcon build --packages-select ugv_bringup ugv_chat_ai ugv_description ugv_gazebo ugv_nav ugv_slam ugv_tools ugv_vision ugv_web_app --symlink-install 
 echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 echo "eval "$(register-python-argcomplete ros2)"" >> ~/.bashrc
-echo "(register-python-argcomplete colcon)" >> ~/.bashrc
+echo "eval "$(register-python-argcomplete colcon)" >> ~/.bashrc
 echo "source /home/ws/ugv_ws/install/setup.bash" >> ~/.bashrc
 source ~/.bashrc 

@@ -5,39 +5,47 @@ from geometry_msgs.msg import Twist
 import serial  
 import json  
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Float32,Float32MultiArray
+from std_msgs.msg import Float32, Float32MultiArray
 import subprocess
 import time
 
-# 打开串口  
-ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=1)  
+# Initialize serial communication with the UGV
+ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=1)
 
 class UgvDriver(Node):
     def __init__(self, name):
         super().__init__(name)
-        # 创建订阅者
+
+        # Subscribe to velocity commands (cmd_vel topic)
         self.cmd_vel_sub_ = self.create_subscription(Twist, "cmd_vel", self.cmd_vel_callback, 10)
-        self.joint_states_sub = self.create_subscription(JointState,'ugv/joint_states',self.joint_states_callback,10)
-        self.led_ctrl_sub = self.create_subscription(Float32MultiArray,'ugv/led_ctrl',self.led_ctrl_callback,10)
+
+        # Subscribe to joint states (ugv/joint_states topic)
+        self.joint_states_sub = self.create_subscription(JointState, 'ugv/joint_states', self.joint_states_callback, 10)
+
+        # Subscribe to LED control data (ugv/led_ctrl topic)
+        self.led_ctrl_sub = self.create_subscription(Float32MultiArray, 'ugv/led_ctrl', self.led_ctrl_callback, 10)
+
+        # Subscribe to voltage data (voltage topic)
         self.voltage_sub = self.create_subscription(Float32, 'voltage', self.voltage_callback, 10)
-        
+
+    # Callback for processing velocity commands
     def cmd_vel_callback(self, msg):
-        # 收到速度消息时发送速度数据给串口
-#        print("msg.linear.x: ", msg.linear.x)
-#        print("msg.angular.z: ", msg.angular.z)
         linear_velocity = msg.linear.x
         angular_velocity = msg.angular.z
-        # 防止原地转向时速度太小无法转动
+
+        # Apply minimum threshold to angular velocity if linear velocity is zero
         if linear_velocity == 0:
             if 0 < angular_velocity < 0.2:
                 angular_velocity = 0.2
             elif -0.2 < angular_velocity < 0:
                 angular_velocity = -0.2
+
+        # Send the velocity data to the UGV as a JSON string
         data = json.dumps({'T': '13', 'X': linear_velocity, 'Z': angular_velocity}) + "\n"
         ser.write(data.encode())
-        
-    def joint_states_callback(self, msg):
 
+    # Callback for processing joint state updates
+    def joint_states_callback(self, msg):
         header = {
             'stamp': {
                 'sec': msg.header.stamp.sec,
@@ -45,58 +53,63 @@ class UgvDriver(Node):
             },
             'frame_id': msg.header.frame_id,
         }
-        
+
+        # Extract joint positions and convert to degrees
         name = msg.name
         position = msg.position
-        velocity = msg.velocity
-        effort = msg.effort
 
         x_rad = position[name.index('pt_base_link_to_pt_link1')]
         y_rad = position[name.index('pt_link1_to_pt_link2')]
 
-        x_degree = (180*x_rad)/3.1415926
-        y_degree = (180*y_rad)/3.1415926
-        
+        x_degree = (180 * x_rad) / 3.1415926
+        y_degree = (180 * y_rad) / 3.1415926
+
+        # Send the joint data as a JSON string to the UGV
         joint_data = json.dumps({
             'T': 134, 
             'X': x_degree, 
             'Y': y_degree, 
-            "SX":600,
-            "SY":600,
+            "SX": 600,
+            "SY": 600,
         }) + "\n"
                 
         ser.write(joint_data.encode())
 
+    # Callback for processing LED control commands
     def led_ctrl_callback(self, msg):
         IO4 = msg.data[0]
         IO5 = msg.data[1]
         
+        # Send LED control data as a JSON string to the UGV
         led_ctrl_data = json.dumps({
             'T': 132, 
-            "IO4":IO4,
-            "IO5":IO5,
+            "IO4": IO4,
+            "IO5": IO5,
         }) + "\n"
                 
         ser.write(led_ctrl_data.encode())
-        
+
+    # Callback for processing voltage data
     def voltage_callback(self, msg):
         voltage_value = msg.data
-        if 0.1< voltage_value < 9 : 
-            subprocess.run(['aplay', '-D', 'plughw:4,0', '/home/ws/ugv_ws/src/ugv_main/ugv_bringup/ugv_bringup/low_battery.wav'])
-            time.sleep(5)
-            #print("Low battery - Voltage is below 9: ", voltage_value)
-        #else:
-            #print("Received voltage data:", voltage_value)
-       
-def main(args=None):
-    rclpy.init(args=args) # 初始化rclpy
-    node = UgvDriver("ugv_driver")  # 新建一个节点
 
-    rclpy.spin(node) # 保持节点运行，检测是否收到退出指令（Ctrl+C）
-    # 关闭rclpy
-    rclpy.shutdown()
-    # 关闭串口  
-    ser.close()
+        # If voltage drops below a threshold, play a low battery warning sound
+        if 0.1 < voltage_value < 9: 
+            subprocess.run(['aplay', '-D', 'plughw:3,0', '/home/ws/ugv_ws/src/ugv_main/ugv_bringup/ugv_bringup/low_battery.wav'])
+            time.sleep(5)
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = UgvDriver("ugv_driver")
+    
+    try:
+        rclpy.spin(node)  # Keep the node running and handling callbacks
+    except KeyboardInterrupt:
+        pass  # Graceful shutdown on user interrupt
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+        ser.close()  # Close the serial connection
 
 if __name__ == '__main__':
     main()

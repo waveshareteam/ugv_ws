@@ -99,7 +99,7 @@ class JoyTeleop(Node):
         
 	def user_pc(self, joy_data):
 
-        # 取消 Cancel
+        # Cancel
 		if joy_data.axes[5] == -1: self.cancel_nav()
 		if joy_data.buttons[5] == 1:
 			if self.RGBLight_index < 6:
@@ -111,7 +111,7 @@ class JoyTeleop(Node):
 			self.Buzzer_active=not self.Buzzer_active
             # print "self.Buzzer_active: ", self.Buzzer_active
 			self.pub_Buzzer.publish(self.Buzzer_active)
-        # 档位控制 Gear control
+        # Gear control
 		if joy_data.buttons[9] == 1:
 			if self.linear_Gear == 1.0: self.linear_Gear = 1.0 / 3
 			elif self.linear_Gear == 1.0 / 3: self.linear_Gear = 2.0 / 3

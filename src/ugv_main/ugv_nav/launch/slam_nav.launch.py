@@ -155,6 +155,7 @@ def generate_launch_description():
     # Add the actions to launch all of the navigation nodes
     ld.add_action(bringup_lidar_launch)
     ld.add_actionrobot_pose_publisher_launch)
+    ld.add_action(robot_pose_publisher_launch)
     ld.add_action(bringup_cmd_group)
     return ld
 

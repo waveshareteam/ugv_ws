@@ -10,6 +10,7 @@ import os
 
 def generate_launch_description():
 
+    # Launch configuration variables
     use_sim_time = LaunchConfiguration('use_sim_time')
     queue_size = LaunchConfiguration('queue_size')
     qos = LaunchConfiguration('qos')
@@ -39,6 +40,7 @@ def generate_launch_description():
     use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='false',
                                      description='Whether to launch RViz2')  
                            
+    # Parameters for the SLAM node
     parameters = {
             "frame_id": 'base_footprint',
             'queue_size': queue_size,
@@ -56,6 +58,7 @@ def generate_launch_description():
         ("depth/image", "oak/stereo/image_raw"),
     ]
     
+    # Launch the lidar bringup launch file
     bringup_lidar_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('ugv_bringup'), 'launch'),
          '/bringup_lidar.launch.py']),
@@ -65,6 +68,7 @@ def generate_launch_description():
         }.items()
     )
         
+    # Launch the oak lite bringup launch file
     bringup_oak_lite_launch = IncludeLaunchDescription( PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('ugv_vision'), 'launch'),
              '/oak_d_lite.launch.py']
@@ -92,6 +96,7 @@ def generate_launch_description():
         remappings=remappings
     )
 
+    # Launch the rtabmap viz node
     rtabmap_viz_node = Node(
         package='rtabmap_viz', executable='rtabmap_viz', output='screen',
         parameters=[parameters],
@@ -99,6 +104,7 @@ def generate_launch_description():
         condition=UnlessCondition(LaunchConfiguration('use_rviz'))
     )
 
+    # Launch the robot pose publisher launch file
     robot_pose_publisher_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('robot_pose_publisher'), 'launch'),
          '/robot_pose_publisher_launch.py'])

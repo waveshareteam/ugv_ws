@@ -15,16 +15,19 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
                                    
+    # Create a node to read joystick input
     joy_node = Node(
         package='joy',
         executable='joy_node',
     )
 
+    # Create a node to control the robot using joystick input
     joy_ctrl_node = Node(
         package='ugv_tools',
         executable='joy_ctrl',
     )
 
+    # Return the launch description
     return LaunchDescription([
         joy_node,
         joy_ctrl_node

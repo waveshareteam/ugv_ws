@@ -18,6 +18,7 @@
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
+// Declare variables
 float q1, q2, q3;
 float q0 = 1.0;
 float imu_yaw = 0.0;
@@ -28,6 +29,7 @@ float yaw = 0.0;
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
 #endif
 
+// Define covariance matrices for odometry
 const double ODOM_POSE_COVARIANCE[] = {1e-3, 0, 0, 0, 0, 0,
                                        0, 1e-3, 0, 0, 0, 0,
                                        0, 0, 1e6, 0, 0, 0,
@@ -54,13 +56,14 @@ const double ODOM_TWIST_COVARIANCE2[] = {1e-9, 0, 0, 0, 0, 0,
                                          0, 0, 0, 0, 1e6, 0,
                                          0, 0, 0, 0, 0, 1e-9};
 
+// Define class for odometry publisher
 class OdomPublisher : public rclcpp::Node
 {
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscription_;
     rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr odom_raw_subscription_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    rclcpp::TimerBase::SharedPtr timer_; // 定时器
+    rclcpp::TimerBase::SharedPtr timer_; 
 
     double dt = 0.0;
     double x_pos_ = 0.0;
@@ -74,32 +77,37 @@ class OdomPublisher : public rclcpp::Node
     rclcpp::Time last_time_;
     std::string odom_frame = "odom";
     std::string base_footprint_frame = "base_footprint";
-    float init_odl = 0.0; // 增加的成员变量，记录初始值
-    float init_odr = 0.0; // 增加的成员变量，记录初始值
+    float init_odl = 0.0;
+    float init_odr = 0.0; 
 
 public:
     OdomPublisher()
         : Node("base_node")
     {
+        // Declare parameters
         this->declare_parameter<std::string>("odom_frame", "odom");
         this->declare_parameter<std::string>("base_footprint_frame", "base_footprint");
         this->declare_parameter<bool>("pub_odom_tf", false);
 
+        // Get parameters
         this->get_parameter<bool>("pub_odom_tf", pub_odom_tf_);
         this->get_parameter<std::string>("odom_frame", odom_frame);
         this->get_parameter<std::string>("base_footprint_frame", base_footprint_frame);
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
+        // Create subscriptions
         imu_subscription_ = this->create_subscription<sensor_msgs::msg::Imu>("imu/data", 5, std::bind(&OdomPublisher::handle_imu, this, _1));
         odom_raw_subscription_ = this->create_subscription<std_msgs::msg::Float32MultiArray>("odom/odom_raw", 50, std::bind(&OdomPublisher::handle_odom, this, _1));
 
+        // Create publisher
         odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("odom_raw", 5);
 
-        // 设置定时器，周期为100毫秒（即10 Hz的发布速率）
+        // Create timer
         timer_ = this->create_wall_timer(100ms, std::bind(&OdomPublisher::publish_odom, this));
     }
 
 private:
+    // Handle IMU data
     void handle_imu(const std::shared_ptr<sensor_msgs::msg::Imu> msg)
     {
         q1 = msg->orientation.x;
@@ -112,6 +120,7 @@ private:
         imu_yaw = std::atan2(siny_cosp, cosy_cosp);
     }
 
+    // Handle odometry data
     void handle_odom(const std::shared_ptr<std_msgs::msg::Float32MultiArray> msg)
     {
         rclcpp::Time curren_time = rclcpp::Clock().now();
@@ -160,6 +169,7 @@ private:
         yaw = odom_yaw;
     }
 
+    // Publish odometry data
     void publish_odom()
     {
         rclcpp::Time curren_time = rclcpp::Clock().now();
@@ -188,7 +198,7 @@ private:
 
         uint8_t i = 0;
         if (vx == 0 || vw == 0)
-        { // 底盘不动时用下面这组协方差
+        { 
             for (i = 0; i < _countof(ODOM_POSE_COVARIANCE); i++)
             {
                 odom.pose.covariance[i] = ODOM_POSE_COVARIANCE2[i];
@@ -231,6 +241,7 @@ private:
     }
 };
 
+// Main function
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);

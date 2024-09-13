@@ -29,7 +29,7 @@ setup(
             'gesture_ctrl = ugv_vision.gesture_ctrl:main',
             'apriltag_ctrl = ugv_vision.apriltag_ctrl:main',
             'apriltag_track_0 = ugv_vision.apriltag_track_0:main',
-            'apriltag_track_1 = ugv_vision.apriltag_track_1:main'，
+            'apriltag_track_1 = ugv_vision.apriltag_track_1:main',
             'apriltag_track_2 = ugv_vision.apriltag_track_2:main'
         ],
     },

@@ -14,10 +14,7 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
-
-    ugv_bringup_dir = get_package_share_directory('ugv_bringup')
-    rviz_config_dir = os.path.join(ugv_bringup_dir,'rviz','view_ugv_bringup.rviz')
-      
+    # Declare launch arguments
     pub_odom_tf_arg = DeclareLaunchArgument('pub_odom_tf', default_value='false',
                                             description='Whether to publish the tf from the original odom to the base_footprint')                                         
      
@@ -32,12 +29,12 @@ def generate_launch_description():
         'param',
         'imu_filter_param.yaml'
     )
-                                         
+    # Define the nodes to be launched                                     
     bringup_node = Node(
         package='ugv_bringup',
         executable='ugv_bringup',
     )
-    
+    # Include the robot state launch from the ugv_description package
     robot_state_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('ugv_description'), 'launch', 'display.launch.py')
@@ -47,7 +44,7 @@ def generate_launch_description():
             'rviz_config': LaunchConfiguration('rviz_config'),
         }.items()
     ) 
-    
+    # Define the nodes to be launched
     imu_complementary_filter_node = Node(
             package='imu_complementary_filter',
             executable='complementary_filter_node',
@@ -61,29 +58,29 @@ def generate_launch_description():
                 {'gain_mag': 0.01},
             ]
     )
-    
+    # Define the nodes to be launched
     imu_filter_node = Node(
         package='imu_filter_madgwick',
         executable='imu_filter_madgwick_node',
         parameters=[imu_filter_config]
     )
-    
+    # Define the nodes to be launched
     laser_bringup_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('ldlidar'), 'launch'),
          '/ldlidar.launch.py'])
     )
-    
+    # Define the nodes to be launched
     driver_node = Node(
         package='ugv_bringup',
         executable='ugv_driver',
     )
-    
+    # Define the nodes to be launched
     base_node = Node(
         package='ugv_base_node',
         executable='base_node_ekf',
         parameters=[{'pub_odom_tf': LaunchConfiguration('pub_odom_tf')}]
     )
-    
+    # Define the nodes to be launched
     ekf_node = Node(
         package='robot_localization',
         executable='ekf_node',

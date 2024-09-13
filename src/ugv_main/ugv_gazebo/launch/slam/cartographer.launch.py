@@ -10,9 +10,11 @@ from launch.substitutions import Command, LaunchConfiguration
 
 def generate_launch_description():
 
+    # Declare the launch argument for use_sim_time
     use_sim_time_arg = DeclareLaunchArgument('use_sim_time', default_value='true',
                                      description='Whether to launch gazebo')                          
 
+    # Include the cartographer launch file
     cartographer_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('cartographer'), 'launch'),
          '/mapping.launch.py']),
@@ -21,9 +23,12 @@ def generate_launch_description():
         }.items()
     )
     
+    # Get the ugv_slam package share directory
     ugv_slam_dir = get_package_share_directory('ugv_slam')
+    # Get the rviz config file
     rviz_slam_2d_config = os.path.join(ugv_slam_dir, 'rviz', 'view_slam_2d_gazebo.rviz')
     
+    # Launch rviz2 node
     rviz2_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -32,6 +37,7 @@ def generate_launch_description():
         arguments=['-d', rviz_slam_2d_config],
     )
 
+    # Launch robot_pose_publisher node
     robot_pose_publisher_node = Node(package="robot_pose_publisher", executable="robot_pose_publisher",
             name="robot_pose_publisher",
             output="screen",
@@ -44,6 +50,7 @@ def generate_launch_description():
             ]
     ) 
                 
+    # Return the launch description
     return LaunchDescription([
         use_sim_time_arg,
         cartographer_launch,
