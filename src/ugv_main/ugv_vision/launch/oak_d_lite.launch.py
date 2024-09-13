@@ -24,7 +24,12 @@ def launch_setup(context, *args, **kwargs):
             PythonLaunchDescriptionSource(
                 os.path.join(depthai_prefix, "launch", "camera.launch.py")
             ),
-            launch_arguments={"name": name, "parent_frame": '3d_camera_link',"params_file": params_file}.items(),
+            launch_arguments={
+                "name": name, 
+                "parent_frame": '3d_camera_link',
+                "params_file": params_file,
+                'use_rviz': 'False',
+            }.items(),
         ),
         LoadComposableNodes(
             condition=IfCondition(LaunchConfiguration("rectify_rgb")),
