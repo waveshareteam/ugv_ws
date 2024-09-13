@@ -7,7 +7,7 @@ enter_container() {
     if [ $? -eq 0 ]; then
         echo "Container started successfully."
         echo "Executing docker exec command to open a bash shell in the container..."
-        docker exec -it ugvrpi_ros_humble /bin/bash
+        docker exec -it ugv_rpi_ros_humble /bin/bash -c "/home/ws/ugv_ws/remotessh.sh"
         if [ $? -eq 0 ]; then
             echo "Opened bash shell in the container."
             exit
@@ -24,16 +24,11 @@ main_menu() {
     while true; do
         echo "Please choose an option:"
         echo "1. Enter container"
-        echo "2. Exit"
         read -p "Enter the option number and press Enter: " choice
         
         case $choice in
             1)
                 enter_container
-                ;;
-            2)
-                echo "Exiting the script."
-                exit 0
                 ;;
             *)
                 echo "Invalid option, please try again."
