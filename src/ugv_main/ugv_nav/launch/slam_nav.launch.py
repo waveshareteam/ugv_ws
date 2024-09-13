@@ -94,6 +94,11 @@ def generate_launch_description():
             'rviz_config': 'nav_2d',  
         }.items()
     )
+    
+    robot_pose_publisher_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
+        [os.path.join(get_package_share_directory('robot_pose_publisher'), 'launch'),
+         '/robot_pose_publisher_launch.py'])
+    ) 
             
     # Specify the actions
     bringup_cmd_group = GroupAction([
@@ -128,31 +133,8 @@ def generate_launch_description():
                               'params_file': params_file,
                               'use_composition': use_composition,
                               'use_respawn': use_respawn,
-                              'container_name': 'nav2_container'}.items()),
-                              
-        Node(package="robot_pose_publisher", executable="robot_pose_publisher",
-            name="robot_pose_publisher",
-            output="screen",
-            emulate_tty=True,
-            parameters=[
-                {"use_sim_time": False},
-                {"is_stamped": True},
-                {"map_frame": "map"},
-                {"base_frame": "base_footprint"}
-            ]) 
+                              'container_name': 'nav2_container'}.items())) 
     ])
-    
-    robot_pose_publisher_node = Node(package="robot_pose_publisher", executable="robot_pose_publisher",
-            name="robot_pose_publisher",
-            output="screen",
-            emulate_tty=True,
-            parameters=[
-                {"use_sim_time": False},
-                {"is_stamped": True},
-                {"map_frame": "map"},
-                {"base_frame": "base_footprint"}
-            ]
-    ) 
     
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -172,7 +154,7 @@ def generate_launch_description():
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(bringup_lidar_launch)
+    ld.add_actionrobot_pose_publisher_launch)
     ld.add_action(bringup_cmd_group)
-    ld.add_action(robot_pose_publisher_node)
     return ld
 

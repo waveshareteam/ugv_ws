@@ -99,17 +99,10 @@ def generate_launch_description():
         condition=UnlessCondition(LaunchConfiguration('use_rviz'))
     )
 
-    robot_pose_publisher_node = Node(package="robot_pose_publisher", executable="robot_pose_publisher",
-            name="robot_pose_publisher",
-            output="screen",
-            emulate_tty=True,
-            parameters=[
-                {"use_sim_time": False},
-                {"is_stamped": True},
-                {"map_frame": "map"},
-                {"base_frame": "base_footprint"}
-            ]
-    )
+    robot_pose_publisher_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
+        [os.path.join(get_package_share_directory('robot_pose_publisher'), 'launch'),
+         '/robot_pose_publisher_launch.py'])
+    ) 
                       
     return LaunchDescription([
         declare_use_sim_time,
@@ -119,8 +112,8 @@ def generate_launch_description():
         use_rviz_arg,
         bringup_lidar_launch,
         bringup_oak_lite_launch,
+        robot_pose_publisher_launch
         rtabmap_slam_node_slam,
         rtabmap_slam_node_localization,
         rtabmap_viz_node
-        #robot_pose_publisher_node
     ])

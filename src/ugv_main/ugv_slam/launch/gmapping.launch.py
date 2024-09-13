@@ -27,21 +27,14 @@ def generate_launch_description():
          '/mapping.launch.py'])
     )  
 
-    robot_pose_publisher_node = Node(package="robot_pose_publisher", executable="robot_pose_publisher",
-            name="robot_pose_publisher",
-            output="screen",
-            emulate_tty=True,
-            parameters=[
-                {"use_sim_time": False},
-                {"is_stamped": True},
-                {"map_frame": "map"},
-                {"base_frame": "base_footprint"}
-            ]
+    robot_pose_publisher_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
+        [os.path.join(get_package_share_directory('robot_pose_publisher'), 'launch'),
+         '/robot_pose_publisher_launch.py'])
     ) 
         
     return LaunchDescription([
         use_rviz_arg,
         bringup_lidar_launch, 
-        gmapping_launch,
-        robot_pose_publisher_node
+        robot_pose_publisher_launch
+        gmapping_launch
     ])
