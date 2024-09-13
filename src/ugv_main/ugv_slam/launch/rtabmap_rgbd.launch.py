@@ -112,7 +112,7 @@ def generate_launch_description():
         use_rviz_arg,
         bringup_lidar_launch,
         bringup_oak_lite_launch,
-        robot_pose_publisher_launch
+        robot_pose_publisher_launch,
         rtabmap_slam_node_slam,
         rtabmap_slam_node_localization,
         rtabmap_viz_node
