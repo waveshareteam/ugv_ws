@@ -7,16 +7,16 @@ import os
 
 def generate_launch_description():
 
-    LDLIDAR_MODEL = os.environ['LDLIDAR_MODEL']
-    ldlidar_launch_file = 'view_' + LDLIDAR_MODEL + '.launch.py'
-    
-    laser_bringup_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
-        [os.path.join(get_package_share_directory('ldlidar'), 'launch/'),
-         ldlidar_launch_file])
-    )
+  LDLIDAR_MODEL = os.environ['LDLIDAR_MODEL']
+  ldlidar_launch_file = 'viewer_' + LDLIDAR_MODEL + '.launch.py'
+  
+  laser_bringup_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
+      [os.path.join(get_package_share_directory('ldlidar'), 'launch/'),
+       ldlidar_launch_file])
+  )
     
   ld = LaunchDescription()
 
-  ld.add_action(ldlidar_node)
+  ld.add_action(laser_bringup_launch)
 
   return ld
