@@ -36,10 +36,7 @@ def generate_launch_description():
         'localization', default_value='false',
         description='Launch in localization mode.'
     )
-
-    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='false',
-                                     description='Whether to launch RViz2')  
-                           
+                            
     # Parameters for the SLAM node
     parameters = {
             "frame_id": 'base_footprint',
@@ -95,7 +92,7 @@ def generate_launch_description():
         ],
         remappings=remappings
     )
-
+    
     # Launch the rtabmap viz node
     rtabmap_viz_node = Node(
         package='rtabmap_viz', executable='rtabmap_viz', output='screen',
@@ -109,13 +106,12 @@ def generate_launch_description():
         [os.path.join(get_package_share_directory('robot_pose_publisher'), 'launch'),
          '/robot_pose_publisher_launch.py'])
     ) 
-                      
+                     
     return LaunchDescription([
         declare_use_sim_time,
         declare_queue_size,
         declare_qos,
         declare_localization,
-        use_rviz_arg,
         bringup_lidar_launch,
         bringup_oak_lite_launch,
         robot_pose_publisher_launch,

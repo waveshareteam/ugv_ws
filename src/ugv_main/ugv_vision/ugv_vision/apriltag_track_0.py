@@ -91,7 +91,7 @@ class ApriltagTracker(Node):
             cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
 
             # Print the tag ID and center coordinates
-            print(f'Tag ID: {r.tag_id}, Center: ({center_x}, {center_y})')
+            print(f'Tag ID: {r["id"]}, Center: ({center_x}, {center_y})')
 
             # Determine the command to send based on the center coordinates
             if (center_x - 320) > 30: 
