@@ -24,9 +24,9 @@ def generate_launch_description():
     )  
     
     # Get the path to the ugv_slam package
-    ugv_slam_dir = get_package_share_directory('ugv_slam')
+    ugv_slam_dir = get_package_share_directory('ugv_gazebo')
     # Get the path to the rviz config file
-    rviz_slam_2d_config = os.path.join(ugv_slam_dir, 'rviz', 'view_slam_2d_gazebo.rviz')
+    rviz_slam_2d_config = os.path.join(ugv_slam_dir, 'rviz', 'view_slam_2d.rviz')
     
     # Create a node for rviz2
     rviz2_node = Node(
