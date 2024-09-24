@@ -1,0 +1,608 @@
+<?xml version="1.0" ?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="ugv_rover">
+  <link name="base_footprint"></link>
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.000460087791654118 -6.50856019576702E-10 -0.0147959620149623"
+        rpy="0 0 0" />
+      <mass
+        value="2.78375064359473" />
+      <inertia
+        ixx="0.00651567554169617"
+        ixy="-5.86655425789789E-13"
+        ixz="3.77886436056975E-05"
+        iyy="0.00933991752413667"
+        iyz="-2.53116742521487E-11"
+        izz="0.0121583506563461" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/base_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/base_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0.000460087791654118 6.50856019576702E-10 0.08" rpy="0 0 0"/> 
+  </joint>
+  
+  <link name="base_imu_link"> 
+      <origin xyz="0 0 0" rpy="0 0 0"/> 
+  </link>
+  
+  <joint name="imu_joint" type="fixed">
+      <parent link="base_link" />
+      <child link="base_imu_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link
+    name="left_up_wheel_link">
+    <inertial>
+      <origin
+        xyz="1.38777878078145E-17 1.38777878078145E-17 0"
+        rpy="1.5708 0 0" />
+      <mass
+        value="0.207085933743005" />
+      <inertia
+        ixx="0.000116541923504163"
+        ixy="-1.59309191113245E-55"
+        ixz="-3.43238458333891E-37"
+        iyy="0.000170742352371108"
+        iyz="-3.6165187302327E-37"
+        izz="0.000116541923504163" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/left_up_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/left_up_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_up_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="0.0855 0.08726 -0.041212"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_up_wheel_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="left_down_wheel_link">
+    <inertial>
+      <origin
+        xyz="0 1.38777878078145E-17 0"
+        rpy="1.5708 0 0" />
+      <mass
+        value="0.207085933743005" />
+      <inertia
+        ixx="0.000116541923504163"
+        ixy="-1.59309191113245E-55"
+        ixz="-3.43238458333891E-37"
+        iyy="0.000170742352371108"
+        iyz="-3.6165187302327E-37"
+        izz="0.000116541923504163" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/left_down_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/left_down_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_down_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0854999999999981 0.0872599990000038 -0.0412119912691592"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_down_wheel_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="right_up_wheel_link">
+    <inertial>
+      <origin
+        xyz="1.38777878078145E-17 -1.38777878078145E-17 0"
+        rpy="1.5708 0 0" />
+      <mass
+        value="0.207085933743005" />
+      <inertia
+        ixx="0.000116541923504163"
+        ixy="-1.59309191113245E-55"
+        ixz="-3.43238458333891E-37"
+        iyy="0.000170742352371108"
+        iyz="-3.6165187302327E-37"
+        izz="0.000116541923504163" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/right_up_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/right_up_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_up_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="0.0854999999999989 -0.0872600009999962 -0.0412119912691588"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_up_wheel_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="right_down_wheel_link">
+    <inertial>
+      <origin
+        xyz="0 -1.38777878078145E-17 0"
+        rpy="1.5708 0 0" />
+      <mass
+        value="0.207085933743005" />
+      <inertia
+        ixx="0.000116541923504163"
+        ixy="-1.59309191113245E-55"
+        ixz="-3.43238458333891E-37"
+        iyy="0.000170742352371108"
+        iyz="-3.6165187302327E-37"
+        izz="0.000116541923504163" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/right_down_wheel_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/right_down_wheel_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_down_wheel_link_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0854999999999981 -0.0872600009999962 -0.0412119912691594"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_down_wheel_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="3d_camera_link">
+    <inertial>
+      <origin
+        xyz="0.00849999999999999 -2.66785989545803E-18 0"
+        rpy="1.5708 1.5708 0" />
+      <mass
+        value="0.043316" />
+      <inertia
+        ixx="3.27216283333333E-05"
+        ixy="1.12259284465067E-22"
+        ixz="-1.19114008207636E-22"
+        iyy="3.87317233333333E-06"
+        iyz="-2.37303626261453E-22"
+        izz="3.09348433333333E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 1.5708 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/3d_camera_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 1.5708 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/3d_camera_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint
+    name="3d_camera_link_joint"
+    type="fixed">
+    <origin
+      xyz="0.06531 0 0.021953"
+      rpy="-1.5708 0 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="3d_camera_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  
+  <link
+    name="base_lidar_link">
+    <inertial>
+      <origin
+        xyz="-6.93889390390723E-18 -1.81372359302323E-18 0.0165546434494574"
+        rpy="0 0 0" />
+      <mass
+        value="0.0418000091653573" />
+      <inertia
+        ixx="8.26853377699878E-06"
+        ixy="-2.32283058129169E-22"
+        ixz="-3.51417304718746E-22"
+        iyy="8.26853377699876E-06"
+        iyz="2.66754484573224E-23"
+        izz="8.32524607487378E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/base_lidar_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/base_lidar_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_lidar_link_joint"
+    type="fixed">
+    <origin
+      xyz="0.0398145505519817 0 0.04"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="base_lidar_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="pt_base_link">
+    <inertial>
+      <origin
+        xyz="0.00127554206615719 2.80272572267171E-15 0.0215158687368638"
+        rpy="0 0 0" />
+      <mass
+        value="0.109518186442022" />
+      <inertia
+        ixx="3.30168147078049E-05"
+        ixy="-2.724587071518E-18"
+        ixz="-2.93137934608679E-06"
+        iyy="5.1580984319637E-05"
+        iyz="-6.32568066032632E-18"
+        izz="4.86101329827052E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_base_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_base_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_base_link_joint"
+    type="fixed">
+    <origin
+      xyz="-0.018892 0 0.04"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pt_base_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="pt_link1">
+    <inertial>
+      <origin
+        xyz="-0.00338129216527271 1.0094878463484E-15 0.0176096758355074"
+        rpy="0 0 0" />
+      <mass
+        value="0.00710917409663916" />
+      <inertia
+        ixx="3.89716322571471E-06"
+        ixy="-3.20607036006508E-19"
+        ixz="2.32919366130509E-07"
+        iyy="2.4980668051168E-06"
+        iyz="-2.87650001968868E-19"
+        izz="2.60402792588347E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_link1.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_link1.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_base_link_to_pt_link1"
+    type="revolute">
+    <origin
+      xyz="0.010151 0 0.048"
+      rpy="0 0 0" />
+    <parent
+      link="pt_base_link" />
+    <child
+      link="pt_link1" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="pt_link2">
+    <inertial>
+      <origin
+        xyz="0.0218201278828439 0.0119590002643801 0.020000000000001"
+        rpy="0 0 0" />
+      <mass
+        value="0.0970496053012515" />
+      <inertia
+        ixx="3.07158301509253E-05"
+        ixy="-9.60865010663691E-07"
+        ixz="-1.08689847044801E-19"
+        iyy="3.74067734460566E-05"
+        iyz="-1.7579899274055E-18"
+        izz="4.94991610517831E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_link2.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_link2.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_link1_to_pt_link2"
+    type="revolute">
+    <origin
+      xyz="0 0.02 0.043003"
+      rpy="1.5708 0 0" />
+    <parent
+      link="pt_link1" />
+    <child
+      link="pt_link2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5233333"
+      upper="1.5707963"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="pt_camera_link">
+    <inertial>
+      <origin
+        xyz="0.00630730338217479 -7.90865732935165E-18 0.000950308188413934"
+        rpy="0 -1.5708 1.5708" />
+      <mass
+        value="0.00623651844028495" />
+      <inertia
+        ixx="5.11295942352593E-07"
+        ixy="3.46495200123478E-22"
+        ixz="-4.00917493406375E-08"
+        iyy="3.99078324787848E-07"
+        iyz="1.31404415819798E-22"
+        izz="4.02518684222241E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 -1.5708 1.5708" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_camera_link.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 -1.5708 1.5708" />
+      <geometry>
+        <mesh
+          filename="package://ugv_description/meshes/ugv_rover/pt_camera_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pt_link2_to_pt_camera_link"
+    type="fixed">
+    <origin
+      xyz="0.047686 -0.000569 0.02"
+      rpy="3.14 -1.5708 0" />
+    <parent
+      link="pt_link2" />
+    <child
+      link="pt_camera_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  
+</robot>
