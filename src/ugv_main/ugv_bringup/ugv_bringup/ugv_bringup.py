@@ -146,7 +146,7 @@ class ugv_bringup(Node):
     # Publish odometry data to the ROS topic "odom/odom_raw"
     def publish_odom_raw(self):
         odom_raw_data = self.base_controller.base_data
-        array = [odom_raw_data["odl"], odom_raw_data["odr"]]
+        array = [odom_raw_data["odl"]/100, odom_raw_data["odr"]/100]
         msg = Float32MultiArray(data=array)
         self.odom_publisher_.publish(msg)  # Publish the odometry data
 
@@ -154,7 +154,7 @@ class ugv_bringup(Node):
     def publish_voltage(self):
         voltage_data = self.base_controller.base_data
         msg = Float32()
-        msg.data = float(voltage_data["v"])
+        msg.data = float(voltage_data["v"])/100
         self.voltage_publisher_.publish(msg)  # Publish the voltage data
                         
 # Main function to initialize the ROS node and start spinning
