@@ -1,26 +1,26 @@
-# ugv_ws 工作空间说明（穩定）
+# ugv_ws Workspace Description (Stable)
 
-1.环境
+1.environment
 
-- pc 软件：VMware Workstation 17Pro、mobarxterm
-- 小车 版本：ugv rpi
+- pc software：VMware Workstation 17Pro、mobarxterm
+- ugv Version：ugv rpi
 
-2.架构
+2.architecture
 
-- 项目：https://github.com/DUDULRX/ugv_ws/tree/ros2-humble
+- project：https://github.com/DUDULRX/ugv_ws/tree/ros2-humble
     
     ```jsx
     git clone -b ros2-humble-develop https://github.com/DUDULRX/ugv_ws.git
     ```
     
-    - 虚拟机第一次编译（小车上得一个一个编译）
+    - First compilation on the virtual machine (compiling one by one on the robot)
         
         ```jsx
         cd /home/ws/ugv_ws
         . build_first.sh
         ```
         
-        build_first.sh内容
+        build_first.sh content
         
         ```jsx
         cd /home/ws/ugv_ws
@@ -33,14 +33,14 @@
         source ~/.bashrc 
         ```
         
-    - 虚拟机日常编译（小车上得一个一个编译）
+    - Daily compilation of virtual machines (one by one on the car)
         
         ```jsx
         cd /home/ws/ugv_ws
         . build_common.sh
         ```
         
-        build_common.sh内容
+        build_common.sh content
         
         ```jsx
         cd /home/ws/ugv_ws
@@ -56,7 +56,7 @@
         . build_apriltag.sh
         ```
         
-        build_apriltag.sh内容
+        build_apriltag.sh content
         
         ```jsx
         cd /home/ws/ugv_ws/src/ugv_else/apriltag_ros/apriltag
@@ -65,9 +65,9 @@
         cd /home/ws/ugv_ws
         ```
         
-- ubuntu 软件：
+- ubuntu software：
     
-    **参照wiki安装 ros2 humble**
+    **Install according to wiki install ros2 humble**
     
     ```jsx
     apt-get update 
@@ -87,28 +87,28 @@
     apt install ros-humble-usb-cam
     apt install ros-humble-depthai-*
     
-    #仿真 虚拟机安装
+    #Simulation virtual machine installation
     apt install gazebo
     apt install ros-humble-gazebo-*
     ```
     
-- python3 库：
+- python3 Library：
     
-    国内
+    domestic
     
     ```jsx
     cd ~/ugv_ws
     python3 -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
     
-    国外
+    foreign
     
     ```jsx
     cd ~/ugv_ws
     python3 -m pip install -r requirements.txt
     ```
     
-    requirements.txt 内容
+    requirements.txt content
     
     ```jsx
     pyserial
@@ -117,45 +117,45 @@
     requests
     ```
     
-- ugv_ws 功能包
+- ugv_ws Feature pack
     
-    > ugv_main 主要功能
+    > ugv_main Main functions
     > 
     > 
-    > > ugv_base_node 两轮差速 运动学
+    > > ugv_base_node Two-wheel differential kinematics
     > > 
     > 
-    > > ugv_bringup 驱动、控制
+    > > ugv_bringup drive, control
     > > 
     > 
-    > > ugv_chat_ai web ai交互
+    > > ugv_chat_ai web ai interaction
     > > 
     > 
-    > > ugv_description 模型
+    > > ugv_description Model
     > > 
     > 
-    > > ugv_gazebo 仿真
+    > > ugv_gazebo simulation
     > > 
     > 
-    > > ugv_interface 信息接口
+    > > ugv_interface Information interface
     > > 
     > 
-    > > ugv_nav 导航
+    > > ugv_nav navigation
     > > 
     > 
-    > > ugv_slam 建图
+    > > ugv_slam Mapping
     > > 
     > 
-    > > ugv_tools 工具
+    > > ugv_tools tool
     > > 
     > 
-    > > ugv_vision 视觉交互
+    > > ugv_vision 视sensory interaction
     > > 
     > 
-    > > ugv_web_app web端
+    > > ugv_web_app web
     > > 
     
-    > ugv_else ( ugv_main 依赖)
+    > ugv_else ( ugv_main rely)
     > 
     > 
     > > apriltag_ros
@@ -191,27 +191,27 @@
     > > vizanti
     > > 
 
-3.使用（小车上的ros包均在docker内执行）
+3.Use (ros packages on the car are all executed in docker)
 
-use_rviz 可选 true、false(默认)
+use_rviz optional true, false (default)
 
-小车模型 可选 rasp_rover、ugv_rover、ugv_beast
+Car model optional rasp_rover, ugv_rover, ugv_beast
 
-雷达模型 可选 ld06、ld19(默认)、stl27l
+Lidar model optional ld06, ld19 (default), stl27l
 
-- 启动小车，关闭开机自启动脚本
+- Start the car and turn off the auto-start script.
     
     ```jsx
     sudo killall -9 python
     ```
     
 
-进入docker，启动ssh，方可远程到docker，可视化界面
+Enter docker and start ssh to remotely access docker and the visual interface
 
-- 小车设置docker
-    - 设置docker远程登陆
+- Car settings docker
+    - Set up docker remote login
         
-        主机中执行，进入目录
+        Execute on the host and enter the directory
         
         ```jsx
         cd /home/ws/ugv_ws
@@ -221,49 +221,49 @@ use_rviz 可选 true、false(默认)
         
         1进入docker
         
-        ![image.png](images/进入docker.png)
+        ![image.png](images/Enter%20docker.png)
         
-    - 退出docker
+    - Exit docker
         
-        docke内执行
+        Execute within docker
         
         ```jsx
         exit
         ```
         
-- 远程到docker
+- Remote to docker
     
-    ![image.png](images/远程到docker.png)
+    ![image.png](images/Connect%20to%20docker%20remotely.png)
     
-    ![image.png](images/docker用户名.png)
+    ![image.png](images/Docker%20username.png)
     
     ```jsx
-    #用户名
+    #username
     root
-    #密码需提前设置
+    #Password needs to be set in advance
     ws
     ```
     
-    进入工作空间
+    Enter workspace
     
     ```jsx
     cd /home/ws/ugv_ws
     ```
     
-- 查看模型关节
+- View model joints
     - rasp_rover
         
         ```jsx
         export UGV_MODEL=rasp_rover
         ```
         
-        启动
+        start up
         
         ```jsx
          ros2 launch ugv_description display.launch.py use_rviz:=true
         ```
         
-        ![image.png](images/rasp_rover.png)
+        ![image.png](images/Rasp_rover.png)
         
     - ugv_rover
         
@@ -271,13 +271,13 @@ use_rviz 可选 true、false(默认)
         export UGV_MODEL=ugv_rover
         ```
         
-        启动
+        start up
         
         ```jsx
          ros2 launch ugv_description display.launch.py use_rviz:=true
         ```
         
-        ![image.png](images/ugv_rover.png)
+        ![image.png](images/Ugv_rover.png)
         
     - ugv_beast
         
@@ -285,196 +285,162 @@ use_rviz 可选 true、false(默认)
         export UGV_MODEL=ugv_beast
         ```
         
-        启动
+        start up
         
         ```jsx
          ros2 launch ugv_description display.launch.py use_rviz:=true
         ```
         
-        ![image.png](images/ugv_beast.png)
+        ![image.png](images/Ugv_beast.png)
         
-    - 驱动小车（可以控制云台、LED灯）
+    - Drive the car (can control the pan/tilt and LED lights)
         
         ```jsx
          ros2 run ugv_bringup ugv_driver
         ```
         
-        拖动关节角度发布器相关滑条可以控制云台
+        Drag the slider related to the joint angle publisher to control the gimbal
         
         [![](https://res.cloudinary.com/marcomontalbano/image/upload/v1727491041/video_to_markdown/images/youtube--jA9LJTBRQqY-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/jA9LJTBRQqY "")
         
-        控制灯光 data 0-255  data[0]控制oak相机附近灯IO4  data[1]控制usb摄像头附近灯IO5 
+        Control the light data 0-255 data[0] control the light IO4 near the oak camera data[1] control the light IO5 near the usb camera
         
         ```jsx
         ros2 topic pub /ugv/led_ctrl std_msgs/msg/Float32MultiArray "{data: [0, 0]}" -1
         ```
         
-- 底盘驱动（docker内执行）
+- Chassis driver (executed within docker)
     
-    如改用另外的雷达，修改
+    If you switch to another radar, modify
     
     ```jsx
     export LDLIDAR_MODEL=
     ```
-    
-    - 直接使用imu传感器数据（长时间会漂移）
-        
-        ```jsx
-        ros2 launch ugv_bringup bringup_imu_origin.launch.py use_rviz:=true
-        ```
-        
-    - 使用imu和odom进行ekf融合（不能长时间原地大幅度旋转）
-        
-        ```jsx
-        ros2 launch ugv_bringup bringup_imu_ekf.launch.py use_rviz:=true
-        ```
-        
-    - 使用雷达作为imu传感器数据（稳定些）
+    - Use radar as imu sensor data (more stable)
         
         ```jsx
         ros2 launch ugv_bringup bringup_lidar.launch.py use_rviz:=true
         ```
         
     
-    原地旋转小车查看姿态
+    Rotate the car in place to check the posture
     
     [![](https://res.cloudinary.com/marcomontalbano/image/upload/v1727491431/video_to_markdown/images/youtube--5neLr1Q2ddM-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/5neLr1Q2ddM "")
     
-- 手柄、键盘控制
+- Joystick, keyboard control
     
-    启动小车
+    Start the car
     
     ```jsx
     ros2 launch ugv_bringup bringup_lidar.launch.py use_rviz:=true
     ```
     
-    - 手柄控制（手柄usb接口需接在小车或虚拟机）
+    - Joystick control (the joystick USB interface needs to be connected to the car or virtual machine)
         
         ```jsx
         ros2 launch ugv_tools teleop_twist_joy.launch.py
         ```
         
-    - 键盘控制
+    - keyboard control
         
         ```jsx
         ros2 run ugv_tools keyboard_ctrl
         ```
         
-        ![image.png](images/键盘控制.png)
+        ![image.png](images/Keyboard%20controls.png)
         
-- 视觉交互
+- visual interaction
     
-    启动小车
+    Start the car
     
     ```jsx
     ros2 launch ugv_bringup bringup_lidar.launch.py use_rviz:=true
     ```
     
-    - 启动相关接口
+    - Start related interfaces
         
-        控制小车
+        control car
         
         ```jsx
         ros2 run ugv_tools behavior_ctrl
         ```
         
-        开摄像头，简单
+        Turn on the camera, easy
         
         ```jsx
         ros2 run usb_cam usb_cam_node_exe
         ```
         
-        开摄像头，去畸变
+        Turn on the camera and remove distortion
         
         ```jsx
         ros2 launch ugv_vision camera.launch.py
         ```
         
-    - 单目
-        - 颜色追踪
+    - Monocular
             
-            根据目标颜色物体中心点x坐标选择左右，居中后，根据y坐标选择前后，y偏上则前，偏下则后
+        - apriltag control
             
-            ```jsx
-             ros2 run ugv_vision color_track
-            ```
+            apriltag only sets tag36h11, which can be modified by yourself
             
-            更改hsv阈值
-            
-            ```jsx
-            ros2 run rqt_reconfigure rqt_reconfigure
-            ```
-            
-        - 手势控制（手要正常摆放哈）
-            
-            1 2 3 4 右左 前后 其他停
-            
-            ```jsx
-            ros2 run ugv_vision gesture_ctrl
-            ```
-            
-        - apriltag控制
-            
-            apriltag 仅设置tag36h11，可自行修改
-            
-            - apriltag 控制
+            - apriltag control
                 
-                1 2 3 4 右左 前后 其他停
+                1 2 3 4 Right, left, front and rear, other stops
                 
                 ```jsx
                 ros2 run ugv_vision apriltag_ctrl
                 ```
                 
-            - apriltag 简单追踪
+            - apriltag Simple tracking
                 
-                根据ar tag中心点x坐标选择左右，居中后，根据y坐标选择前后，y偏上则前，偏下则后
+                Select the left and right according to the x coordinate of the center point of the ar tag. After centering, select the front and rear according to the y coordinate. If the y is upward, the front is forward, and if the y is downward, the rear is
                 
                 ```jsx
                 ros2 run ugv_vision apriltag_track_0
                 ```
                 
-            - apriltag 目标追踪（ar码需要指定尺寸0.08）
+            - apriltag Target tracking (AR code needs to specify size 0.08)
                 
-                位姿识别
+                pose recognition
                 
-                这里把之前开摄像头的命令关了，换成以下
+                Here, the previous command to turn on the camera is turned off and replaced with the following
                 
                 ```jsx
                 ros2 launch ugv_vision apriltag_track.launch.py
                 ```
                 
-                ![image.png](images/apriltag%20目标追踪.jpg)
+                ![image.png](images/APIELTAG%20object%20tracking.jpg)
                 
-                - 简单行驶到目标点（旋转，直行）
+                - Simply drive to the target point (rotate, go straight)
                     
-                    开启跟踪
+                    Turn on tracking
                     
                     ```jsx
                     ros2 run ugv_vision apriltag_track_1
                     ```
                     
-                    命令行
+                    command line
                     
                     ```jsx
                     ros2 topic pub /apriltag/track std_msgs/msg/Int8 -1
                     ```
                     
-                - 结合nav2行驶到目标点（需要关闭之前的启动文件，改成开启nav）
+                - Combine nav2 to drive to the target point (you need to close the previous startup file and change to open nav)
                     
-                    开启导航
+                    Turn on navigation
                     
                     ```jsx
                     ros2 launch ugv_nav nav.launch.py use_rviz:=true
                     ```
                     
-                    开启跟踪
+                    Turn on tracking
                     
                     ```jsx
                     ros2 run ugv_vision apriltag_track_2
                     ```
                     
-- 建图
-    - 2维（激光雷达）
+- Mapping
+    - 2D (LiDAR)
         - gmapping
             
             ```jsx
@@ -483,19 +449,19 @@ use_rviz 可选 true、false(默认)
             
             [![](https://res.cloudinary.com/marcomontalbano/image/upload/v1727493329/video_to_markdown/images/youtube--cBiuYmxGWks-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/cBiuYmxGWks "")
             
-            控制小车
+            control car
             
             ```jsx
             ros2 run ugv_tools keyboard_ctrl
             ```
             
-            保存地图
+            save map
             
             ```jsx
             ./save_2d_gmapping_map.sh
             ```
             
-            ![image.png](images/save_2d_gmapping_map.sh内容.png)
+            ![image.png](images/Save_2d_gmapping_map.sh.png)
             
             save_2d_gmapping_map.sh内容
             
@@ -512,19 +478,19 @@ use_rviz 可选 true、false(默认)
             
             [![](https://res.cloudinary.com/marcomontalbano/image/upload/v1727491911/video_to_markdown/images/youtube--dHyNeuJ0k3U-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/dHyNeuJ0k3U "")
             
-            控制小车
+            control car
             
             ```jsx
             ros2 run ugv_tools keyboard_ctrl
             ```
             
-            保存地图
+            save map
             
             ```jsx
             ./save_2d_cartographer_map.sh
             ```
             
-            ![image.png](images/save_2d_cartographer_map.sh内容.png)
+            ![image.png](images/Save_2d_cartographer_map.sh.png)
             
             save_2d_cartographer_map.sh内容
             
@@ -533,9 +499,9 @@ use_rviz 可选 true、false(默认)
             ros2 run nav2_map_server map_saver_cli -f ./map && ros2 service call /write_state cartographer_ros_msgs/srv/WriteState "{filename: '/home/ws/ugv_ws/src/ugv_main/ugv_nav/maps/map.pbstream'}"
             ```
             
-    - 3维（激光雷达+深度相机）
+    - 3D (lidar + depth camera)
         - rtabmap
-            - rtabmap_viz 可视化
+            - rtabmap_viz Visualization
                 
                 ```jsx
                 ros2 launch ugv_slam rtabmap_rgbd.launch.py use_rviz:=false
@@ -543,13 +509,13 @@ use_rviz 可选 true、false(默认)
                 
                 [![](https://res.cloudinary.com/marcomontalbano/image/upload/v1727492108/video_to_markdown/images/youtube--J3_QCGVF7Jc-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/J3_QCGVF7Jc "")
                 
-                控制小车
+                control car
                 
                 ```jsx
                 ros2 run ugv_tools keyboard_ctrl
                 ```
                 
-            - rviz 可视化
+            - rviz Visualization
                 
                 ```jsx
                 ros2 launch ugv_slam rtabmap_rgbd.launch.py use_rviz:=true
@@ -557,30 +523,30 @@ use_rviz 可选 true、false(默认)
                 
                 [![](https://res.cloudinary.com/marcomontalbano/image/upload/v1727492190/video_to_markdown/images/youtube--dxey_90tdFI-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/dxey_90tdFI "")
                 
-                控制小车
+                control car
                 
                 ```jsx
                 ros2 run ugv_tools keyboard_ctrl
                 ```
                 
             
-            建图完毕后，直接 ctrl+c 退出建图节点，系统将会⾃动保存地图。地图默认保存路径 ~/.ros/rtabmap.db 
+            After the mapping is completed, directly press ctrl+c to exit the mapping node, and the system will automatically save the map. Map default save path ~/.ros/rtabmap.db 
             
-- 导航
-    - 2维
-        - 局部定位
+- navigation
+    - 2D
+        - local positioning
             
-            use_**localization** amcl（默认），emcl，cartographer
+            use_localization amcl（default），emcl，cartographer
             
             - amcl
                 
-                先启动，需要手动指定大致初始位置
+                Start first, you need to manually specify the approximate initial position
                 
                 ```jsx
-                ros2 launch ugv_nav nav.launch.py use_**localization**:=amcl use_rviz:=true
+                ros2 launch ugv_nav nav.launch.py use_localization:=amcl use_rviz:=true
                 ```
                 
-                再通过控制小车，简单移动旋转，协助初始定位
+                Then by controlling the car, simply move and rotate to assist in initial positioning.
                 
                 ```jsx
                 ros2 run ugv_tools keyboard_ctrl
@@ -588,7 +554,7 @@ use_rviz 可选 true、false(默认)
                 
             - emcl
                 
-                启动后 ，需要手动指定大致初始位置
+                After startup, you need to manually specify the approximate initial position
                 
                 ```jsx
                 ros2 launch ugv_nav nav.launch.py use_localization:=emcl use_rviz:=true
@@ -596,23 +562,23 @@ use_rviz 可选 true、false(默认)
                 
             - cartographer
                 
-                注意，需使用cartographer建图后，才可以进行
+                Note that you need to use Cartographer to build the map before you can proceed.
                 
                 ```jsx
-                ros2 launch ugv_nav nav.launch.py use_**localization**:=cartographer use_rviz:=true
+                ros2 launch ugv_nav nav.launch.py use_localization:=cartographer use_rviz:=true
                 ```
                 
-                ![image.png](images/cartographer纯定位.png)
+                ![image.png](images/Cartographer%20pure_localization.png)
                 
-                启动后，如果还未定位到准确位置，可以通过控制小车，简单移动，协助初始定位
+                After startup, if the accurate position has not been located, you can control the car and simply move it to assist in the initial positioning.
                 
                 ```jsx
                 ros2 run ugv_tools keyboard_ctrl
                 ```
                 
-        - 局部导航
+        - local navigation
             
-            use_localplan dwa，teb（默认）
+            use_localplan dwa，teb（default）
             
             - dwa
                 
@@ -626,19 +592,19 @@ use_rviz 可选 true、false(默认)
                  ros2 launch ugv_nav nav.launch.py use_localplan:=teb use_rviz:=true
                 ```
                 
-    - 3维
+    - 3D
         - rtabmap
-            - 局部导航
+            - local navigation
                 
-                开启定位
+                Turn on positioning
                 
                 ```jsx
                 ros2 launch ugv_nav rtabmap_localization_launch.py
                 ```
                 
-                开启nav（可以慢慢等，三维数据加载完毕再导航，要一会时间）
+                Turn on nav (you can wait slowly until the 3D data is loaded before navigating, it will take a while)
                 
-                use_localplan dwa，teb（默认）
+                use_localplan dwa，teb（default）
                 
                 - dwa
                     
@@ -652,103 +618,103 @@ use_rviz 可选 true、false(默认)
                      ros2 launch ugv_nav nav_rtabmap.launch.py use_localplan:=teb use_rviz:=true
                     ```
                     
-- 建图导航同时开（二维）
+- Mapping and navigation are enabled at the same time (two-dimensional)
     
     ```jsx
     ros2 launch ugv_nav slam_nav.launch.py use_rviz:=true
     ```
     
-    - rviz手动发布导航点进行探索（也可使用键盘、手柄、web端进行遥控探索）
+    - rviz manually publishes navigation points for exploration (you can also use the keyboard, handle, and web side for remote exploration)
         
-        ![image.png](images/rviz手动发布导航点进行探索.png)
+        ![image.png](images/Rviz%20manually%20publishes%20navigation%20points%20for%20exploration.png)
         
-    - 自动探索（要在封闭规则区域）
+    - Automatic exploration (to be in a closed rule area)
         
         ```jsx
          ros2 launch explore_lite explore.launch.py 
         ```
         
-- web ai交互
-    - 启动小车
+- web ai interaction
+    - Start the car
         
         ```jsx
         ros2 launch ugv_bringup bringup_lidar.launch.py use_rviz:=true
         ```
         
-    - 启动相关接口
+    - Start related interfaces
         
         ```jsx
         ros2 run ugv_tools behavior_ctrl
         ```
         
-    - web ai 交互（需要有相关的ai接口，目前是ollama本地部署）
+    - web ai Interaction (requires relevant ai interface, currently ollama local deployment)
         
         ```jsx
         ros2 run ugv_chat_ai app
         ```
         
-- web端控制
+- web side control
     
-    先驱动小车 参考上述底盘驱动 建图 导航 建图导航同时开
+    Drive the car first, refer to the above chassis drive, map construction and navigation, and start mapping and navigation at the same time.
     
-    - ugv web端
+    - ugv web
         
         ```jsx
         ros2 launch ugv_web_app bringup.launch.py host:=ip
         ```
         
-- 指令交互
+- command interaction
     
     ```jsx
     ros2 run ugv_tools behavior_ctrl
     ```
     
-    - 基础控制（需要把车子放下去跑，根据里程计判断是否完成目标）
+    - Basic control (you need to put the car down and run, and judge whether the goal has been completed based on the odometer)
         
         ```jsx
         ros2 launch ugv_bringup bringup_lidar.launch.py use_rviz:=true
         ```
         
-        前进 data 单位 米 
+        Forward data unit meters
         
         ```jsx
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"drive_on_heading\", \"data\": 0.1}]'}"
         ```
         
-        后退 data 单位 米  
+        Back data unit meters
         
         ```jsx
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"back_up\", \"data\": 0.1}]'}"
         ```
         
-        旋转 data 单位 度 正数左转 负数右转
+        Rotation data unit degree ,positive number left rotation, negative number right rotation
         
         ```jsx
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"spin\", \"data\": -1}]'}"
         ```
         
-        停止
+        stop
         
         ```jsx
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"stop\", \"data\": 0}]'}"
         ```
         
     
-    以下需要开启导航
+    Navigation needs to be enabled below
     
     ```jsx
     ros2 launch ugv_nav nav.launch.py use_rviz:=true
     ```
     
-    - 获取当前点位置
+    - Get current point position
         
         ```elm
         ros2 topic echo /robot_pose --once
         ```
         
-    - 保存为导航点
+    - Save as navigation point
         
-        data 导航点名称，可选a-g
+        data Navigation point name, optional a-g
         
         ```jsx
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"save_map_point\", \"data\": \"a\"}]'}"
@@ -756,18 +722,18 @@ use_rviz 可选 true、false(默认)
         
     - 运动到导航点
         
-        data 导航点名称，可选a-g
+        data Navigation point name, optional a-g
         
         ```jsx
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"pub_nav_point\", \"data\": \"a\"}]'}"
         ```
         
     
-    保存的点同时也会存在文件里
+    The saved points will also be stored in the file.
     
-    ![image.png](images/保存的点同时也会存在文件里.png)
+    ![image.png](images/The%20saved%20points%20will%20also%20be%20stored%20in%20the%20file.png)
     
-- gazebo综合仿真（虚拟机上执行）
+- gazebo comprehensive simulation (executed on virtual machine)
     
     ```jsx
     cd ~/.gazebo/
@@ -779,14 +745,14 @@ use_rviz 可选 true、false(默认)
     rm -rf ugv_description.zip
     ```
     
-    - 查看模型
+    - View model
         - rasp_rover
             
             ```jsx
             export UGV_MODEL=rasp_rover
             ```
             
-            启动
+            start up
             
             ```jsx
              ros2 launch ugv_gazebo display.launch.py 
@@ -798,7 +764,7 @@ use_rviz 可选 true、false(默认)
             export UGV_MODEL=ugv_rover
             ```
             
-            启动
+            start up
             
             ```jsx
              ros2 launch ugv_gazebo display.launch.py 
@@ -810,63 +776,63 @@ use_rviz 可选 true、false(默认)
             export UGV_MODEL=ugv_beast
             ```
             
-            启动
+            start up
             
             ```jsx
              ros2 launch ugv_gazebo display.launch.py 
             ```
             
-    - 加载模型
-        - 空白
+    - Load model
+        - empty
             
             ```elm
             ros2 launch ugv_gazebo bringup_test.launch.py
             ```
             
-            ![image.png](images/gazebo空白世界.png)
+            ![image.png](images/Gazebo%20blank%20world.png)
             
-        - 房子
+        - house
             
             ```jsx
             ros2 launch ugv_gazebo bringup.launch.py
             ```
             
-            ![image.png](images/gazebo房子世界.png)
+            ![image.png](images/Gazebo%20house%20world.png)
             
     
-    以下 以ugv_rover 为例
+    The following takes ugv_rover as an example
     
-    指定模型
+    Specify model
     
     ```jsx
     export UGV_MODEL=ugv_rover
     ```
     
-    启动
+    start up
     
     ```jsx
     ros2 launch ugv_gazebo bringup.launch.py
     ```
     
-    - 手柄、键盘控制
-        - 手柄控制（手柄usb接口需接在虚拟机）
+    - Joystick, keyboard control
+        - Joystick control (the joystick USB interface needs to be connected to the virtual machine)
             
             ```jsx
             ros2 launch ugv_tools teleop_twist_joy.launch.py
             ```
             
-        - 键盘控制
+        - keyboard control
             
             ```jsx
             ros2 run ugv_tools keyboard_ctrl
             ```
             
-            ![image.png](images/键盘控制.png)
+            ![image.png](images/Keyboard%20controls.png)
             
-    - 建图
-        - 2维（激光雷达）
+    - Mapping
+        - 2D (LiDAR)
             
-            ![image.png](images/gazebo二维建图.png)
+            ![image.png](images/Gazebo%202D%20mapping.png)
             
             - gmapping
                 
@@ -874,19 +840,19 @@ use_rviz 可选 true、false(默认)
                 ros2 launch ugv_gazebo gmapping.launch.py
                 ```
                 
-                控制小车
+                control car
                 
                 ```jsx
                 ros2 run ugv_tools keyboard_ctrl
                 ```
                 
-                保存地图
+                save map
                 
                 ```jsx
                 ./save_2d_gmapping_map_gazebo.sh
                 ```
                 
-                save_2d_gmapping_map_gazebo.sh内容
+                save_2d_gmapping_map_gazebo.sh content
                 
                 ```jsx
                 cd /home/ws/ugv_ws/src/ugv_main/ugv_gazebo/maps
@@ -899,71 +865,71 @@ use_rviz 可选 true、false(默认)
                 ros2 launch ugv_gazebo cartographer.launch.py
                 ```
                 
-                控制小车
+                control car
                 
                 ```jsx
                 ros2 run ugv_tools keyboard_ctrl
                 ```
                 
-                保存地图
+                save map
                 
                 ```jsx
                 ./save_2d_cartographer_map_gazebo.sh
                 ```
                 
-                save_2d_cartographer_map_gazebo.sh内容
+                save_2d_cartographer_map_gazebo.sh content
                 
                 ```jsx
                 cd /home/ws/ugv_ws/src/ugv_main/ugv_gazebo/maps
                 ros2 run nav2_map_server map_saver_cli -f ./map && ros2 service call /write_state cartographer_ros_msgs/srv/WriteState "{filename: '/home/ws/ugv_ws/src/ugv_main/ugv_gazebo/maps/map.pbstream'}"
                 ```
                 
-        - 3维（激光雷达+深度相机）
+        - 3D (lidar + depth camera)
             - rtabmap
-                - rtabmap_viz 可视化
+                - rtabmap_viz Visualization
                     
                     ```jsx
                     ros2 launch ugv_gazebo rtabmap_rgbd.launch.py
                     ```
                     
-                    ![image.png](images/gazebo%20rtabmap_viz%20可视化.png)
+                    ![image.png](images/Gazebo%20rtabmap_viz%20visualization.png)
                     
-                    控制小车
+                    control car
                     
                     ```jsx
                     ros2 run ugv_tools keyboard_ctrl
                     ```
                     
-                - rviz 可视化
+                - rviz Visualization
                     
                     ```jsx
                     ros2 launch ugv_gazebo rtabmap_rgbd.launch.py use_rviz:=true
                     ```
                     
-                    控制小车
+                    control car
                     
                     ```jsx
                     ros2 run ugv_tools keyboard_ctrl
                     ```
                     
                 
-                建图完毕后，直接 ctrl+c 退出建图节点，系统将会⾃动保存地图。地图默认保存路径 ~/.ros/rtabmap.db 
+                After the mapping is completed, directly press ctrl+c to exit the mapping node, and the system will automatically save the map. Map default save path ~/.ros/rtabmap.db 
                 
-    - 导航
-        - 2维
-            - 局部定位
+    - navigation
+        - 2D
+            - local positioning
                 
-                use_**localization** amcl（默认），emcl，cartographer
+                use_localization amcl（default），emcl，cartographer
                 
                 - amcl
                     
-                    先启动，需要手动指定大致初始位置
+                    Start first, you need to manually specify the approximate initial position
                     
                     ```jsx
-                    ros2 launch ugv_gazebo nav.launch.py use_**localization**:=amcl 
+                    ros2 launch ugv_gazebo nav.launch.py use_localization:=amcl 
                     ```
                     
-                    再通过控制小车，简单移动旋转，协助初始定位
+                    Then by controlling the car, simply move and rotate to assist in initial positioning.
                     
                     ```jsx
                     ros2 run ugv_tools keyboard_ctrl
@@ -971,7 +937,7 @@ use_rviz 可选 true、false(默认)
                     
                 - emcl
                     
-                    启动后 ，需要手动指定大致初始位置
+                    After startup, you need to manually specify the approximate initial position
                     
                     ```jsx
                     ros2 launch ugv_gazebo nav.launch.py use_localization:=emcl 
@@ -979,19 +945,19 @@ use_rviz 可选 true、false(默认)
                     
                 - cartographer
                     
-                    注意，需使用cartographer建图后，才可以进行
+                    Note that you need to use Cartographer to build the map before you can proceed.
                     
                     ```jsx
-                    ros2 launch ugv_gazebo nav.launch.py use_**localization**:=cartographer 
+                    ros2 launch ugv_gazebo nav.launch.py use_localization:=cartographer 
                     ```
                     
-                    启动后，如果还未定位到准确位置，可以通过控制小车，简单移动，协助初始定位
+                    After startup, if the accurate position has not been located, you can control the car and simply move it to assist in the initial positioning.
                     
                     ```jsx
                     ros2 run ugv_tools keyboard_ctrl
                     ```
                     
-            - 局部导航
+            - local navigation
                 
                 use_localplan dwa，teb（默认）
                 
@@ -1007,19 +973,19 @@ use_rviz 可选 true、false(默认)
                      ros2 launch ugv_gazebo nav.launch.py use_localplan:=teb 
                     ```
                     
-        - 3维
+        - 3D
             - rtabmap
-                - 局部导航
+                - local navigation
                     
-                    开启定位
+                    Turn on positioning
                     
                     ```jsx
                     ros2 launch ugv_gazebo rtabmap_localization_launch.py
                     ```
                     
-                    开启nav （可以慢慢等，三维数据加载完毕再导航，要一会时间）
+                    Turn on nav (you can wait slowly until the 3D data is loaded before navigating, it will take a while)
                     
-                    ![image.png](images/gazebo%20rtabmap%20三维导航.png)
+                    ![image.png](images/Gazebo%20rtabmap%203D%20navigation.png)
                     
                     use_localplan dwa，teb（默认）
                     
@@ -1035,100 +1001,100 @@ use_rviz 可选 true、false(默认)
                          ros2 launch ugv_ngazebo nav_rtabmap.launch.py use_localplan:=teb
                         ```
                         
-    - 建图导航同时开（二维）
+    - Mapping and navigation are enabled at the same time (two-dimensional)
         
         ```jsx
         ros2 launch ugv_gazebo slam_nav.launch.py
         ```
         
-        - 自动探索（要在封闭规则区域）
+        - Automatic exploration (to be in a closed rule area)
             
             ```jsx
              ros2 launch explore_lite explore.launch.py 
             ```
             
-    - web ai交互
-        - 启动相关接口
+    - web ai interaction
+        - Start related interfaces
             
             ```jsx
             ros2 run ugv_tools behavior_ctrl
             ```
             
-        - web ai 交互（需要有相关的ai接口，目前是ollama本地部署）
+        - web ai Interaction (requires relevant ai interface, currently ollama local deployment)
             
             ```jsx
             ros2 run ugv_chat_ai app
             ```
             
-    - web端控制
-        - ugv web端
+    - web control
+        - ugv web
             
             ```jsx
             ros2 launch ugv_web_app bringup.launch.py host:=ip
             ```
             
-    - 指令交互
+    - command interaction
         
         ```jsx
         ros2 run ugv_tools behavior_ctrl
         ```
         
-        - 基础控制（需要把车子放下去跑，根据里程计判断是否完成目标）
+        - Basic control (you need to put the car down and run, and judge whether the goal has been completed based on the odometer)
             
-            前进 data 单位 米 
+            Forward data unit meters
             
             ```jsx
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"drive_on_heading\", \"data\": 0.5}]'}”
             ```
             
-            后退 data 单位 米  
+            Back data unit meters
             
             ```jsx
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"back_up\", \"data\": 0.5}]'}”
             ```
             
-            旋转 data 单位 度 正数右转 负数左转
+            Rotation data unit degree positive number rotate right, negative number rotate left
             
             ```jsx
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"spin\", \"data\": -1}]'}”
             ```
             
-            停止
+            stop
             
             ```jsx
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"spin\", \"data\": 0}]'}”
             ```
             
         
-        以下需要开启导航
+        Navigation needs to be enabled below
         
         ```jsx
         ros2 launch ugv_gazebo nav.launch.py use_rviz:=true
         ```
         
-        - 获取当前点位置
+        - Get current point position
             
             ```elm
             ros2 topic echo /robot_pose --once
             ```
             
-        - 保存为导航点
+        - Save as navigation point
             
-            data 导航点名称，可选a-g
+            data navigation point name, optional a-g
             
             ```jsx
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"save_map_point\", \"data\": \"a\"}]'}"
             ```
             
-        - 运动到导航点
+        - Move to navigation point
             
-            data 导航点名称，可选a-g
+            data navigation point name, optional a-g
             
             ```jsx
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"pub_nav_point\", \"data\": \"a\"}]'}"
             ```
             
         
-        保存的点同时也会存在文件里
+        The saved points will also be stored in the file.
         
-        ![image.png](images/保存的点同时也会存在文件里.png)
+        ![image.png](images/The%20saved%20points%20will%20also%20be%20stored%20in%20the%20file.png)
