@@ -1,11 +1,11 @@
 # ugv_ws Workspace Description (Stable)
 
-1.environment
+1.Environment
 
 - pc software：VMware Workstation 17Pro、mobarxterm
 - ugv Version：ugv rpi
 
-2.architecture
+2.Architecture
 
 - project：https://github.com/DUDULRX/ugv_ws/tree/ros2-humble
     
@@ -49,7 +49,7 @@
         source install/setup.bash 
         ```
         
-    - 编译apriltag
+    - Compile apriltag
         
         ```jsx
         cd /home/ws/ugv_ws
@@ -65,7 +65,7 @@
         cd /home/ws/ugv_ws
         ```
         
-- ubuntu software：
+- Ubuntu software：
     
     **Install according to wiki install ros2 humble**
     
@@ -92,7 +92,7 @@
     apt install ros-humble-gazebo-*
     ```
     
-- python3 Library：
+- Python3 Library：
     
     domestic
     
@@ -117,7 +117,7 @@
     requests
     ```
     
-- ugv_ws Feature pack
+- Feature pack ugv_ws 
     
     > ugv_main Main functions
     > 
@@ -149,13 +149,13 @@
     > > ugv_tools tool
     > > 
     > 
-    > > ugv_vision 视sensory interaction
+    > > ugv_vision visual interaction
     > > 
     > 
     > > ugv_web_app web
     > > 
     
-    > ugv_else ( ugv_main rely)
+    > ugv_else ( ugv_main dependence)
     > 
     > 
     > > apriltag_ros
@@ -195,9 +195,9 @@
 
 use_rviz optional true, false (default)
 
-Car model optional rasp_rover, ugv_rover, ugv_beast
+car model optional rasp_rover, ugv_rover, ugv_beast
 
-Lidar model optional ld06, ld19 (default), stl27l
+lidar model optional ld06, ld19 (default), stl27l
 
 - Start the car and turn off the auto-start script.
     
@@ -349,7 +349,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
         
         ![image.png](images/Keyboard%20controls.png)
         
-- visual interaction
+- Visual interaction
     
     Start the car
     
@@ -379,11 +379,11 @@ Enter docker and start ssh to remotely access docker and the visual interface
         
     - Monocular
             
-        - apriltag control
+        - Apriltag control
             
             apriltag only sets tag36h11, which can be modified by yourself
             
-            - apriltag control
+            - Apriltag control
                 
                 1 2 3 4 Right, left, front and rear, other stops
                 
@@ -391,7 +391,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 ros2 run ugv_vision apriltag_ctrl
                 ```
                 
-            - apriltag Simple tracking
+            - Apriltag Simple tracking
                 
                 Select the left and right according to the x coordinate of the center point of the ar tag. After centering, select the front and rear according to the y coordinate. If the y is upward, the front is forward, and if the y is downward, the rear is
                 
@@ -399,7 +399,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 ros2 run ugv_vision apriltag_track_0
                 ```
                 
-            - apriltag Target tracking (AR code needs to specify size 0.08)
+            - Apriltag Target tracking (AR code needs to specify size 0.08)
                 
                 pose recognition
                 
@@ -441,7 +441,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                     
 - Mapping
     - 2D (LiDAR)
-        - gmapping
+        - Gmapping
             
             ```jsx
              ros2 launch ugv_slam gmapping.launch.py use_rviz:=true
@@ -470,7 +470,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
             ros2 run nav2_map_server map_saver_cli -f ./map
             ```
             
-        - cartographer
+        - Cartographer
             
             ```jsx
             ros2 launch ugv_slam cartographer.launch.py use_rviz:=true
@@ -500,8 +500,8 @@ Enter docker and start ssh to remotely access docker and the visual interface
             ```
             
     - 3D (lidar + depth camera)
-        - rtabmap
-            - rtabmap_viz Visualization
+        - Rtabmap
+            - Rtabmap_viz Visualization
                 
                 ```jsx
                 ros2 launch ugv_slam rtabmap_rgbd.launch.py use_rviz:=false
@@ -515,7 +515,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 ros2 run ugv_tools keyboard_ctrl
                 ```
                 
-            - rviz Visualization
+            - Rviz Visualization
                 
                 ```jsx
                 ros2 launch ugv_slam rtabmap_rgbd.launch.py use_rviz:=true
@@ -532,9 +532,9 @@ Enter docker and start ssh to remotely access docker and the visual interface
             
             After the mapping is completed, directly press ctrl+c to exit the mapping node, and the system will automatically save the map. Map default save path ~/.ros/rtabmap.db 
             
-- navigation
+- Navigation
     - 2D
-        - local positioning
+        - Local localization
             
             use_localization amcl（default），emcl，cartographer
             
@@ -576,7 +576,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 ros2 run ugv_tools keyboard_ctrl
                 ```
                 
-        - local navigation
+        - Local navigation
             
             use_localplan dwa，teb（default）
             
@@ -593,8 +593,8 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 ```
                 
     - 3D
-        - rtabmap
-            - local navigation
+        - Rtabmap
+            - Local navigation
                 
                 Turn on positioning
                 
@@ -624,7 +624,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
     ros2 launch ugv_nav slam_nav.launch.py use_rviz:=true
     ```
     
-    - rviz manually publishes navigation points for exploration (you can also use the keyboard, handle, and web side for remote exploration)
+    - Rviz manually publishes navigation points for exploration (you can also use the keyboard, handle, and web side for remote exploration)
         
         ![image.png](images/Rviz%20manually%20publishes%20navigation%20points%20for%20exploration.png)
         
@@ -634,7 +634,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
          ros2 launch explore_lite explore.launch.py 
         ```
         
-- web ai interaction
+- Web ai interaction
     - Start the car
         
         ```jsx
@@ -647,13 +647,13 @@ Enter docker and start ssh to remotely access docker and the visual interface
         ros2 run ugv_tools behavior_ctrl
         ```
         
-    - web ai Interaction (requires relevant ai interface, currently ollama local deployment)
+    - Web ai Interaction (requires relevant ai interface, currently ollama local deployment)
         
         ```jsx
         ros2 run ugv_chat_ai app
         ```
         
-- web side control
+- Web side control
     
     Drive the car first, refer to the above chassis drive, map construction and navigation, and start mapping and navigation at the same time.
     
@@ -663,7 +663,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
         ros2 launch ugv_web_app bringup.launch.py host:=ip
         ```
         
-- command interaction
+- Command interaction
     
     ```jsx
     ros2 run ugv_tools behavior_ctrl
@@ -693,7 +693,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"spin\", \"data\": -1}]'}"
         ```
         
-        stop
+        Stop
         
         ```jsx
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"stop\", \"data\": 0}]'}"
@@ -720,7 +720,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
         ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"save_map_point\", \"data\": \"a\"}]'}"
         ```
         
-    - 运动到导航点
+    - Move to navigation point
         
         data Navigation point name, optional a-g
         
@@ -733,7 +733,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
     
     ![image.png](images/The%20saved%20points%20will%20also%20be%20stored%20in%20the%20file.png)
     
-- gazebo comprehensive simulation (executed on virtual machine)
+- Gazebo comprehensive simulation (executed on virtual machine)
     
     ```jsx
     cd ~/.gazebo/
@@ -783,15 +783,15 @@ Enter docker and start ssh to remotely access docker and the visual interface
             ```
             
     - Load model
-        - empty
+        - Empty
             
             ```elm
             ros2 launch ugv_gazebo bringup_test.launch.py
             ```
             
-            ![image.png](images/Gazebo%20blank%20world.png)
+            ![image.png](images/Gazebo%20empty%20world.png)
             
-        - house
+        - House
             
             ```jsx
             ros2 launch ugv_gazebo bringup.launch.py
@@ -821,7 +821,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
             ros2 launch ugv_tools teleop_twist_joy.launch.py
             ```
             
-        - keyboard control
+        - Keyboard control
             
             ```jsx
             ros2 run ugv_tools keyboard_ctrl
@@ -834,7 +834,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
             
             ![image.png](images/Gazebo%202D%20mapping.png)
             
-            - gmapping
+            - Gmapping
                 
                 ```elm
                 ros2 launch ugv_gazebo gmapping.launch.py
@@ -859,7 +859,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 ros2 run nav2_map_server map_saver_cli -f ./map
                 ```
                 
-            - cartographer
+            - Cartographer
                 
                 ```elm
                 ros2 launch ugv_gazebo cartographer.launch.py
@@ -885,8 +885,8 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 ```
                 
         - 3D (lidar + depth camera)
-            - rtabmap
-                - rtabmap_viz Visualization
+            - Rtabmap
+                - Rtabmap_viz Visualization
                     
                     ```jsx
                     ros2 launch ugv_gazebo rtabmap_rgbd.launch.py
@@ -900,7 +900,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                     ros2 run ugv_tools keyboard_ctrl
                     ```
                     
-                - rviz Visualization
+                - Rviz Visualization
                     
                     ```jsx
                     ros2 launch ugv_gazebo rtabmap_rgbd.launch.py use_rviz:=true
@@ -915,9 +915,9 @@ Enter docker and start ssh to remotely access docker and the visual interface
                 
                 After the mapping is completed, directly press ctrl+c to exit the mapping node, and the system will automatically save the map. Map default save path ~/.ros/rtabmap.db 
                 
-    - navigation
+    - Navigation
         - 2D
-            - local positioning
+            - Local positioning
                 
                 use_localization amcl（default），emcl，cartographer
                 
@@ -957,7 +957,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
                     ros2 run ugv_tools keyboard_ctrl
                     ```
                     
-            - local navigation
+            - Local navigation
                 
                 use_localplan dwa，teb（默认）
                 
@@ -974,8 +974,8 @@ Enter docker and start ssh to remotely access docker and the visual interface
                     ```
                     
         - 3D
-            - rtabmap
-                - local navigation
+            - Rtabmap
+                - Local navigation
                     
                     Turn on positioning
                     
@@ -1013,7 +1013,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
              ros2 launch explore_lite explore.launch.py 
             ```
             
-    - web ai interaction
+    - Web ai interaction
         - Start related interfaces
             
             ```jsx
@@ -1026,14 +1026,14 @@ Enter docker and start ssh to remotely access docker and the visual interface
             ros2 run ugv_chat_ai app
             ```
             
-    - web control
+    - Web control
         - ugv web
             
             ```jsx
             ros2 launch ugv_web_app bringup.launch.py host:=ip
             ```
             
-    - command interaction
+    - Command interaction
         
         ```jsx
         ros2 run ugv_tools behavior_ctrl
@@ -1059,7 +1059,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"spin\", \"data\": -1}]'}”
             ```
             
-            stop
+            Stop
             
             ```jsx
             ros2 action send_goal /behavior ugv_interface/action/Behavior "{command: '[{\"T\": 1, \"type\": \"spin\", \"data\": 0}]'}”
