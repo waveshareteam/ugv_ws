@@ -633,6 +633,12 @@ Enter docker and start ssh to remotely access docker and the visual interface
         ```jsx
          ros2 launch explore_lite explore.launch.py 
         ```
+
+    - Save map
+            
+        ```jsx
+        ./save_2d_gmapping_map.sh
+        ```
         
 - Web ai interaction
     - Start the car
