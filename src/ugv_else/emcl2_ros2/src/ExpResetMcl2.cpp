@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "emcl2/ExpResetMcl2.h"
+#include "emcl2/Pose.h"
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -41,8 +42,8 @@ void ExpResetMcl2::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, 
 	double origin = inv ? scan.angle_max_ : scan.angle_min_;
 	int sgn = inv ? -1 : 1;
 	for(size_t i = 0; i < scan.ranges_.size() ; i++) {
-		scan.directions_16bit_.push_back(Pose::get16bitRepresentation(
-			origin + sgn * i * scan.angle_increment_));
+		uint16_t rep = Pose::get16bitRepresentation(origin + sgn * i * scan.angle_increment_);
+		scan.directions_16bit_.push_back();
 	}
 
 	double valid_pct = 0.0;

@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+#include <cstdint>
 
 namespace emcl2
 {
