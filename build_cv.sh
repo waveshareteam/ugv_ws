@@ -1,0 +1,1 @@
+colcon build --executor sequential --packages-select cv_bridge
