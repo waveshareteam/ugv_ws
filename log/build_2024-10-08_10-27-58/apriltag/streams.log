@@ -1,3 +1,0 @@
-[0.021s] Invoking command in '/home/rocketsky/Library/ugv_ws/build/apriltag': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rocketsky/Library/ugv_ws/src/ugv_else/apriltag_ros/apriltag -DCMAKE_INSTALL_PREFIX=/home/rocketsky/Library/ugv_ws/install/apriltag
-[1.111s] -- The C compiler identification is GNU 13.2.0
-[1.165s] -- Detecting C compiler ABI info

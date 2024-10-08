@@ -1,1 +1,0 @@
-Invoking command in '/home/rocketsky/Library/ugv_ws/build/ugv_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rocketsky/Library/ugv_ws/src/ugv_main/ugv_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/rocketsky/Library/ugv_ws/install/ugv_description

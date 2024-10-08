@@ -1,1 +1,0 @@
-/usr/bin/cc  -v CMakeFiles/cmTC_170dc.dir/CMakeCCompilerABI.c.o -o cmTC_170dc 
