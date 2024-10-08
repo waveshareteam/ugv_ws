@@ -3,6 +3,8 @@ project(vizanti_msgs)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)

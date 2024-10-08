@@ -4,6 +4,8 @@ project(apriltag_ros)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
