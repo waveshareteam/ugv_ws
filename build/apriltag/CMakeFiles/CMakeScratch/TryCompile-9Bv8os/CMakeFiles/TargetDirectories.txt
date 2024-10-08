@@ -1,0 +1,3 @@
+/home/rocketsky/Library/ugv_ws/build/apriltag/CMakeFiles/CMakeScratch/TryCompile-9Bv8os/CMakeFiles/cmTC_170dc.dir
+/home/rocketsky/Library/ugv_ws/build/apriltag/CMakeFiles/CMakeScratch/TryCompile-9Bv8os/CMakeFiles/edit_cache.dir
+/home/rocketsky/Library/ugv_ws/build/apriltag/CMakeFiles/CMakeScratch/TryCompile-9Bv8os/CMakeFiles/rebuild_cache.dir
