@@ -43,7 +43,7 @@ void ExpResetMcl2::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, 
 	int sgn = inv ? -1 : 1;
 	for(size_t i = 0; i < scan.ranges_.size() ; i++) {
 		uint16_t rep = Pose::get16bitRepresentation(origin + sgn * i * scan.angle_increment_);
-		scan.directions_16bit_.push_back();
+		scan.directions_16bit_.push_back(rep);
 	}
 
 	double valid_pct = 0.0;
