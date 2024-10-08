@@ -12,7 +12,7 @@ namespace emcl2
 
 class Pose
 {
-      public:
+public:
 	Pose() {}
 	Pose(double x, double y, double t);
 	Pose(const Pose & other);

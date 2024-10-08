@@ -6,13 +6,14 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdint>
 
 namespace emcl2
 {
 
 class Scan
 {
-      public:
+public:
 	int seq_;
 	int scan_increment_;
 	double angle_max_;
