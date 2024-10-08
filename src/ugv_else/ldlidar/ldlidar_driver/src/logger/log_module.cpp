@@ -169,7 +169,7 @@ void LogModule::InitLock() {
 #ifndef LINUX
 	InitializeCriticalSection(&mutex_lock_);
 #else
-  pthread_mutex_init(&mutex_lock_,NULL);
+  	pthread_mutex_init(&mutex_lock_,NULL);
 #endif
 }
 
