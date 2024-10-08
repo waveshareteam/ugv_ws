@@ -263,7 +263,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
          ros2 launch ugv_description display.launch.py use_rviz:=true
         ```
         
-        ![image.png](images/Rasp_rover.png)
+        ![image.png](images/rasp_rover.png)
         
     - ugv_rover
         
@@ -277,7 +277,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
          ros2 launch ugv_description display.launch.py use_rviz:=true
         ```
         
-        ![image.png](images/Ugv_rover.png)
+        ![image.png](images/ugv_rover.png)
         
     - ugv_beast
         
@@ -291,7 +291,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
          ros2 launch ugv_description display.launch.py use_rviz:=true
         ```
         
-        ![image.png](images/Ugv_beast.png)
+        ![image.png](images/ugv_beast.png)
         
     - Drive the car (can control the pan/tilt and LED lights)
         
