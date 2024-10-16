@@ -293,7 +293,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
         start up
         
         ```jsx
-         ros2 launch ugv_description display.launch.py use_rviz:=true
+        ros2 launch ugv_description display.launch.py use_rviz:=true
         ```
         
         ![image.png](images/ugv_beast.png)
@@ -301,7 +301,7 @@ Enter docker and start ssh to remotely access docker and the visual interface
     - Drive the car (can control the pan/tilt and LED lights)
         
         ```jsx
-         ros2 run ugv_bringup ugv_driver
+        ros2 run ugv_bringup ugv_driver
         ```
         
         Drag the slider related to the joint angle publisher to control the gimbal
