@@ -3,7 +3,7 @@
 1.Environment
 
 - pc software：VMware Workstation 17Pro、mobarxterm
-- ugv Version：ugv rpi
+- ugv Version：UGV ROVER、UGV BEAST
 
 2.Architecture
 
