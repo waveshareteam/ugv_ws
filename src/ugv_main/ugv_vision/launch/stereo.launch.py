@@ -10,7 +10,7 @@ from launch.actions import (
     OpaqueFunction,
 )
 # Import the necessary modules from the launch.conditions package
-from launch.conditions import IfCondition,UnlessCondition
+from launch.conditions import IfCondition
 # Import the necessary modules from the launch.launch_description_sources package
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 # Import the necessary modules from the launch.substitutions package
@@ -43,29 +43,6 @@ def launch_setup(context, *args, **kwargs):
                 "params_file": params_file,
                 'use_rviz': 'False',
             }.items(),
-        ),
-        # Load the rectify_color_node composable node if the rectify_rgb launch configuration is set to True
-        LoadComposableNodes(
-            condition=UnlessCondition(LaunchConfiguration("rectify_rgb")),
-            target_container=name + "_container",
-            composable_node_descriptions=[
-                ComposableNode(
-                    package="image_proc",
-                    plugin="image_proc::RectifyNode",
-                    name="rectify_color_node",
-                    remappings=[
-                        ("image", name + "/rgb/image_raw"),
-                        ("camera_info", name + "/rgb/camera_info"),
-                        ("image_rect", name + "/rgb/image_rect"),
-                        ("image_rect/compressed", name + "/rgb/image_rect/compressed"),
-                        (
-                            "image_rect/compressedDepth",
-                            name + "/rgb/image_rect/compressedDepth",
-                        ),
-                        ("image_rect/theora", name + "/rgb/image_rect/theora"),
-                    ],
-                )
-            ],
         )
     ]
 
@@ -77,7 +54,7 @@ def generate_launch_description():
         DeclareLaunchArgument("name", default_value="oak"),
         DeclareLaunchArgument(
             "params_file",
-            default_value=os.path.join(get_package_share_directory("ugv_vision"), "config", "oak_d_lite.yaml"),
+            default_value=os.path.join(get_package_share_directory("ugv_vision"), "config", "stereo.yaml"),
         ),
         DeclareLaunchArgument("rectify_rgb", default_value="False"),
     ]

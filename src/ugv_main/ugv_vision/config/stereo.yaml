@@ -1,0 +1,13 @@
+/oak:
+  ros__parameters:
+    camera:
+      i_enable_ir: false
+      i_nn_type: none
+      i_pipeline_type: STEREO
+    pipeline_gen:
+      i_enable_imu: false
+    stereo:
+      i_synced: true
+      i_left_rect_low_bandwidth_ffmpeg_encoder: h264_nvenc
+      i_low_bandwidth_ffmpeg_encoder: h264_nvenc
+      i_right_rect_low_bandwidth_ffmpeg_encoder: h264_nvenc
