@@ -7,10 +7,10 @@
 
 2.Architecture
 
-- project：https://github.com/DUDULRX/ugv_ws/tree/ros2-humble
+- project：[https://github.com/waveshareteam/ugv_ws/tree/ros2-humble-develop](https://github.com/waveshareteam/ugv_ws/tree/ros2-humble-develop)
     
     ```jsx
-    git clone -b ros2-humble-develop https://github.com/DUDULRX/ugv_ws.git
+    git clone -b ros2-humble-develop https://github.com/waveshareteam/ugv_ws.git
     ```
     
     - First compilation on the virtual machine (compiling one by one on the robot)
