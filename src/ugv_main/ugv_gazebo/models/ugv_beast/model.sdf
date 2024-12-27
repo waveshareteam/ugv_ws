@@ -644,42 +644,19 @@
   </joint>
   
      <static>0</static>
-    
-  <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_diff_drive.so">
-    <updateRate>20</updateRate>
 
-    <!-- Number of wheel pairs -->
-    <num_wheel_pairs>2</num_wheel_pairs>
-
-    <!-- wheels0 -->
-    <left_joint>left_up_wheel_link_joint</left_joint>
-    <right_joint>right_up_wheel_link_joint</right_joint>
-
-    <!-- wheels1-->
-    <left_joint>left_down_wheel_link_joint</left_joint>
-    <right_joint>right_down_wheel_link_joint</right_joint>
-
-    <!-- kinematics -->
-    <wheel_separation>0.140</wheel_separation>
-    <wheel_separation>0.140</wheel_separation>
-
-    <wheel_diameter>0.05</wheel_diameter>
-    <wheel_diameter>0.05</wheel_diameter>
-
-    <!-- limits -->
-    <max_wheel_torque>20</max_wheel_torque>
-    <max_wheel_acceleration>1.0</max_wheel_acceleration>
-
-    <!-- output -->
-    <publish_odom>true</publish_odom>
-    <publish_odom_tf>true</publish_odom_tf>
-    <publish_wheel_tf>false</publish_wheel_tf>
-    <command_topic>cmd_vel</command_topic>
-    <odometry_topic>odom</odometry_topic>
-    <odometry_frame>odom</odometry_frame>
-    <robot_base_frame>base_footprint</robot_base_frame>
+    <plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <odometryRate>20.0</odometryRate>
+      <leftFrontJoint>left_up_wheel_link_joint</leftFrontJoint>
+      <rightFrontJoint>right_up_wheel_link_joint</rightFrontJoint>
+      <leftRearJoint>left_down_wheel_link_joint</leftRearJoint>
+      <rightRearJoint>right_down_wheel_link_joint</rightRearJoint>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
     </plugin>
-    
+               
     <plugin name="gazebo_ros_joint_state_publisher"
     filename="libgazebo_ros_joint_state_publisher.so">
 

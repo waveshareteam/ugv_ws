@@ -13,7 +13,7 @@
   <test_depend>ament_lint_common</test_depend>
   
   <depend>geometry_msgs</depend>
-  <depend>sensors_msgs</depend>
+  <depend>sensor_msgs</depend>
   <depend>rclcpp</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
