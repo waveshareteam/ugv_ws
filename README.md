@@ -13,7 +13,7 @@
     git clone -b ros2-humble-develop https://github.com/DUDULRX/ugv_ws.git
     ```
     
-    - First compilation on the virtual machine (compiling one by one on the robot)
+    - First compilation on the virtual machine (compiling one by one on the pi or jetson)
         
         ```jsx
         cd /home/ws/ugv_ws
