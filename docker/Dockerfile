@@ -27,8 +27,7 @@ RUN git clone -b ros2-humble-develop https://github.com/tranzmatt/ugv_ws.git /ho
     apt-get update && \
     . /opt/ros/humble/setup.sh && \
     rosdep update && \
-    rosdep install --from-paths src --ignore-src -r -y \
-        --skip-keys "gazebo cmake_modules roslaunch"
+    rosdep install --from-paths src --ignore-src -r -y
 
 RUN cd /home/ws/ugv_ws && \
     chmod +x *.sh && \
