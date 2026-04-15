@@ -40,11 +40,6 @@ def generate_launch_description():
         executable='ugv_bringup',
     )
 
-    driver_node = Node(
-        package='ugv_bringup',
-        executable='ugv_driver',
-    )
-
     # Include laser lidar launch file
     laser_bringup_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -73,7 +68,6 @@ def generate_launch_description():
         rviz_config_arg,
         robot_state_launch,
         bringup_node,
-        driver_node,
         laser_bringup_launch,
         rf2o_laser_odometry_launch,
         base_node

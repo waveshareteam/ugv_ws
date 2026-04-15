@@ -69,11 +69,6 @@ def generate_launch_description():
         [os.path.join(get_package_share_directory('ldlidar'), 'launch'),
          '/ldlidar.launch.py'])
     )
-    # Define the base node with parameters    
-    driver_node = Node(
-        package='ugv_bringup',
-        executable='ugv_driver',
-    )
     # Define the base node with parameters
     base_node = Node(
         package='ugv_base_node',
@@ -91,7 +86,6 @@ def generate_launch_description():
         imu_complementary_filter_node,
         #imu_filter_node,
         laser_bringup_launch,
-        driver_node,
         base_node
     ])
 

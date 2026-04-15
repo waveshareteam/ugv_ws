@@ -2,13 +2,14 @@ import serial
 import json
 import queue
 import threading
+import subprocess
+import time
 import rclpy
 from rclpy.node import Node
 import logging
-import time
 from std_msgs.msg import Header, Float32MultiArray, Float32
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import Imu, MagneticField
+from sensor_msgs.msg import Imu, MagneticField, JointState
 import math
 import os
 
@@ -109,6 +110,11 @@ class ugv_bringup(Node):
         self.base_controller = BaseController(serial_port, 115200)
         # Timer to periodically execute the feedback loop
         self.feedback_timer = self.create_timer(0.001, self.feedback_loop)
+        # Subscribers for forwarding commands to the base over UART
+        self.cmd_vel_sub_ = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
+        self.joint_states_sub_ = self.create_subscription(JointState, 'ugv/joint_states', self.joint_states_callback, 10)
+        self.led_ctrl_sub_ = self.create_subscription(Float32MultiArray, 'ugv/led_ctrl', self.led_ctrl_callback, 10)
+        self._low_battery_playing = False
 
     # Main loop for reading sensor feedback and publishing it to ROS topics
     def feedback_loop(self):
@@ -166,7 +172,43 @@ class ugv_bringup(Node):
         msg = Float32()
         msg.data = float(voltage_data["v"])/100
         self.voltage_publisher_.publish(msg)  # Publish the voltage data
-                        
+        if 0.1 < msg.data < 9 and not self._low_battery_playing:
+            self._low_battery_playing = True
+            threading.Thread(target=self._play_low_battery_warning, daemon=True).start()
+
+    def _play_low_battery_warning(self):
+        subprocess.run(['aplay', '-D', 'plughw:3,0',
+                        '/home/ws/ugv_ws/src/ugv_main/ugv_bringup/ugv_bringup/low_battery.wav'])
+        time.sleep(5)
+        self._low_battery_playing = False
+
+    # Forward /cmd_vel to the base platform over UART
+    def cmd_vel_callback(self, msg):
+        linear_velocity = msg.linear.x
+        angular_velocity = msg.angular.z
+        if linear_velocity == 0:
+            if 0 < angular_velocity < 0.2:
+                angular_velocity = 0.2
+            elif -0.2 < angular_velocity < 0:
+                angular_velocity = -0.2
+        self.base_controller.base_json_ctrl({'T': '13', 'X': linear_velocity, 'Z': angular_velocity})
+
+    # Forward /ugv/joint_states pan/tilt commands to the base over UART
+    def joint_states_callback(self, msg):
+        name = msg.name
+        position = msg.position
+        x_rad = position[name.index('pt_base_link_to_pt_link1')]
+        y_rad = position[name.index('pt_link1_to_pt_link2')]
+        x_degree = (180 * x_rad) / math.pi
+        y_degree = (180 * y_rad) / math.pi
+        self.base_controller.base_json_ctrl({'T': 134, 'X': x_degree, 'Y': y_degree, 'SX': 600, 'SY': 600})
+
+    # Forward /ugv/led_ctrl commands to the base over UART
+    def led_ctrl_callback(self, msg):
+        IO4 = msg.data[0]
+        IO5 = msg.data[1]
+        self.base_controller.base_json_ctrl({'T': 132, 'IO4': IO4, 'IO5': IO5})
+
 # Main function to initialize the ROS node and start spinning
 def main(args=None):
     rclpy.init(args=args)  # Initialize ROS
