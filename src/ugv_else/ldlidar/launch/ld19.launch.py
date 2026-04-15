@@ -32,7 +32,7 @@ def generate_launch_description():
         {'product_name': 'LDLiDAR_LD19'},
         {'topic_name': 'scan'},
         {'frame_id': 'base_lidar_link'},
-        {'port_name': '/dev/ttyACM0'},
+        {'port_name': '/dev/ttyAMA1'},
         {'port_baudrate': 230400},
         {'laser_scan_dir': True},
         {'enable_angle_crop_func': True},
