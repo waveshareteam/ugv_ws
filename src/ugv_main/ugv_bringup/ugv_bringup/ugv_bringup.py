@@ -114,6 +114,17 @@ class BaseController:
     def base_json_ctrl(self, input_json):
         self.send_command(input_json)
 
+    # Write motor-stop and feedback-disable directly to the serial port,
+    # bypassing the command queue.  Safe to call from signal handlers and
+    # destroy_node() where daemon threads may already be dying.
+    def emergency_stop(self):
+        try:
+            self.ser.write((json.dumps({'T': 13, 'X': 0.0, 'Z': 0.0}) + '\n').encode('utf-8'))
+            self.ser.write((json.dumps({'T': 131, 'cmd': 0}) + '\n').encode('utf-8'))
+            self.ser.flush()
+        except Exception:
+            pass
+
 # ROS node class for bringing up the UGV system and publishing sensor data
 class ugv_bringup(Node):
     def __init__(self):
@@ -141,9 +152,21 @@ class ugv_bringup(Node):
         self.joint_states_sub_ = self.create_subscription(JointState, 'ugv/joint_states', self.joint_states_callback, 10)
         self.led_ctrl_sub_ = self.create_subscription(Float32MultiArray, 'ugv/led_ctrl', self.led_ctrl_callback, 10)
         self._low_battery_playing = False
+        # Watchdog: track last cmd_vel so we can stop motors if commands stop arriving
+        self._last_cmd_vel_time = self.get_clock().now()
+        self._last_cmd_vel_nonzero = False
+        self._CMD_VEL_TIMEOUT = 0.5  # seconds
 
     # Main loop for reading sensor feedback and publishing it to ROS topics
     def feedback_loop(self):
+        # Watchdog: stop motors if no cmd_vel has arrived within the timeout
+        if self._last_cmd_vel_nonzero:
+            age = (self.get_clock().now() - self._last_cmd_vel_time).nanoseconds / 1e9
+            if age > self._CMD_VEL_TIMEOUT:
+                self.base_controller.emergency_stop()
+                self._last_cmd_vel_nonzero = False
+                self.get_logger().warn('cmd_vel watchdog: no command received, motors stopped')
+
         self.base_controller.feedback_data()
         if self.base_controller.base_data["T"] == 1001:  # Check if the feedback type is correct
             self.publish_imu_data_raw()  # Publish IMU raw data
@@ -217,6 +240,8 @@ class ugv_bringup(Node):
                 angular_velocity = 0.2
             elif -0.2 < angular_velocity < 0:
                 angular_velocity = -0.2
+        self._last_cmd_vel_time = self.get_clock().now()
+        self._last_cmd_vel_nonzero = (linear_velocity != 0.0 or angular_velocity != 0.0)
         self.base_controller.base_json_ctrl({'T': 13, 'X': linear_velocity, 'Z': angular_velocity})
 
     # Forward /ugv/joint_states pan/tilt commands to the base over UART
@@ -236,9 +261,9 @@ class ugv_bringup(Node):
         self.base_controller.base_json_ctrl({'T': 132, 'IO4': IO4, 'IO5': IO5})
 
     def destroy_node(self):
-        # Stop motors and disable serial feedback before closing the serial port
-        self.base_controller.base_json_ctrl({'T': 13, 'X': 0.0, 'Z': 0.0})
-        self.base_controller.base_json_ctrl({'T': 131, 'cmd': 0})
+        # Stop motors and disable serial feedback — write directly to serial
+        # (bypass the queue) so this is guaranteed to flush before the process exits
+        self.base_controller.emergency_stop()
         super().destroy_node()
 
 # Main function to initialize the ROS node and start spinning
