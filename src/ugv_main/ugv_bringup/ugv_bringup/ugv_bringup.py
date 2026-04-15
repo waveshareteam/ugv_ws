@@ -4,6 +4,7 @@ import queue
 import threading
 import subprocess
 import time
+import signal
 import rclpy
 from rclpy.node import Node
 import logging
@@ -14,8 +15,12 @@ import math
 import os
 
 def is_jetson():
-    result = any("ugv_jetson" in root for root, dirs, files in os.walk("/"))
-    return result
+    """Detect Jetson by reading the device-tree model string — no filesystem walk."""
+    try:
+        with open('/proc/device-tree/model', 'r') as f:
+            return 'jetson' in f.read().lower()
+    except OSError:
+        return False
 
 if is_jetson():
     serial_port = '/dev/ttyTHS1'
@@ -63,8 +68,13 @@ class BaseController:
         # Base data structure to hold sensor values
         self.base_data = {"T": 1001, "L": 0, "R": 0, "ax": 0, "ay": 0, "az": 0, "gx": 0, "gy": 0, "gz": 0, "mx": 0, "my": 0, "mz": 0, "odl": 0, "odr": 0, "v": 0}
     
-    # Function to read and return feedback data from the serial input
+    # Function to read and return feedback data from the serial input.
+    # Non-blocking: returns the last known base_data immediately if no bytes
+    # are waiting.  This prevents the ROS timer callback from stalling the
+    # executor when the ESP32 is slow or silent.
     def feedback_data(self):
+        if self.rl.s.in_waiting == 0:
+            return self.base_data
         line = None
         try:
             # Drain any backlog so we don't fall behind, keeping only the latest packet
@@ -73,11 +83,6 @@ class BaseController:
                 if 'T' in candidate:
                     self.base_data = candidate
             self.rl.clear_buffer()
-            # Now block for the next fresh packet
-            line = self.rl.readline().decode('utf-8')
-            self.data_buffer = json.loads(line)
-            if 'T' in self.data_buffer:
-                self.base_data = self.data_buffer
             return self.base_data
         except UnicodeDecodeError:
             # UART framing/noise error — discard corrupted bytes and resync
@@ -240,6 +245,15 @@ class ugv_bringup(Node):
 def main(args=None):
     rclpy.init(args=args)  # Initialize ROS
     node = ugv_bringup()  # Create the UGV bringup node
+
+    # Ensure motors stop and feedback is disabled when the process is killed
+    # by docker stop, systemd, or the OOM killer (SIGTERM).
+    def _sigterm_handler(signum, frame):
+        node.destroy_node()
+        rclpy.shutdown()
+
+    signal.signal(signal.SIGTERM, _sigterm_handler)
+
     try:
         rclpy.spin(node)
     finally:
