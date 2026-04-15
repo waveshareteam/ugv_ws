@@ -42,7 +42,7 @@ def get_rviz_config_file(context):
 def launch_setup(context, *args, **kwargs):
 
     rviz_config = context.launch_configurations['rviz_config']
-    UGV_MODEL = os.environ['UGV_MODEL']
+    UGV_MODEL = os.environ.get('UGV_MODEL', 'ugv_rover')
     urdf_file_name = UGV_MODEL + '.urdf'
     urdf_model_path = os.path.join(
         get_package_share_directory('ugv_description'),

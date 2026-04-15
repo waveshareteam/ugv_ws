@@ -7,7 +7,7 @@ import os
 
 def generate_launch_description():
 
-    LDLIDAR_MODEL = os.environ['LDLIDAR_MODEL']
+    LDLIDAR_MODEL = os.environ.get('LDLIDAR_MODEL', 'ld19')
     ldlidar_launch_file = LDLIDAR_MODEL + '.launch.py'
     
     laser_bringup_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(

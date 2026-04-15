@@ -65,11 +65,16 @@ class BaseController:
     
     # Function to read and return feedback data from the serial input
     def feedback_data(self):
+        line = None
         try:
-            line = self.rl.readline().decode('utf-8')  # Read line from UART
+            raw = self.rl.readline()
+            line = raw.decode('utf-8')  # Read line from UART
             self.data_buffer = json.loads(line)  # Parse JSON data
             self.base_data = self.data_buffer  # Store received data
             return self.base_data  # Return base data
+        except UnicodeDecodeError:
+            # UART framing/noise error — discard corrupted bytes and resync
+            self.rl.clear_buffer()
         except json.JSONDecodeError as e:
             self.logger.error(f"JSON decode error: {e} with line: {line}")  # Log error
             self.rl.clear_buffer()  # Clear buffer on error
@@ -109,7 +114,7 @@ class ugv_bringup(Node):
         # Initialize the base controller with the UART port and baud rate
         self.base_controller = BaseController(serial_port, 115200)
         # Timer to periodically execute the feedback loop
-        self.feedback_timer = self.create_timer(0.001, self.feedback_loop)
+        self.feedback_timer = self.create_timer(0.02, self.feedback_loop)  # 50 Hz — matches ESP32 output rate
         # Subscribers for forwarding commands to the base over UART
         self.cmd_vel_sub_ = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
         self.joint_states_sub_ = self.create_subscription(JointState, 'ugv/joint_states', self.joint_states_callback, 10)
