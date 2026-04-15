@@ -67,17 +67,24 @@ class BaseController:
     def feedback_data(self):
         line = None
         try:
-            raw = self.rl.readline()
-            line = raw.decode('utf-8')  # Read line from UART
-            self.data_buffer = json.loads(line)  # Parse JSON data
-            self.base_data = self.data_buffer  # Store received data
-            return self.base_data  # Return base data
+            # Drain any backlog so we don't fall behind, keeping only the latest packet
+            while self.rl.s.in_waiting > 0:
+                candidate = json.loads(self.rl.readline().decode('utf-8'))
+                if 'T' in candidate:
+                    self.base_data = candidate
+            self.rl.clear_buffer()
+            # Now block for the next fresh packet
+            line = self.rl.readline().decode('utf-8')
+            self.data_buffer = json.loads(line)
+            if 'T' in self.data_buffer:
+                self.base_data = self.data_buffer
+            return self.base_data
         except UnicodeDecodeError:
             # UART framing/noise error — discard corrupted bytes and resync
             self.rl.clear_buffer()
         except json.JSONDecodeError as e:
-            self.logger.error(f"JSON decode error: {e} with line: {line}")  # Log error
-            self.rl.clear_buffer()  # Clear buffer on error
+            self.logger.error(f"JSON decode error: {e} with line: {line}")
+            self.rl.clear_buffer()
         except Exception as e:
             self.logger.error(f"[base_ctrl.feedback_data] unexpected error: {e}")
             self.rl.clear_buffer()
@@ -113,10 +120,19 @@ class ugv_bringup(Node):
         self.voltage_publisher_ = self.create_publisher(Float32, "voltage", 50)
         # Initialize the base controller with the UART port and baud rate
         self.base_controller = BaseController(serial_port, 115200)
+        # Configure ESP32: enable serial feedback flow, set 50ms interval (20 Hz),
+        # disable command echo, and select module type
+        self.base_controller.base_json_ctrl({'T': 131, 'cmd': 1})
+        self.base_controller.base_json_ctrl({'T': 142, 'cmd': 50})
+        self.base_controller.base_json_ctrl({'T': 143, 'cmd': 0})   # echo off
+        self.base_controller.base_json_ctrl({'T': 4, 'cmd': 0})     # module: 0=none
+        # Home camera/gimbal to forward-facing default position
+        self.base_controller.base_json_ctrl({'T': 133, 'X': 0, 'Y': 0, 'SPD': 200, 'ACC': 10})
         # Timer to periodically execute the feedback loop
-        self.feedback_timer = self.create_timer(0.02, self.feedback_loop)  # 50 Hz — matches ESP32 output rate
+        self.feedback_timer = self.create_timer(0.05, self.feedback_loop)  # 20 Hz — matches ESP32 feedback interval
         # Subscribers for forwarding commands to the base over UART
         self.cmd_vel_sub_ = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
+        self.get_logger().info('ugv_bringup ready')
         self.joint_states_sub_ = self.create_subscription(JointState, 'ugv/joint_states', self.joint_states_callback, 10)
         self.led_ctrl_sub_ = self.create_subscription(Float32MultiArray, 'ugv/led_ctrl', self.led_ctrl_callback, 10)
         self._low_battery_playing = False
@@ -196,7 +212,7 @@ class ugv_bringup(Node):
                 angular_velocity = 0.2
             elif -0.2 < angular_velocity < 0:
                 angular_velocity = -0.2
-        self.base_controller.base_json_ctrl({'T': '13', 'X': linear_velocity, 'Z': angular_velocity})
+        self.base_controller.base_json_ctrl({'T': 13, 'X': linear_velocity, 'Z': angular_velocity})
 
     # Forward /ugv/joint_states pan/tilt commands to the base over UART
     def joint_states_callback(self, msg):
@@ -214,13 +230,21 @@ class ugv_bringup(Node):
         IO5 = msg.data[1]
         self.base_controller.base_json_ctrl({'T': 132, 'IO4': IO4, 'IO5': IO5})
 
+    def destroy_node(self):
+        # Stop motors and disable serial feedback before closing the serial port
+        self.base_controller.base_json_ctrl({'T': 13, 'X': 0.0, 'Z': 0.0})
+        self.base_controller.base_json_ctrl({'T': 131, 'cmd': 0})
+        super().destroy_node()
+
 # Main function to initialize the ROS node and start spinning
 def main(args=None):
     rclpy.init(args=args)  # Initialize ROS
     node = ugv_bringup()  # Create the UGV bringup node
-    rclpy.spin(node)  # Keep the node running
-    #node.destroy_node()  # (optional) Shutdown the node
-    rclpy.shutdown()  # Shutdown ROS
+    try:
+        rclpy.spin(node)
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
