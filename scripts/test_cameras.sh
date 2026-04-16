@@ -1,6 +1,36 @@
 #!/bin/bash
+# =============================================================================
 # test_cameras.sh — verify USB webcam and OAK-D Lite are publishing.
-# Run inside the container with camera nodes already running.
+#
+# PREREQUISITES
+#   Camera nodes must be running.  Either standalone:
+#     ros2 launch ugv_vision camera.launch.py       # USB webcam only
+#     ros2 launch ugv_vision oak_d_lite.launch.py   # OAK-D only
+#   Or via the full stack (starts both):
+#     ros2 launch ugv_bringup bringup_full.launch.py
+#
+#   Both physical devices must be passed through to the Docker container.
+#   Check your docker run command includes:
+#     --device /dev/video0              ← USB webcam  (0bda:5842)
+#     --device /dev/bus/usb             ← OAK-D Lite  (03e7:2485, Movidius MyriadX)
+#
+#   The OAK-D also needs a udev rule on the HOST (not in the container):
+#     echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' \
+#       | sudo tee /etc/udev/rules.d/80-movidius.rules
+#     sudo udevadm control --reload-rules && sudo udevadm trigger
+#   (Only needs to be done once per host OS install.)
+#
+# WHAT IT DOES
+#   For each camera, confirms at least one message arrives within 5s,
+#   then measures the publish rate over 5s and reports pass/fail.
+#
+# EXPECTED RESULTS
+#   USB webcam    /image_raw              ~30 Hz  (640x480 MJPEG)
+#   OAK-D RGB     /oak/rgb/image_raw      ~30 Hz  (USB3 Super Speed)
+#   OAK-D depth   /oak/stereo/image_raw   ~20 Hz  (stereo matching is heavier)
+#
+#   USB scheduling jitter of ~133ms is normal on all three — not a fault.
+# =============================================================================
 
 source /opt/ros/humble/setup.bash 2>/dev/null
 source /home/ws/ugv_ws/install/setup.bash 2>/dev/null

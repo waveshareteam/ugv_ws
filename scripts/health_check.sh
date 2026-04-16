@@ -1,8 +1,37 @@
 #!/bin/bash
+# =============================================================================
 # health_check.sh — verify all UGV sensor topics are alive at expected rates.
-# Run inside the container after bringup:
-#   ros2 launch ugv_bringup bringup_full.launch.py &
-#   sleep 10 && ./scripts/health_check.sh
+#
+# PREREQUISITES
+#   The full stack must be running before you run this script.
+#   In one terminal inside the container:
+#     ros2 launch ugv_bringup bringup_full.launch.py
+#   Wait ~10s for all nodes to finish starting, then in a second terminal:
+#     cd /home/ws/ugv_ws && ./scripts/health_check.sh
+#
+# WHAT IT CHECKS
+#   Base platform  /voltage        ~20 Hz  (ESP32 serial alive)
+#                  /imu/data_raw   ~20 Hz  (IMU data flowing)
+#                  /odom/odom_raw  ~20 Hz  (raw wheel encoder ticks)
+#                  /odom           ~10 Hz  (computed odometry)
+#   Lidar          /scan           ~10 Hz  (LD19 on /dev/ttyAMA1)
+#   USB webcam     /image_raw      ~30 Hz  (usb_cam on /dev/video0)
+#   OAK-D Lite     /oak/rgb/image_raw    ~30 Hz
+#                  /oak/stereo/image_raw ~20 Hz
+#   TF             /tf              any    (transform tree being broadcast)
+#
+# WHAT TO DO IF SOMETHING FAILS
+#   /voltage missing     → ugv_bringup not running, or /dev/ttyAMA0 not in container
+#   /scan missing        → ldlidar not running, or /dev/ttyAMA1 not in container
+#                          Check: docker inspect <container> | grep Devices
+#                          Fix:   add --device /dev/ttyAMA1 to docker run
+#   /image_raw missing   → usb_cam not running, or /dev/video0 not in container
+#   /oak/* missing       → depthai node not running, or USB not passed through
+#                          Check udev rule on host:
+#                            echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' \
+#                              | sudo tee /etc/udev/rules.d/80-movidius.rules
+#                            sudo udevadm control --reload-rules && sudo udevadm trigger
+# =============================================================================
 
 SETUP="/opt/ros/humble/setup.bash"
 WS_SETUP="/home/ws/ugv_ws/install/setup.bash"
