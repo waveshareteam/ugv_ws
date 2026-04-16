@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 '''
@@ -22,6 +24,14 @@ Parameter Description:
 '''
 
 def generate_launch_description():
+  # port_name is normally supplied by ldlidar.launch.py via the LDLIDAR_PORT
+  # environment variable.  See ldlidar.launch.py for the full overlay-to-device
+  # mapping table and configuration instructions.
+  port_name_arg = DeclareLaunchArgument(
+      'port_name', default_value='/dev/ttyAMA1',
+      description='Serial port the LD19 lidar is connected to (see ldlidar.launch.py)'
+  )
+
   # LDROBOT LiDAR publisher node
   ldlidar_node = Node(
       package='ldlidar',
@@ -32,7 +42,7 @@ def generate_launch_description():
         {'product_name': 'LDLiDAR_LD19'},
         {'topic_name': 'scan'},
         {'frame_id': 'base_lidar_link'},
-        {'port_name': '/dev/ttyACM0'},
+        {'port_name': LaunchConfiguration('port_name')},
         {'port_baudrate': 230400},
         {'laser_scan_dir': True},
         {'enable_angle_crop_func': True},
@@ -53,6 +63,7 @@ def generate_launch_description():
   # Define LaunchDescription variable
   ld = LaunchDescription()
 
+  ld.add_action(port_name_arg)
   ld.add_action(ldlidar_node)
  # ld.add_action(base_footprint_to_laser_tf_node)
 

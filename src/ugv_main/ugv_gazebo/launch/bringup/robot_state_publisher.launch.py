@@ -15,7 +15,7 @@ def generate_launch_description():
     ld = LaunchDescription()
     
     # Get the UGV_MODEL environment variable
-    UGV_MODEL = os.environ['UGV_MODEL']
+    UGV_MODEL = os.environ.get('UGV_MODEL', 'ugv_rover')
     # Create the urdf_file_name variable by appending '.urdf' to the UGV_MODEL variable
     urdf_file_name = UGV_MODEL + '.urdf'
     # Create the urdf_model_path variable by joining the package share directory, 'urdf' folder, and the urdf_file_name

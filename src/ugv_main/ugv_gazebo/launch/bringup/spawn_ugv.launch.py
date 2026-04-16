@@ -22,7 +22,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    UGV_MODEL = os.environ['UGV_MODEL']
+    UGV_MODEL = os.environ.get('UGV_MODEL', 'ugv_rover')
  
     urdf_path = os.path.join(
         get_package_share_directory('ugv_gazebo'),

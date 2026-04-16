@@ -16,7 +16,7 @@ def generate_launch_description():
     rviz_config_path = os.path.join(pkg_share, 'rviz/display.rviz')
     
     # Get the UGV model from the environment variables
-    UGV_MODEL = os.environ['UGV_MODEL']
+    UGV_MODEL = os.environ.get('UGV_MODEL', 'ugv_rover')
     # Define the urdf file name
     urdf_file_name = UGV_MODEL + '.urdf'
     # Define the path to the urdf model
