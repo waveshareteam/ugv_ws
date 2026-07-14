@@ -65,7 +65,9 @@ Each demo uses the same launch file; only **`exe`** changes.
 | Argument | Default | Description |
 |----------|---------|-------------|
 | **`exe`** | *(required)* | Vision node executable (see [USB camera](#usb-camera), [OAK-D Lite](#oak-d-lite), [Pan-tilt tracking](#pan-tilt-tracking)) |
-| `use_rviz` | `false` | RViz with `view_slam_2d.rviz` |
+| `use_rviz` | `false` | RViz with `view_slam_2d.rviz` (only when `use_bringup:=true`) |
+| `use_bringup` | `true` | Include `ugv_bringup` / `ugv_gazebo` bringup. Set **`false`** when another base driver (e.g. **`ugv_roarm_bringup`**) is already running |
+| `use_sim_time` | `false` | Gazebo clock; selects `ugv_gazebo` bringup instead of `ugv_bringup` |
 
 ### Launch nodes
 

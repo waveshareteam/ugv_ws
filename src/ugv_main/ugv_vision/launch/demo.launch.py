@@ -1,7 +1,7 @@
 import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.conditions import IfCondition, UnlessCondition
+from launch.conditions import AndCondition, IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -22,6 +22,15 @@ def generate_launch_description():
         description='Use simulation/Gazebo clock',
     )
 
+    use_bringup_arg = DeclareLaunchArgument(
+        'use_bringup',
+        default_value='true',
+        description=(
+            'Include ugv_bringup / ugv_gazebo bringup. '
+            'Set false when ugv_roarm_bringup or another base stack is already running.'
+        ),
+    )
+
     exe_arg = DeclareLaunchArgument(
         'exe',
         description='Vision demo executable (e.g. color_ball_track, cam_oak_webrtc)',
@@ -40,7 +49,10 @@ def generate_launch_description():
             'use_rviz': LaunchConfiguration('use_rviz'),
             'rviz_config': 'slam_2d',
         }.items(),
-        condition=UnlessCondition(LaunchConfiguration('use_sim_time')),
+        condition=AndCondition([
+            IfCondition(LaunchConfiguration('use_bringup')),
+            UnlessCondition(LaunchConfiguration('use_sim_time')),
+        ]),
     )
 
     bringup_gazebo_launch = IncludeLaunchDescription(
@@ -51,7 +63,10 @@ def generate_launch_description():
             'use_rviz': LaunchConfiguration('use_rviz'),
             'rviz_config': 'slam_2d',
         }.items(),
-        condition=IfCondition(LaunchConfiguration('use_sim_time')),
+        condition=AndCondition([
+            IfCondition(LaunchConfiguration('use_bringup')),
+            IfCondition(LaunchConfiguration('use_sim_time')),
+        ]),
     )
 
     cam_bringup_launch = IncludeLaunchDescription(
@@ -73,6 +88,7 @@ def generate_launch_description():
     return LaunchDescription([
         use_rviz_arg,
         use_sim_time_arg,
+        use_bringup_arg,
         exe_arg,
         bringup_lidar_launch,
         bringup_gazebo_launch,
