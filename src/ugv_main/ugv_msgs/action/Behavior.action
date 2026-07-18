@@ -2,7 +2,9 @@ string command
 
 ---
 bool result
+string message
 
 ---
 bool feedback
-
+string status
+float32 progress

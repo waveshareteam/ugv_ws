@@ -220,7 +220,11 @@ class ChatAi(Node):
     def get_result_callback(self, future):
         try:
             response = future.result()
-            self.get_logger().info(f"Behavior result: {response.result.result}")
+            msg = getattr(response.result, "message", "")
+            self.get_logger().info(
+                f"Behavior result: {response.result.result}"
+                + (f" ({msg})" if msg else "")
+            )
         except Exception as e:
             self.get_logger().error(f"get_result failed: {e}")
 

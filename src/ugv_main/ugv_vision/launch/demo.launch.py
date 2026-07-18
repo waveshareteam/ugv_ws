@@ -1,7 +1,7 @@
 import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.conditions import AndCondition, IfCondition, UnlessCondition
+from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -49,10 +49,10 @@ def generate_launch_description():
             'use_rviz': LaunchConfiguration('use_rviz'),
             'rviz_config': 'slam_2d',
         }.items(),
-        condition=AndCondition([
-            IfCondition(LaunchConfiguration('use_bringup')),
-            UnlessCondition(LaunchConfiguration('use_sim_time')),
-        ]),
+        condition=IfCondition(PythonExpression([
+            "'", LaunchConfiguration('use_bringup'), "' == 'true' and '",
+            LaunchConfiguration('use_sim_time'), "' != 'true'",
+        ])),
     )
 
     bringup_gazebo_launch = IncludeLaunchDescription(
@@ -63,10 +63,10 @@ def generate_launch_description():
             'use_rviz': LaunchConfiguration('use_rviz'),
             'rviz_config': 'slam_2d',
         }.items(),
-        condition=AndCondition([
-            IfCondition(LaunchConfiguration('use_bringup')),
-            IfCondition(LaunchConfiguration('use_sim_time')),
-        ]),
+        condition=IfCondition(PythonExpression([
+            "'", LaunchConfiguration('use_bringup'), "' == 'true' and '",
+            LaunchConfiguration('use_sim_time'), "' == 'true'",
+        ])),
     )
 
     cam_bringup_launch = IncludeLaunchDescription(
