@@ -22,9 +22,9 @@ Voice / Ollama / Web AI are optional — see [Experimental](experimental.md).
 !!! warning "Safety"
     Lift the robot before motion-tracking nodes. Stop with zero **`/cmd_vel`** when done:
 
-    ```bash
-    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
-    ```
+  ```bash
+  ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
+  ```
 
 ---
 

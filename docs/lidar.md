@@ -15,9 +15,9 @@ For 2D mapping, see [Mapping](mapping.md). For camera tracking, see [Vision](vis
 !!! warning "Safety"
     Lift the robot when testing guard/follow logic on a bench. Stop motion when done:
 
-    ```bash
-    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
-    ```
+  ```bash
+  ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
+  ```
 
 ---
 

@@ -16,7 +16,7 @@ ugv_ws
 |-- ros2.sh                 # Container and SSH setup
 |-- save_map.sh             # Save SLAM maps
 |-- src
-    |-- ugv_else            # Third-party ROS 2 packages
+    |-- ugv_else            # Third-party ROS2 packages
     |-- ugv_main            # Core UGV packages
 ```
 

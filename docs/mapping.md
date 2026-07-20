@@ -21,11 +21,11 @@ For `/scan` and the base stack, see [Hardware Driver](bringup.md).
 !!! warning "Safety"
     The robot moves while you teleop during mapping. Clear the area and keep hands away from wheels before driving.
 
-    Stop motion when done:
+Stop motion when done:
 
-    ```bash
-    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
-    ```
+```bash
+ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
+```
 
 ---
 

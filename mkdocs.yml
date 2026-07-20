@@ -1,5 +1,5 @@
 site_name: ugv_ws Documentation
-site_description: ROS 2 Humble colcon workspace (ugv_ws) for WaveShare UGV ROS2 Kit robots
+site_description: ROS2 Humble colcon workspace (ugv_ws) for WaveShare UGV ROS2 Kit robots
 site_url: https://waveshareteam.github.io/ugv_ws
 
 repo_name: ugv_ws
@@ -28,6 +28,7 @@ nav:
     - Mapping: mapping.md
     - Web App: web_app.md
     - Navigation: navigation.md
+    - Behavior Command Control: behavior_ctrl.md
     - Experimental: experimental.md
     - Gazebo: gazebo.md
 

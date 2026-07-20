@@ -7,7 +7,7 @@ For real-robot bringup, see [Hardware Driver](bringup.md).
 !!! warning "Do not run Gazebo on the physical robot"
     **Do not** launch **`bringup_gazebo.launch.py`** or any Gazebo workflow on the **Pi/Jetson mounted on the real UGV**. Gazebo is heavy (CPU/GPU, X11) and is meant for a VM or desktop. On hardware, use **`bringup_lidar.launch.py`** — [Hardware Driver — Launch](bringup.md#launch-physical-robot).
 
-    Never run Gazebo bringup and **`bringup_lidar.launch.py`** at the same time.
+Never run Gazebo bringup and **`bringup_lidar.launch.py`** at the same time.
 
 ## Prerequisites
 
@@ -18,11 +18,11 @@ For real-robot bringup, see [Hardware Driver](bringup.md).
 !!! warning "Safety"
     Simulation still drives the virtual robot with **`/cmd_vel`** (teleop, SLAM mapping, Nav2). Keep the sim view clear of obstacles you care about; stop teleop or send zero velocity before switching tasks:
 
-    ```bash
-    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
-    ```
+```bash
+ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
+```
 
-    Do not run **`bringup_lidar.launch.py`** (real hardware) and Gazebo bringup at the same time.
+Do not run **`bringup_lidar.launch.py`** (real hardware) and Gazebo bringup at the same time.
 
 ---
 

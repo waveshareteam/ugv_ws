@@ -20,11 +20,11 @@ For the suggested reading order, see [index](index.md#suggested-reading-order).
 !!! warning "Safety"
     [Web AI](#web-ai) drives the chassis via **`behavior_ctrl`** → **`/cmd_vel`**. Clear the area before use.
 
-    Emergency stop:
+  Emergency stop:
 
-    ```bash
-    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
-    ```
+  ```bash
+  ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
+  ```
 
 ---
 
@@ -101,7 +101,9 @@ Requires **`qwen3:8b`** (or compatible model) on the Ollama server.
 
 Browser chat that sends motion commands to the **`/behavior`** action. **`behavior_ctrl`** executes open-loop moves and publishes **`/cmd_vel`**.
 
-Supported behavior types: **`drive_on_heading`**, **`back_up`**, **`spin`**, **`stop`**.
+CLI command reference, prerequisites, and all JSON types (including map points / Nav2): **[Behavior Command Control](behavior_ctrl.md)**.
+
+Supported behavior types in the default Web AI prompt: **`drive_on_heading`**, **`back_up`**, **`spin`**, **`stop`**.
 
 Example LLM JSON: `{"T": 1, "type": "drive_on_heading", "data": 2}`
 

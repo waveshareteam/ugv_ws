@@ -19,11 +19,11 @@ Default map file: **`src/ugv_main/ugv_nav/maps/map.yaml`**.
 !!! warning "Safety"
     Nav2 moves the chassis autonomously once you send a goal. Clear the area and keep hands away from wheels before launching.
 
-    Emergency stop:
+Emergency stop:
 
-    ```bash
-    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
-    ```
+```bash
+ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
+```
 
 ---
 
