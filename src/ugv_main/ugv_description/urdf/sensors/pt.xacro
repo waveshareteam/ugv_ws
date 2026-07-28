@@ -135,17 +135,17 @@
 
   <joint name="pt_base_link_to_pt_link1">
     <command_interface name="position"/>
-    <state_interface name="position">
-    <state_interface name="velocity"/>
     <state_interface name="effort"/>
+    <state_interface name="velocity"/>
+    <state_interface name="position">
       <param name="initial_value">${initial_positions['pt_base_link_to_pt_link1']}</param>
     </state_interface>
   </joint>
   <joint name="pt_link1_to_pt_link2">
     <command_interface name="position"/>
-    <state_interface name="position">
-    <state_interface name="velocity"/>
     <state_interface name="effort"/>
+    <state_interface name="velocity"/>
+    <state_interface name="position">
       <param name="initial_value">${initial_positions['pt_link1_to_pt_link2']}</param>
     </state_interface>
   </joint>

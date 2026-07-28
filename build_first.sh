@@ -3,9 +3,194 @@ set -e
 
 WS=/home/ws/ugv_ws
 BASHRC=~/.bashrc
+APT_PREFS=/etc/apt/preferences.d/block-gazebo-classic
 
 add_if_not_exist () {
     grep -qxF "$1" "$BASHRC" || echo "$1" >> "$BASHRC"
+}
+
+set_bashrc_export () {
+    local key="$1"
+    local val="$2"
+    sed -i "/^export ${key}=/d" "$BASHRC"
+    echo "export ${key}=${val}" >> "$BASHRC"
+    export "${key}=${val}"
+}
+
+load_bashrc_var () {
+    local var="$1"
+    local val
+    val=$(grep -E "^export ${var}=" "$BASHRC" 2>/dev/null | tail -n1 | cut -d= -f2- | tr -d '"' | tr -d "'" || true)
+    if [ -n "$val" ]; then
+        export "$var=$val"
+    fi
+}
+
+unhold_gz_related () {
+    echo "🔓 Clearing apt holds that may block Gazebo installs..."
+    local holds
+    holds=$(apt-mark showhold 2>/dev/null || true)
+    if [ -n "$holds" ]; then
+        echo "$holds"
+        # shellcheck disable=SC2086
+        apt-mark unhold $holds || true
+    else
+        echo "✔ No held packages"
+    fi
+}
+
+remove_installed_pkgs () {
+    local pattern="$1"
+    local pkgs
+    pkgs=$(dpkg -l 2>/dev/null | awk -v p="$pattern" '$1 ~ /^ii/ && $2 ~ p {print $2}' || true)
+    if [ -n "$pkgs" ]; then
+        echo "🧹 Removing packages matching /$pattern/:"
+        echo "$pkgs"
+        # shellcheck disable=SC2086
+        apt-get remove -y --purge $pkgs || true
+    fi
+}
+
+purge_gazebo_classic () {
+    echo "🧹 Purging Gazebo Classic..."
+    remove_installed_pkgs '^gazebo'
+    remove_installed_pkgs '^libgazebo'
+    remove_installed_pkgs '^ros-humble-gazebo'
+    apt-get autoremove -y || true
+}
+
+purge_gazebo_fortress_ros_gz () {
+    echo "🧹 Purging Fortress ros-gz / ignition gazebo6..."
+    remove_installed_pkgs '^ros-humble-ros-gz-'
+    remove_installed_pkgs '^ros-humble-ros-gz$'
+    remove_installed_pkgs '^ros-humble-ign-ros2-control'
+    remove_installed_pkgs '^libignition-gazebo6'
+    remove_installed_pkgs '^libignition-gui6'
+    remove_installed_pkgs '^libignition-rendering6'
+    remove_installed_pkgs '^libignition-sensors6'
+    apt-get remove -y --purge ignition-tools ignition-transport11-cli || true
+}
+
+purge_gazebo_harmonic () {
+    echo "🧹 Purging Gazebo Harmonic / gz..."
+    remove_installed_pkgs '^ros-humble-ros-gzharmonic'
+    remove_installed_pkgs '^ros-humble-gz-ros2-control'
+    remove_installed_pkgs '^gz-harmonic'
+    remove_installed_pkgs '^gz-tools'
+    remove_installed_pkgs '^gz-sim'
+    remove_installed_pkgs '^gz-plugin'
+    remove_installed_pkgs '^gz-math'
+    remove_installed_pkgs '^gz-common'
+    remove_installed_pkgs '^gz-msgs'
+    remove_installed_pkgs '^gz-transport'
+    remove_installed_pkgs '^gz-rendering'
+    remove_installed_pkgs '^gz-sensors'
+    remove_installed_pkgs '^gz-physics'
+    remove_installed_pkgs '^gz-gui'
+    remove_installed_pkgs '^gz-fuel'
+    remove_installed_pkgs '^gz-launch'
+    remove_installed_pkgs '^libgz-'
+    remove_installed_pkgs '^libsdformat14'
+    purge_gazebo_fortress_ros_gz
+    apt-get autoremove -y || true
+}
+
+detect_installed_gz () {
+    if dpkg -l 2>/dev/null | awk '
+        $1 ~ /^ii/ && ($2 ~ /^gz-harmonic/ || $2 ~ /^ros-humble-ros-gzharmonic/) {found=1}
+        END {exit !found}'; then
+        echo "harmonic"
+    elif dpkg -l 2>/dev/null | awk '
+        $1 ~ /^ii/ && $2 ~ /^(gazebo|libgazebo11|ros-humble-gazebo-ros)(|-.*)$/ {found=1}
+        END {exit !found}'; then
+        echo "classic"
+    else
+        echo ""
+    fi
+}
+
+block_gazebo_classic_apt () {
+    echo "🔒 Blocking Classic gazebo packages in apt (Harmonic present)..."
+    cat > "$APT_PREFS" << 'EOF'
+Package: gazebo
+Pin: release *
+Pin-Priority: -1
+
+Package: gazebo-*
+Pin: release *
+Pin-Priority: -1
+
+Package: libgazebo*
+Pin: release *
+Pin-Priority: -1
+
+Package: ros-humble-gazebo*
+Pin: release *
+Pin-Priority: -1
+EOF
+}
+
+allow_gazebo_classic_apt () {
+    rm -f "$APT_PREFS"
+}
+
+ensure_universe () {
+    apt-get install -y software-properties-common
+    add-apt-repository -y universe || true
+    apt-get update
+}
+
+install_gazebo_classic () {
+    echo "✔ Installing Gazebo Classic (gazebo11)..."
+    unhold_gz_related
+    purge_gazebo_harmonic
+    allow_gazebo_classic_apt
+    ensure_universe
+    apt-get install -y \
+      gazebo \
+      gazebo-common \
+      gazebo-plugin-base \
+      ros-humble-gazebo-ros-pkgs \
+      ros-humble-gazebo-ros2-control
+    add_if_not_exist "source /usr/share/gazebo/setup.bash"
+}
+
+install_gazebo_harmonic () {
+    echo "⚠️ Installing Gazebo Harmonic (gz-sim 8) for ROS 2 Humble..."
+    echo "   https://gazebosim.org/docs/harmonic/ros_installation/"
+
+    unhold_gz_related
+    purge_gazebo_classic
+    purge_gazebo_fortress_ros_gz
+    block_gazebo_classic_apt
+
+    apt-get install -y curl lsb-release gnupg
+
+    curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
+      --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] \
+https://packages.osrfoundation.org/gazebo/ubuntu-stable \
+$(lsb_release -cs) main" \
+      | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+
+    apt-get update
+    apt-get install -y \
+      gz-harmonic \
+      ros-humble-ros-gzharmonic \
+      ros-humble-gz-ros2-control
+}
+
+reload_bashrc () {
+    # shellcheck disable=SC1090
+    source "$BASHRC" 2>/dev/null || true
+
+    # 非交互脚本里 bashrc 可能直接 return，再强制加载关键变量
+    while IFS= read -r line; do
+        eval "$line"
+    done < <(grep -E '^export (GZ_VERSION|UGV_MODEL|LDLIDAR_MODEL|ROARM_MODEL|GRIPPER_TYPE)=' "$BASHRC" 2>/dev/null || true)
+
+    echo "✔ Reloaded env from ~/.bashrc (GZ_VERSION=${GZ_VERSION:-none})"
 }
 
 echo "=============================="
@@ -13,9 +198,26 @@ echo "   UGV Build & Config Script"
 echo "=============================="
 echo
 
+load_bashrc_var GZ_VERSION
+DETECTED_GZ="$(detect_installed_gz)"
+
+echo "[0/6] Preparing apt..."
+unhold_gz_related
+apt-get update || true
+
+# 只有「真的已装 Harmonic」才 block Classic；
+# 不要仅因 bashrc 里残留 GZ_VERSION=harmonic 就 pin 住 classic
+if [ "$DETECTED_GZ" = "harmonic" ]; then
+    block_gazebo_classic_apt
+    purge_gazebo_fortress_ros_gz
+fi
+
+apt-get -f install -y || true
+apt-get autoremove -y || true
+apt-get update
+
 # ---------- Basic system deps ----------
 echo "[1/6] Installing basic dependencies..."
-apt-get update
 apt-get install -y \
   python3-pip \
   python3-colcon-argcomplete \
@@ -25,8 +227,12 @@ apt-get install -y \
   speech-dispatcher-espeak \
   espeak-ng \
   gstreamer1.0-rtsp \
+  software-properties-common \
+  curl \
+  lsb-release \
+  gnupg
 
-# ---------- Python deps (WARNING) ----------
+# ---------- Python deps ----------
 echo
 echo "⚠️  Python dependencies will be installed via pip"
 echo "⚠️  It is STRONGLY recommended to use a virtualenv for AI/Vision"
@@ -40,119 +246,139 @@ fi
 # ---------- ROS 2 packages ----------
 echo
 echo "[2/6] Installing ROS 2 packages..."
+if [ "$DETECTED_GZ" = "harmonic" ]; then
+    echo "✔ Harmonic detected → keep Classic blocked"
+    block_gazebo_classic_apt
+fi
+
 apt-get install -y \
-    ros-humble-cartographer-* \
-    ros-humble-desktop-* \
-    ros-humble-joint-state-publisher-* \
+    ros-humble-cartographer-ros \
+    ros-humble-cartographer-ros-msgs \
+    ros-humble-cartographer-rviz \
+    ros-humble-desktop \
+    ros-humble-joint-state-publisher \
+    ros-humble-joint-state-publisher-gui \
     ros-humble-position-controllers \
-    ros-humble-nav2-* \
-    ros-humble-rosbridge-* \
-    ros-humble-rqt-* \
-    ros-humble-rtabmap-* \
+    ros-humble-navigation2 \
+    ros-humble-nav2-bringup \
+    ros-humble-rosbridge-suite \
+    ros-humble-rqt \
+    ros-humble-rqt-common-plugins \
+    ros-humble-rtabmap-ros \
     ros-humble-v4l2-camera \
-    ros-humble-depthai-bridge-dbgsym \
+    ros-humble-depthai-bridge \
     ros-humble-depthai-ros-driver \
     ros-humble-depthai-ros-msgs \
-    ros-humble-depthai-ros-msgs-dbgsym \
-    ros-humble-depthai-bridge \
     ros-humble-depthai-descriptions \
     ros-humble-depthai-examples \
-    ros-humble-depthai-ros-driver-dbgsym \
     ros-humble-depthai \
-    ros-humble-depthai-dbgsym \
-    ros-humble-depthai-examples-dbgsym \
     ros-humble-depthai-filters \
-    ros-humble-depthai-filters-dbgsym \
     ros-humble-depthai-ros
-  
 
-# ---------- Gazebo (OPTIONAL) ----------
+# ---------- Gazebo ----------
 echo
 echo "=============================="
 echo "     Gazebo Version Select"
 echo "=============================="
-echo "⚠️  Gazebo is resource-intensive"
-echo "⚠️  Recommended ONLY for desktop / VM"
+echo "⚠️  Classic and Harmonic CANNOT coexist"
+echo "⚠️  Humble: ros-humble-ros-gz* = Fortress; Harmonic needs ros-humble-ros-gzharmonic"
 echo
-echo "Select Gazebo version to install:"
-echo "  [1] Gazebo Classic (gazebo11)"
-echo "  [2] Gazebo Harmonic (gz-sim)"
-echo "  [0] Skip Gazebo installation"
+DETECTED_GZ="$(detect_installed_gz)"
+echo "Detected packages : ${DETECTED_GZ:-none}"
+echo "GZ_VERSION in env : ${GZ_VERSION:-none}"
 echo
-
-read -p "Your choice [0-2]: " GAZEBO_CHOICE
 
 GAZEBO_INSTALLED=false
-GZ_VERSION=""
 
-case "$GAZEBO_CHOICE" in
+if [ -n "$GZ_VERSION" ] && [ -n "$DETECTED_GZ" ] && [ "$GZ_VERSION" = "$DETECTED_GZ" ]; then
+    echo "✔ Gazebo already installed (GZ_VERSION=$GZ_VERSION)"
+    read -p "Reinstall / switch anyway? [y/N]: " REINSTALL_GZ
+    if [[ "$REINSTALL_GZ" =~ ^[Yy]$ ]]; then
+        echo "Select Gazebo version:"
+        echo "  [1] Classic"
+        echo "  [2] Harmonic"
+        read -p "Your choice [1-2]: " GAZEBO_CHOICE
+        case "$GAZEBO_CHOICE" in
+          1) install_gazebo_classic; GZ_VERSION="classic"; GAZEBO_INSTALLED=true ;;
+          2) install_gazebo_harmonic; GZ_VERSION="harmonic"; GAZEBO_INSTALLED=true ;;
+          *) echo "⏭ Keep current"; GAZEBO_INSTALLED=true ;;
+        esac
+    else
+        echo "⏭ Skip reinstallation"
+        GAZEBO_INSTALLED=true
+        if [ "$GZ_VERSION" = "harmonic" ]; then
+            block_gazebo_classic_apt
+            purge_gazebo_fortress_ros_gz
+            unhold_gz_related
+            apt-get install -y ros-humble-ros-gzharmonic ros-humble-gz-ros2-control || true
+        fi
+    fi
 
-  # ---------- Gazebo Classic ----------
-  1)
-    echo "✔ Installing Gazebo Classic (gazebo11)..."
+elif [ -n "$DETECTED_GZ" ]; then
+    echo "✔ Gazebo packages present: $DETECTED_GZ (env was '${GZ_VERSION:-none}')"
+    read -p "Reuse detected '$DETECTED_GZ'? [Y/n]: " REUSE_GZ
+    if [[ "$REUSE_GZ" =~ ^[Nn]$ ]]; then
+        echo "Select Gazebo version:"
+        echo "  [1] Classic"
+        echo "  [2] Harmonic"
+        read -p "Your choice [1-2]: " GAZEBO_CHOICE
+        case "$GAZEBO_CHOICE" in
+          1) install_gazebo_classic; GZ_VERSION="classic"; GAZEBO_INSTALLED=true ;;
+          2) install_gazebo_harmonic; GZ_VERSION="harmonic"; GAZEBO_INSTALLED=true ;;
+          *) GZ_VERSION="$DETECTED_GZ"; GAZEBO_INSTALLED=true ;;
+        esac
+    else
+        GZ_VERSION="$DETECTED_GZ"
+        GAZEBO_INSTALLED=true
+        if [ "$GZ_VERSION" = "harmonic" ]; then
+            block_gazebo_classic_apt
+            purge_gazebo_fortress_ros_gz
+            unhold_gz_related
+            apt-get install -y ros-humble-ros-gzharmonic ros-humble-gz-ros2-control || true
+        fi
+        echo "⏭ Reuse $GZ_VERSION"
+    fi
 
-    apt-get install -y \
-      gazebo \
-      gazebo-common \
-      gazebo-plugin-base \
-      ros-humble-gazebo-ros-pkgs \
-      ros-humble-gazebo-ros2-control
+else
+    echo "Select Gazebo version to install:"
+    echo "  [1] Gazebo Classic (gazebo11)"
+    echo "  [2] Gazebo Harmonic (gz-sim 8)"
+    echo "  [0] Skip Gazebo installation"
+    echo
+    read -p "Your choice [0-2]: " GAZEBO_CHOICE
 
-    GZ_VERSION="classic"
-    GAZEBO_INSTALLED=true
+    case "$GAZEBO_CHOICE" in
+      1)
+        install_gazebo_classic
+        GZ_VERSION="classic"
+        GAZEBO_INSTALLED=true
+        ;;
+      2)
+        install_gazebo_harmonic
+        GZ_VERSION="harmonic"
+        GAZEBO_INSTALLED=true
+        ;;
+      0)
+        echo "⏭ Skipped Gazebo installation"
+        GZ_VERSION=""
+        ;;
+      *)
+        echo "❌ Invalid choice, skipping Gazebo installation"
+        GZ_VERSION=""
+        ;;
+    esac
+fi
 
-    # Gazebo Classic environment
-    add_if_not_exist "source /usr/share/gazebo/setup.bash"
-    ;;
-
-  # ---------- Gazebo Harmonic ----------
-  2)
-    echo "⚠️ Installing Gazebo Harmonic (gz-sim)..."
-
-    # OSRF repository (only needed for gz)
-    apt-get install -y \
-      curl \
-      lsb-release \
-      gnupg
-
-    curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
-      --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
-
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] \
-https://packages.osrfoundation.org/gazebo/ubuntu-stable \
-$(lsb_release -cs) main" \
-      | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
-
-    apt-get update
-
-    apt-get install -y \
-      gz-harmonic \
-      ros-humble-ros-gzharmonic
-
-    GZ_VERSION="harmonic"
-    GAZEBO_INSTALLED=true
-    ;;
-
-  # ---------- Skip ----------
-  0)
-    echo "⏭ Skipped Gazebo installation"
-    ;;
-
-  *)
-    echo "❌ Invalid choice, skipping Gazebo installation"
-    ;;
-esac
-
-# ---------- Export Gazebo version ----------
-if [ "$GAZEBO_INSTALLED" = true ]; then
-  add_if_not_exist "export GZ_VERSION=${GZ_VERSION}"
+if [ "$GAZEBO_INSTALLED" = true ] && [ -n "$GZ_VERSION" ]; then
+  set_bashrc_export "GZ_VERSION" "$GZ_VERSION"
 fi
 
 # ---------- ROS env ----------
 echo
 echo "[3/6] Configuring ROS environment..."
 add_if_not_exist "source /opt/ros/humble/setup.bash"
-source ~/.bashrc
+# shellcheck disable=SC1090
+source "$BASHRC" || true
 
 # ---------- Model selection ----------
 echo
@@ -174,11 +400,12 @@ echo "Selected configuration:"
 echo "  UGV_MODEL     = $UGV_MODEL"
 echo "  LDLIDAR_MODEL = $LDLIDAR_MODEL"
 echo "  Gazebo        = $GAZEBO_INSTALLED"
+echo "  GZ_VERSION    = ${GZ_VERSION:-none}"
 
 read -p "Save model selection to ~/.bashrc? [y/N]: " SAVE_ENV
 if [[ "$SAVE_ENV" =~ ^[Yy]$ ]]; then
-    add_if_not_exist "export UGV_MODEL=$UGV_MODEL"
-    add_if_not_exist "export LDLIDAR_MODEL=$LDLIDAR_MODEL"
+    set_bashrc_export "UGV_MODEL" "$UGV_MODEL"
+    set_bashrc_export "LDLIDAR_MODEL" "$LDLIDAR_MODEL"
     echo "✔ Model selection saved to ~/.bashrc"
 else
     export UGV_MODEL
@@ -191,24 +418,59 @@ echo
 echo "[5/6] Building workspace: $WS"
 cd "$WS" || exit 1
 
+COMMON_PKGS=(
+  cartographer
+  costmap_converter_msgs
+  costmap_converter
+  emcl2
+  explore_lite
+  openslam_gmapping
+  slam_gmapping
+  ldlidar
+  rf2o_laser_odometry
+  robot_pose_publisher
+  teb_msgs
+  teb_local_planner
+  vizanti
+  vizanti_cpp
+  vizanti_demos
+  vizanti_msgs
+  vizanti_server
+  ugv_msgs
+)
+
+if [ "$GZ_VERSION" = "harmonic" ]; then
+  echo "✔ GZ_VERSION=harmonic → include gz_ros2_control (workspace overlay optional)"
+  COMMON_PKGS+=(gz_ros2_control)
+else
+  echo "⏭ Skip gz_ros2_control (need harmonic)"
+fi
+
 colcon build \
-  --packages-select \
-    cartographer \
-    costmap_converter_msgs costmap_converter \
-    emcl2 explore_lite gz_ros2_control \
-    openslam_gmapping slam_gmapping \
-    ldlidar rf2o_laser_odometry \
-    robot_pose_publisher \
-    teb_msgs teb_local_planner \
-    vizanti vizanti_cpp vizanti_demos vizanti_msgs vizanti_server \
-    ugv_msgs \
+  --packages-select "${COMMON_PKGS[@]}" \
   --symlink-install \
   --executor sequential
 
+UGV_PKGS=(
+  ugv_bringup
+  ugv_chat_ai
+  ugv_description
+  ugv_nav
+  ugv_slam
+  ugv_tools
+  ugv_vision
+  ugv_voice
+  ugv_web_app
+)
+
+if [ "$GAZEBO_INSTALLED" = true ]; then
+  UGV_PKGS+=(ugv_gazebo)
+else
+  echo "⏭ Skip ugv_gazebo"
+fi
+
 colcon build \
-  --packages-select \
-    ugv_bringup ugv_chat_ai ugv_description ugv_gazebo \
-    ugv_nav ugv_slam ugv_tools ugv_vision ugv_voice ugv_web_app \
+  --packages-select "${UGV_PKGS[@]}" \
   --symlink-install \
   --executor sequential
 
@@ -220,11 +482,11 @@ add_if_not_exist "export PULSE_SERVER=unix:/run/user/1000/pulse/native"
 add_if_not_exist "export XDG_RUNTIME_DIR=/run/user/1000"
 add_if_not_exist "# ---- ROS 2 & colcon argcomplete ----"
 
-# ROS 2 CLI completion
 add_if_not_exist 'if [ -f /usr/share/ros2cli/ros2cli-completion.bash ]; then source /usr/share/ros2cli/ros2cli-completion.bash; fi'
 add_if_not_exist 'if [ -f /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash ]; then source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash; fi'
 
-source ~/.bashrc
+# shellcheck disable=SC1090
+source "$BASHRC" || true
 
 echo
 echo "=============================="
@@ -232,6 +494,13 @@ echo "✔ Environment ready."
 echo "✔ UGV_MODEL=$UGV_MODEL"
 echo "✔ LDLIDAR_MODEL=$LDLIDAR_MODEL"
 echo "✔ Gazebo installed: $GAZEBO_INSTALLED"
-echo "✔ GZ_VERSION=$GZ_VERSION"
+echo "✔ GZ_VERSION=${GZ_VERSION:-none}"
+if [ "$GZ_VERSION" = "harmonic" ]; then
+  echo "✔ Harmonic: gz-harmonic + ros-humble-ros-gzharmonic + ros-humble-gz-ros2-control"
+  echo "  Launch tip: gz_sim.launch.py gz_version:=8"
+elif [ "$GZ_VERSION" = "classic" ]; then
+  echo "✔ Classic: gazebo11 + gazebo-ros-pkgs + gazebo-ros2-control"
+fi
 echo "=============================="
 
+reload_bashrc
