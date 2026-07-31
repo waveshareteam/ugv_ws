@@ -53,6 +53,7 @@ namespace explore
 {
 Explore::Explore()
   : Node("explore_node")
+  , logger_(this->get_logger())
   , tf_buffer_(this->get_clock())
   , tf_listener_(tf_buffer_)
   , costmap_client_(*this, &tf_buffer_)
@@ -87,7 +88,7 @@ Explore::Explore()
 
   search_ = frontier_exploration::FrontierSearch(costmap_client_.getCostmap(),
                                                  potential_scale_, gain_scale_,
-                                                 min_frontier_size);
+                                                 min_frontier_size, logger_);
 
   if (visualize_) {
     marker_array_publisher_ =
@@ -96,6 +97,11 @@ Explore::Explore()
                                                                      "s",
                                                                      10);
   }
+
+  // Publisher for exploration status
+  rclcpp::QoS status_qos(10);
+  status_qos.transient_local();
+  status_pub_ = this->create_publisher<explore_lite_msgs::msg::ExploreStatus>("explore/status", status_qos);
 
   // Subscription to resume or stop exploration
   resume_subscription_ = this->create_subscription<std_msgs::msg::Bool>(
@@ -127,7 +133,10 @@ Explore::Explore()
       std::chrono::milliseconds((uint16_t)(1000.0 / planner_frequency_)),
       [this]() { makePlan(); });
   // Start exploration right away
-  exploring_timer_->execute_callback();
+  auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+  status_msg.status = explore_lite_msgs::msg::ExploreStatus::EXPLORATION_STARTED;
+  status_pub_->publish(status_msg);
+  makePlan();
 }
 
 Explore::~Explore()
@@ -147,21 +156,9 @@ void Explore::resumeCallback(const std_msgs::msg::Bool::SharedPtr msg)
 void Explore::visualizeFrontiers(
     const std::vector<frontier_exploration::Frontier>& frontiers)
 {
-  std_msgs::msg::ColorRGBA blue;
-  blue.r = 0;
-  blue.g = 0;
-  blue.b = 1.0;
-  blue.a = 1.0;
-  std_msgs::msg::ColorRGBA red;
-  red.r = 1.0;
-  red.g = 0;
-  red.b = 0;
-  red.a = 1.0;
-  std_msgs::msg::ColorRGBA green;
-  green.r = 0;
-  green.g = 1.0;
-  green.b = 0;
-  green.a = 1.0;
+  const auto blue = std_msgs::msg::ColorRGBA().set__b(1.0).set__a(0.5);
+  const auto red = std_msgs::msg::ColorRGBA().set__r(1.0).set__a(0.5);
+  const auto green = std_msgs::msg::ColorRGBA().set__g(1.0).set__a(0.5);
 
   RCLCPP_DEBUG(logger_, "visualising %lu frontiers", frontiers.size());
   visualization_msgs::msg::MarkerArray markers_msg;
@@ -178,16 +175,7 @@ void Explore::visualizeFrontiers(
   m.color.g = 0;
   m.color.b = 255;
   m.color.a = 255;
-  // lives forever
-#ifdef ELOQUENT
-  m.lifetime = rclcpp::Duration(0);  // deprecated in galactic warning
-#elif DASHING
-  m.lifetime = rclcpp::Duration(0);  // deprecated in galactic warning
-#else
-  m.lifetime = rclcpp::Duration::from_seconds(0);  // foxy onwards
-#endif
-  // m.lifetime = rclcpp::Duration::from_nanoseconds(0); // suggested in
-  // galactic
+  // m.lifetime defaults to 0, means lives forever
   m.frame_locked = true;
 
   // weighted frontiers are always sorted
@@ -198,7 +186,9 @@ void Explore::visualizeFrontiers(
   for (auto& frontier : frontiers) {
     m.type = visualization_msgs::msg::Marker::POINTS;
     m.id = int(id);
-    // m.pose.position = {}; // compile warning
+    m.pose.position.x = 0.0;
+    m.pose.position.y = 0.0;
+    m.pose.position.z = 0.0;
     m.scale.x = 0.1;
     m.scale.y = 0.1;
     m.scale.z = 0.1;
@@ -212,7 +202,7 @@ void Explore::visualizeFrontiers(
     ++id;
     m.type = visualization_msgs::msg::Marker::SPHERE;
     m.id = int(id);
-    m.pose.position = frontier.initial;
+    m.pose.position = frontier.centroid;
     // scale frontier according to its cost (costier frontiers will be smaller)
     double scale = std::min(std::abs(min_cost * 0.4 / frontier.cost), 0.5);
     m.scale.x = scale;
@@ -249,6 +239,9 @@ void Explore::makePlan()
 
   if (frontiers.empty()) {
     RCLCPP_WARN(logger_, "No frontiers found, stopping.");
+    auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+    status_msg.status = explore_lite_msgs::msg::ExploreStatus::EXPLORATION_COMPLETE;
+    status_pub_->publish(status_msg);
     stop(true);
     return;
   }
@@ -266,6 +259,9 @@ void Explore::makePlan()
                        });
   if (frontier == frontiers.end()) {
     RCLCPP_WARN(logger_, "All frontiers traversed/tried out, stopping.");
+    auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+    status_msg.status = explore_lite_msgs::msg::ExploreStatus::EXPLORATION_COMPLETE;
+    status_pub_->publish(status_msg);
     stop(true);
     return;
   }
@@ -281,8 +277,10 @@ void Explore::makePlan()
     prev_distance_ = frontier->min_distance;
   }
   // black list if we've made no progress for a long time
-  if ((this->now() - last_progress_ >
-      tf2::durationFromSec(progress_timeout_)) && !resuming_) {
+  if (goal_active_ &&
+      (this->now() - last_progress_ >
+       tf2::durationFromSec(progress_timeout_)) &&
+      !resuming_) {
     frontier_blacklist_.push_back(target_position);
     RCLCPP_DEBUG(logger_, "Adding current goal to black list");
     makePlan();
@@ -295,7 +293,7 @@ void Explore::makePlan()
   }
 
   // we don't need to do anything if we still pursuing the same goal
-  if (same_goal) {
+  if (same_goal && goal_active_) {
     return;
   }
 
@@ -308,12 +306,22 @@ void Explore::makePlan()
   goal.pose.header.frame_id = costmap_client_.getGlobalFrameID();
   goal.pose.header.stamp = this->now();
 
-  auto send_goal_options =
-      rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
-  // send_goal_options.goal_response_callback =
-  // std::bind(&Explore::goal_response_callback, this, _1);
-  // send_goal_options.feedback_callback =
-  //   std::bind(&Explore::feedback_callback, this, _1, _2);
+  goal_active_ = true;
+  auto send_goal_options = rclcpp_action::Client<
+      nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+
+  send_goal_options.goal_response_callback =
+      [this](const NavigationGoalHandle::SharedPtr& goal_handle) {
+        if (!goal_handle) {
+          RCLCPP_ERROR(logger_, "Goal was REJECTED by the action server");
+          goal_active_ = false;
+        } else {
+          active_goal_id_ = goal_handle->get_goal_id();
+          RCLCPP_DEBUG(logger_, "Goal ACCEPTED, uuid: %s",
+            rclcpp_action::to_string(active_goal_id_).c_str());
+        }
+      };
+
   send_goal_options.result_callback =
       [this,
        target_position](const NavigationGoalHandle::WrappedResult& result) {
@@ -325,6 +333,10 @@ void Explore::makePlan()
 void Explore::returnToInitialPose()
 {
   RCLCPP_INFO(logger_, "Returning to initial pose.");
+  auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+  status_msg.status = explore_lite_msgs::msg::ExploreStatus::RETURNING_TO_ORIGIN;
+  status_pub_->publish(status_msg);
+
   auto goal = nav2_msgs::action::NavigateToPose::Goal();
   goal.pose.pose.position = initial_pose_.position;
   goal.pose.pose.orientation = initial_pose_.orientation;
@@ -333,9 +345,17 @@ void Explore::returnToInitialPose()
 
   auto send_goal_options =
       rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+  send_goal_options.result_callback =
+      [this](const NavigationGoalHandle::WrappedResult& result) {
+        if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+          auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+          status_msg.status = explore_lite_msgs::msg::ExploreStatus::RETURNED_TO_ORIGIN;
+          status_pub_->publish(status_msg);
+          RCLCPP_INFO(logger_, "Successfully returned to initial pose.");
+        }
+      };
   move_base_client_->async_send_goal(goal, send_goal_options);
 }
-
 bool Explore::goalOnBlacklist(const geometry_msgs::msg::Point& goal)
 {
   constexpr static size_t tolerace = 5;
@@ -354,16 +374,34 @@ bool Explore::goalOnBlacklist(const geometry_msgs::msg::Point& goal)
 }
 
 void Explore::reachedGoal(const NavigationGoalHandle::WrappedResult& result,
-                          const geometry_msgs::msg::Point& frontier_goal)
-{
+                          const geometry_msgs::msg::Point& frontier_goal) {
+  // discard stale callbacks from previously preempted goals
+  if (result.goal_id != active_goal_id_) {
+    return;
+  }
+
+  goal_active_ = false;
   switch (result.code) {
     case rclcpp_action::ResultCode::SUCCEEDED:
       RCLCPP_DEBUG(logger_, "Goal was successful");
+      last_progress_ = this->now();
+      prev_distance_ = 0;
       break;
     case rclcpp_action::ResultCode::ABORTED:
-      RCLCPP_DEBUG(logger_, "Goal was aborted");
+#ifdef NAV2_RESULT_HAS_ERROR_CODE
+      if (result.result && result.result->error_code != 0) {
+        RCLCPP_DEBUG(logger_, "Goal aborted with error_code=%d (%s) — blacklisting frontier",
+                     result.result->error_code,
+                     result.result->error_msg.c_str());
+        frontier_blacklist_.push_back(frontier_goal);
+      } else {
+        RCLCPP_DEBUG(logger_, "Goal aborted with error_code=0 — likely a preemption, not blacklisting");
+      }
+#else
+      // Humble: no error_code field, blacklist unconditionally on abort
+      RCLCPP_DEBUG(logger_, "Goal aborted — blacklisting frontier");
       frontier_blacklist_.push_back(frontier_goal);
-      RCLCPP_DEBUG(logger_, "Adding current goal to black list");
+#endif
       // If it was aborted probably because we've found another frontier goal,
       // so just return and don't make plan again
       return;
@@ -391,11 +429,23 @@ void Explore::reachedGoal(const NavigationGoalHandle::WrappedResult& result,
 void Explore::start()
 {
   RCLCPP_INFO(logger_, "Exploration started.");
+  auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+  status_msg.status = explore_lite_msgs::msg::ExploreStatus::EXPLORATION_STARTED;
+  status_pub_->publish(status_msg);
 }
 
 void Explore::stop(bool finished_exploring)
 {
   RCLCPP_INFO(logger_, "Exploration stopped.");
+
+  goal_active_ = false;
+  // Only publish paused status if manually stopped (not finished exploring)
+  if (!finished_exploring) {
+    auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+    status_msg.status = explore_lite_msgs::msg::ExploreStatus::EXPLORATION_PAUSED;
+    status_pub_->publish(status_msg);
+  }
+
   move_base_client_->async_cancel_all_goals();
   exploring_timer_->cancel();
 
@@ -408,10 +458,13 @@ void Explore::resume()
 {
   resuming_ = true;
   RCLCPP_INFO(logger_, "Exploration resuming.");
+  auto status_msg = explore_lite_msgs::msg::ExploreStatus();
+  status_msg.status = explore_lite_msgs::msg::ExploreStatus::EXPLORATION_IN_PROGRESS;
+  status_pub_->publish(status_msg);
   // Reactivate the timer
   exploring_timer_->reset();
   // Resume immediately
-  exploring_timer_->execute_callback();
+  makePlan();
 }
 
 }  // namespace explore

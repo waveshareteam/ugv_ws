@@ -146,7 +146,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time',default_value='false',description='Use simulation/Gazebo clock'),
         DeclareLaunchArgument('use_slam',default_value='false',description='Whether run a SLAM'),
         DeclareLaunchArgument('use_rviz', default_value='false',description='Whether to launch RViz2'),
-        DeclareLaunchArgument('use_localplan', default_value='teb', description='Choose which localplan to use: dwa,teb,rpp,mppi'),
+        DeclareLaunchArgument('use_localplan', default_value='dwa', description='Choose which localplan to use: dwa,teb,rpp,mppi'),
         DeclareLaunchArgument('use_localization', default_value='amcl', description='Choose which localization to use: amcl,emcl,cartographer,slam_toolbox,rtabmap'),
         DeclareLaunchArgument('use_keepout_zones', default_value='false', description='Enable Nav2 keepout zones'),
         DeclareLaunchArgument(

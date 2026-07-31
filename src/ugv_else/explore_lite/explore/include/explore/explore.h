@@ -40,19 +40,17 @@
 
 #include <explore/costmap_client.h>
 #include <explore/frontier_search.h>
-#include <geometry_msgs/msg/pose_stamped.h>
-#include <tf2_ros/transform_listener.h>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2_ros/transform_listener.hpp>
 
 #include <chrono>
 #include <cmath>
+#include <explore_lite_msgs/msg/explore_status.hpp>
 #include <geometry_msgs/msg/point.hpp>
-#include <memory>
-#include <mutex>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <std_msgs/msg/color_rgba.hpp>
 #include <string>
-#include <vector>
 #include <visualization_msgs/msg/marker_array.hpp>
 
 #include "nav2_msgs/action/navigate_to_pose.hpp"
@@ -109,7 +107,13 @@ private:
 
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr
       marker_array_publisher_;
-  rclcpp::Logger logger_ = rclcpp::get_logger("ExploreNode");
+
+  /**
+    * @brief Publisher for exploration status updates (see ExploreStatus.msg for status values)
+    */
+  rclcpp::Publisher<explore_lite_msgs::msg::ExploreStatus>::SharedPtr status_pub_;
+
+  rclcpp::Logger logger_;
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
 
@@ -140,6 +144,8 @@ private:
   bool return_to_init_;
   std::string robot_base_frame_;
   bool resuming_ = false;
+  bool goal_active_{false};
+  rclcpp_action::GoalUUID active_goal_id_;
 };
 }  // namespace explore
 

@@ -34,6 +34,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
@@ -42,7 +43,7 @@ find_package(nav_msgs REQUIRED)
 find_package(map_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(nav2_costmap_2d REQUIRED)
-
+find_package(explore_lite_msgs REQUIRED)
 
 set(DEPENDENCIES
   rclcpp
@@ -50,7 +51,6 @@ set(DEPENDENCIES
   sensor_msgs
   tf2
   tf2_ros
-  tf2_geometry_msgs
   nav2_msgs
   nav_msgs
   map_msgs
@@ -87,10 +87,23 @@ target_include_directories(explore PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+target_link_libraries(explore PUBLIC
+  ${explore_lite_msgs_TARGETS}
+  ${geometry_msgs_TARGETS}
+  ${map_msgs_TARGETS}
+  ${nav2_msgs_TARGETS}
+  ${nav_msgs_TARGETS}
+  ${std_msgs_TARGETS}
+  ${visualization_msgs_TARGETS}
+  nav2_costmap_2d::filters
+  rclcpp::rclcpp
+  tf2::tf2
+  tf2_ros::tf2_ros
+)
 
-target_link_libraries(explore ${rclcpp_LIBRARIES})
-
-ament_target_dependencies(explore ${DEPENDENCIES})
+if(nav2_msgs_VERSION VERSION_GREATER_EQUAL "1.3.0")
+  target_compile_definitions(explore PRIVATE NAV2_RESULT_HAS_ERROR_CODE)
+endif()
 
 install(TARGETS explore
   DESTINATION lib/${PROJECT_NAME})
@@ -110,12 +123,26 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(test_explore test/test_explore.cpp)
-  target_link_libraries(test_explore ${catkin_LIBRARIES})
-  ament_target_dependencies(test_explore ${DEPENDENCIES})
 
-  
+  target_link_libraries(test_explore
+    ${geometry_msgs_TARGETS}
+  )
+
 endif()
 
+ament_export_dependencies(
+  explore_lite_msgs
+  geometry_msgs
+  map_msgs
+  nav2_costmap_2d
+  nav2_msgs
+  nav_msgs
+  rclcpp
+  std_msgs
+  tf2
+  tf2_ros
+  visualization_msgs
+)
 
 ament_export_include_directories(include)
 ament_package()

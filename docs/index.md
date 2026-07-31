@@ -143,7 +143,7 @@ Optional Vizanti browser UI in **`ugv_web_app`** — does **not** start the robo
 [Nav2](https://navigation.ros.org/) — **`nav.launch.py`** includes bringup + Nav2 + **`robot_pose_publisher`**. Default: navigate on a **saved map**; optional **`use_slam:=true`** for map-while-navigating (not the same flag as Mapping’s `use_slam:=sync`).
 
 - Localization — **`amcl`** *(default)*, **`emcl`**, **`cartographer`**, **`slam_toolbox`**, **`rtabmap`** (OAK-D).
-- Local planners — **`teb`** *(default)*, **`dwa`**, **`rpp`**, **`mppi`**.
+- Local planners — **`dwa`** *(default)*, **`teb`**, **`rpp`**, **`mppi`**. Prefer **AMCL** + **DWA** first; with **Cartographer** localization keep **DWA** — see [Navigation — Recommended combinations](navigation.md#recommended-combinations).
 - Optional **`use_slam:=true`** on **`nav.launch.py`** — map while navigating (not **`use_localization:=slam_toolbox`** on a saved map — see [SLAM Toolbox: which path?](navigation.md#slam-toolbox-paths)); optional **`explore_lite`** in **T1**.
 - Optional **`use_keepout_zones`**. Stop teleop and motion demos before Nav2.
 

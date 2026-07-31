@@ -266,6 +266,7 @@ apt-get install -y \
     ros-humble-rqt-common-plugins \
     ros-humble-rtabmap-ros \
     ros-humble-v4l2-camera \
+    ros-humble-robot-localization \
     ros-humble-depthai-bridge \
     ros-humble-depthai-ros-driver \
     ros-humble-depthai-ros-msgs \
@@ -424,6 +425,7 @@ COMMON_PKGS=(
   costmap_converter
   emcl2
   explore_lite
+  explore_lite_msgs
   openslam_gmapping
   slam_gmapping
   ldlidar

@@ -10,6 +10,7 @@ PACKAGES=(
   costmap_converter
   emcl2
   explore_lite
+  explore_lite_msgs
   gz_ros2_control
   openslam_gmapping
   slam_gmapping

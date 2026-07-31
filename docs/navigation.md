@@ -49,13 +49,27 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
 
 This workspace wraps Nav2 in **`nav.launch.py`** with bringup and tuned params under **`ugv_nav/params/`**.
 
+### Recommended combinations {#recommended-combinations}
+
+Start with these **T0** examples — pick **one** row for your goal:
+
+| Goal | **T0** example |
+|------|----------------|
+| **First successful navigation** *(recommended)* | `ros2 launch ugv_nav nav.launch.py use_rviz:=true` → **AMCL** + **DWA** (defaults) |
+| **Cartographer map / localization** | `… use_localization:=cartographer` → keep **DWA** (default) |
+| **Stronger obstacle avoidance** *(enough CPU)* | `… use_localization:=amcl use_localplan:=mppi` (or `teb` / `rpp`) |
+| **Gazebo** | Add **`use_sim_time:=true`**; prefer **`use_rviz:=false`** if the VM is slow |
+
+!!! tip "Cartographer + TEB / RPP / MPPI"
+    With **`use_localization:=cartographer`**, use **`use_localplan:=dwa`** (default). TEB / RPP / MPPI use hard collision checks and often fail when Cartographer pose and the static **`map.yaml`** are slightly inconsistent. Prefer **AMCL** (or EMCL) if you want TEB / MPPI / RPP.
+
 ---
 
 ## Run navigation
 
 ### Workflow (saved map only) {#workflow-saved-map-only}
 
-Pick **one** option under [Localization](#localization) and **one** under [Local planners](#local-planners). Merge into a single **T0** launch line (`use_localization` + `use_localplan` if not TEB).
+Pick **one** option under [Localization](#localization) and **one** under [Local planners](#local-planners). Merge into a single **T0** launch line (`use_localization` + `use_localplan` if not using the [defaults](#recommended-combinations)).
 
 **Do not use this block for map-while-navigating** — see [SLAM while navigating](#slam-while-navigating) (`use_slam:=true`) instead.
 
@@ -63,7 +77,7 @@ Pick **one** option under [Localization](#localization) and **one** under [Local
 |------|--------|
 | **1** | **T0** — [Localization](#localization) + [Local planners](#local-planners) |
 | **2** | [Verify](#verify-before-navigating) **`/scan`** |
-| **3** | RViz → **2D Pose Estimate** — align laser with the **saved** map |
+| **3** | RViz → **2D Pose Estimate** — align laser with the **saved** map *(AMCL / EMCL / slam_toolbox; Cartographer: drive slowly if pose is not locked yet)* |
 | **4** | RViz → **2D Goal Pose** — send navigation goal |
 
 If the program no longer needs to run, press **`Ctrl+C`**.
@@ -115,7 +129,7 @@ Do **not** use **`use_localization:=slam_toolbox`** without a saved **`map.poseg
 |----------|---------|-------------|
 | `use_rviz` | `false` | RViz — `view_nav_2d.rviz` (or `view_nav_3d.rviz` for RTAB-Map) |
 | `use_localization` | `amcl` | See [Localization](#localization) |
-| `use_localplan` | `teb` | See [Local planners](#local-planners) |
+| `use_localplan` | `dwa` | See [Local planners](#local-planners) |
 | `use_slam` | `false` | `true` — SLAM Toolbox + Nav2 on **`nav.launch.py`** only — not `use_slam:=sync` on [Mapping](mapping.md#slam-toolbox); see [SLAM while navigating](#slam-while-navigating) |
 | `use_keepout_zones` | `false` | Enable keepout filter — see [Keepout zones](#keepout-zones) |
 | `keepout_mask` | `maps/mask.yaml` | Keepout mask yaml path |
@@ -153,19 +167,19 @@ flowchart LR
 
 ## Localization
 
-Argument: **`use_localization`**. Pick **one** option below. Default local planner is [TEB](#teb); for [DWA](#dwa), [RPP](#rpp), or [MPPI](#mppi), add **`use_localplan:=...`** on the same **T0** line — see [Local planners](#local-planners).
+Argument: **`use_localization`**. Pick **one** option below. Default local planner is [DWA](#dwa); for [TEB](#teb), [RPP](#rpp), or [MPPI](#mppi), add **`use_localplan:=...`** on the same **T0** line — see [Local planners](#local-planners) and [Recommended combinations](#recommended-combinations).
 
-| Value | Map assets |
-|-------|------------|
-| **`amcl`** | `map.yaml` |
-| **`emcl`** | `map.yaml` |
-| **`cartographer`** | `map.yaml` + **`map.pbstream`** |
-| **`slam_toolbox`** | `map.yaml` + **`map.posegraph`** |
-| **`rtabmap`** | RTAB-Map / 3D workflow |
+| Value | Map assets | Notes |
+|-------|------------|-------|
+| **`amcl`** *(default)* | `map.yaml` | Best general choice; pairs with any local planner |
+| **`emcl`** | `map.yaml` | AMCL alternative |
+| **`cartographer`** | `map.yaml` + **`map.pbstream`** | Prefer **DWA**; see tip above |
+| **`slam_toolbox`** | `map.yaml` + **`map.posegraph`** | Saved-map localization only |
+| **`rtabmap`** | RTAB-Map / 3D workflow | Needs OAK-D Lite |
 
 ### AMCL
 
-2D laser localization on **`map.yaml`**.
+2D laser localization on **`map.yaml`**. Usual start: **AMCL** + **DWA** (both defaults).
 
 **T0:**
 
@@ -185,12 +199,18 @@ ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localization:=emcl
 
 ### Cartographer
 
-Requires **`map.yaml`** and **`map.pbstream`** from [Cartographer mapping](mapping.md#cartographer).
+Requires **`map.yaml`** and **`map.pbstream`** from [Cartographer mapping](mapping.md#cartographer) — save them together with **`save_map.sh`** option **`2`**. Keep **DWA** (default).
 
 **T0:**
 
 ```bash
 ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localization:=cartographer
+```
+
+For TEB / MPPI / RPP with a Cartographer-built map, switch localization to **AMCL** (same **`map.yaml`**):
+
+```bash
+ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localization:=amcl use_localplan:=teb
 ```
 
 ### SLAM Toolbox
@@ -217,34 +237,40 @@ ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localization:=rtabmap
 
 ## Local planners
 
-Argument: **`use_localplan`**. Param files under **`ugv_nav/params/`**. Pick **one** option. Default **`teb`** needs no extra argument on the [Localization](#localization) launch. For other planners, add **`use_localplan:=dwa|rpp|mppi`** and keep your **`use_localization:=...`** on the same **T0** line.
+Argument: **`use_localplan`**. Param files under **`ugv_nav/params/`**. Pick **one** option. Default **`dwa`** needs no extra argument on the [Localization](#localization) launch. For other planners, add **`use_localplan:=teb|rpp|mppi`** and keep your **`use_localization:=...`** on the same **T0** line.
 
-| Value | Param file |
-|-------|------------|
-| **`teb`** | `params/teb.yaml` |
-| **`dwa`** | `params/dwa.yaml` |
-| **`rpp`** | `params/rpp.yaml` |
-| **`mppi`** | `params/mppi.yaml` |
-
-### TEB
-
-Timed Elastic Band — **default**. Use any [Localization](#localization) launch as-is ([AMCL](#amcl) + TEB is the usual start).
+| Value | Param file | When to use |
+|-------|------------|-------------|
+| **`dwa`** *(default)* | `params/dwa.yaml` | First run; Cartographer localization; limited CPU |
+| **`teb`** | `params/teb.yaml` | Stronger avoidance — prefer with **AMCL** / **EMCL** |
+| **`rpp`** | `params/rpp.yaml` | Path tracking — prefer with **AMCL** / **EMCL** |
+| **`mppi`** | `params/mppi.yaml` | Predictive avoidance — prefer with **AMCL** / **EMCL** |
 
 ### DWA
 
-Dynamic Window Approach.
+Dynamic Window Approach — **default**. Use any [Localization](#localization) launch as-is ([AMCL](#amcl) + DWA is the recommended start; also the safe choice for [Cartographer](#cartographer)).
 
-**T0** (AMCL example):
+**T0** (defaults — AMCL + DWA):
 
 ```bash
-ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localplan:=dwa
+ros2 launch ugv_nav nav.launch.py use_rviz:=true
+```
+
+### TEB
+
+Timed Elastic Band. Prefer **AMCL** (or EMCL), not Cartographer localization.
+
+**T0:**
+
+```bash
+ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localplan:=teb
 ```
 
 ### RPP
 
-Regulated Pure Pursuit.
+Regulated Pure Pursuit. Prefer **AMCL** (or EMCL).
 
-**T0** (AMCL example):
+**T0:**
 
 ```bash
 ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localplan:=rpp
@@ -252,9 +278,9 @@ ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localplan:=rpp
 
 ### MPPI
 
-Model Predictive Path Integral.
+Model Predictive Path Integral. Prefer **AMCL** (or EMCL).
 
-**T0** (AMCL example):
+**T0:**
 
 ```bash
 ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localplan:=mppi
@@ -264,7 +290,7 @@ ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localplan:=mppi
 
 ## SLAM while navigating {#slam-while-navigating}
 
-**边建图边导航** — run **SLAM Toolbox** and **Nav2** in one session when you do **not** have a saved **`map.yaml`** yet, or when you want to extend coverage while navigating.
+**SLAM while navigating** — run **SLAM Toolbox** and **Nav2** in one session when you do **not** have a saved **`map.yaml`** yet, or when you want to extend coverage while navigating.
 
 !!! note "`use_slam` is not the Mapping launch argument"
     **`slam_toolbox.launch.py`** uses **`use_slam:=sync`** or **`async`** (SLAM Toolbox mode) — see [Mapping — SLAM Toolbox](mapping.md#slam-toolbox).
@@ -331,11 +357,12 @@ ros2 launch ugv_nav nav.launch.py use_keepout_zones:=true use_rviz:=true
 | Symptom | Likely cause | What to try |
 |---------|--------------|-------------|
 | `Timed out waiting for transform from base_link to map` | No initial pose *(saved-map path)* | **2D Pose Estimate** in RViz — not used for [SLAM while navigating](#slam-while-navigating); wait for **`/map`** instead |
-| Robot does not move to goal | Wrong localization / map mismatch | Re-estimate pose; confirm map matches room |
-| Planner fails | Goal in obstacle or unreachable | Pick a new goal on free space |
+| Robot does not move to goal | Wrong localization / map mismatch | Re-estimate pose; confirm map matches room; laser must overlay walls (Fixed Frame **`map`**) |
+| Planner / controller fails (TEB: `trajectory is not feasible`) | Goal in obstacle, or hard local planner with Cartographer | New goal on free space; with Cartographer use **DWA**, or switch to **AMCL** + TEB/MPPI — see [Recommended combinations](#recommended-combinations) |
 | Empty `/scan` | LiDAR / bringup | See [Verify before navigating](#verify-before-navigating) |
 | Jerky or no motion | Another **`/cmd_vel`** publisher | Stop teleop / LiDAR / vision demos |
-| Cartographer / slam_toolbox nav fails | Missing sidecar file | Save **`map.pbstream`** or **`map.posegraph`** when mapping |
+| Cartographer / slam_toolbox nav fails | Missing sidecar file | Save **`map.pbstream`** or **`map.posegraph`** when mapping (same session as **`map.yaml`**) |
+| Gazebo / RViz very slow | CPU saturated | **`use_rviz:=false`**; close Gazebo GUI if possible; see [Gazebo](gazebo.md) |
 | `explore_lite` idle / no goals | **`use_slam:=false`**, Nav2 not ready, or no **`/map`** yet | **`use_slam:=true`** on **T0**; wait for **`/map`**; in Gazebo match **`use_sim_time`** on **T0** and **T1** |
 | Map not growing with **`use_slam:=true`** | Wrong workflow | Confirm **`use_slam:=true`**; drive manually or run **`explore_lite`** — see [SLAM while navigating](#slam-while-navigating) |
 
