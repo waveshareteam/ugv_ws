@@ -33,7 +33,7 @@ unhold_gz_related () {
     if [ -n "$holds" ]; then
         echo "$holds"
         # shellcheck disable=SC2086
-        apt-mark unhold $holds || true
+        sudo apt-mark unhold $holds || true
     else
         echo "✔ No held packages"
     fi
@@ -47,7 +47,7 @@ remove_installed_pkgs () {
         echo "🧹 Removing packages matching /$pattern/:"
         echo "$pkgs"
         # shellcheck disable=SC2086
-        apt-get remove -y --purge $pkgs || true
+        sudo apt-get remove -y --purge $pkgs || true
     fi
 }
 
@@ -56,7 +56,7 @@ purge_gazebo_classic () {
     remove_installed_pkgs '^gazebo'
     remove_installed_pkgs '^libgazebo'
     remove_installed_pkgs '^ros-humble-gazebo'
-    apt-get autoremove -y || true
+    sudo apt-get autoremove -y || true
 }
 
 purge_gazebo_fortress_ros_gz () {
@@ -68,7 +68,7 @@ purge_gazebo_fortress_ros_gz () {
     remove_installed_pkgs '^libignition-gui6'
     remove_installed_pkgs '^libignition-rendering6'
     remove_installed_pkgs '^libignition-sensors6'
-    apt-get remove -y --purge ignition-tools ignition-transport11-cli || true
+    sudo apt-get remove -y --purge ignition-tools ignition-transport11-cli || true
 }
 
 purge_gazebo_harmonic () {
@@ -92,7 +92,7 @@ purge_gazebo_harmonic () {
     remove_installed_pkgs '^libgz-'
     remove_installed_pkgs '^libsdformat14'
     purge_gazebo_fortress_ros_gz
-    apt-get autoremove -y || true
+    sudo apt-get autoremove -y || true
 }
 
 detect_installed_gz () {
@@ -111,7 +111,8 @@ detect_installed_gz () {
 
 block_gazebo_classic_apt () {
     echo "🔒 Blocking Classic gazebo packages in apt (Harmonic present)..."
-    cat > "$APT_PREFS" << 'EOF'
+    #cat > "$APT_PREFS" << 'EOF'
+    sudo tee "$APT_PREFS" > /dev/null << 'EOF'
 Package: gazebo
 Pin: release *
 Pin-Priority: -1
@@ -131,13 +132,13 @@ EOF
 }
 
 allow_gazebo_classic_apt () {
-    rm -f "$APT_PREFS"
+    sudo rm -f "$APT_PREFS"
 }
 
 ensure_universe () {
-    apt-get install -y software-properties-common
-    add-apt-repository -y universe || true
-    apt-get update
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository -y universe || true
+    sudo apt-get update
 }
 
 install_gazebo_classic () {
@@ -146,7 +147,7 @@ install_gazebo_classic () {
     purge_gazebo_harmonic
     allow_gazebo_classic_apt
     ensure_universe
-    apt-get install -y \
+    sudo apt-get install -y \
       gazebo \
       gazebo-common \
       gazebo-plugin-base \
@@ -164,18 +165,18 @@ install_gazebo_harmonic () {
     purge_gazebo_fortress_ros_gz
     block_gazebo_classic_apt
 
-    apt-get install -y curl lsb-release gnupg
+    sudo apt-get install -y curl lsb-release gnupg
 
-    curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
+    sudo curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
       --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
 
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] \
 https://packages.osrfoundation.org/gazebo/ubuntu-stable \
 $(lsb_release -cs) main" \
-      | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+      | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 
-    apt-get update
-    apt-get install -y \
+    sudo apt-get update
+    sudo apt-get install -y \
       gz-harmonic \
       ros-humble-ros-gzharmonic \
       ros-humble-gz-ros2-control
@@ -203,7 +204,7 @@ DETECTED_GZ="$(detect_installed_gz)"
 
 echo "[0/6] Preparing apt..."
 unhold_gz_related
-apt-get update || true
+sudo apt-get update || true
 
 # 只有「真的已装 Harmonic」才 block Classic；
 # 不要仅因 bashrc 里残留 GZ_VERSION=harmonic 就 pin 住 classic
@@ -212,13 +213,13 @@ if [ "$DETECTED_GZ" = "harmonic" ]; then
     purge_gazebo_fortress_ros_gz
 fi
 
-apt-get -f install -y || true
-apt-get autoremove -y || true
-apt-get update
+sudo apt-get -f install -y || true
+sudo apt-get autoremove -y || true
+sudo apt-get update
 
 # ---------- Basic system deps ----------
 echo "[1/6] Installing basic dependencies..."
-apt-get install -y \
+sudo apt-get install -y \
   python3-pip \
   python3-colcon-argcomplete \
   alsa-utils \
@@ -251,7 +252,7 @@ if [ "$DETECTED_GZ" = "harmonic" ]; then
     block_gazebo_classic_apt
 fi
 
-apt-get install -y \
+sudo apt-get install -y \
     ros-humble-cartographer-ros \
     ros-humble-cartographer-ros-msgs \
     ros-humble-cartographer-rviz \
@@ -311,7 +312,7 @@ if [ -n "$GZ_VERSION" ] && [ -n "$DETECTED_GZ" ] && [ "$GZ_VERSION" = "$DETECTED
             block_gazebo_classic_apt
             purge_gazebo_fortress_ros_gz
             unhold_gz_related
-            apt-get install -y ros-humble-ros-gzharmonic ros-humble-gz-ros2-control || true
+            sudo apt-get install -y ros-humble-ros-gzharmonic ros-humble-gz-ros2-control || true
         fi
     fi
 
@@ -335,7 +336,7 @@ elif [ -n "$DETECTED_GZ" ]; then
             block_gazebo_classic_apt
             purge_gazebo_fortress_ros_gz
             unhold_gz_related
-            apt-get install -y ros-humble-ros-gzharmonic ros-humble-gz-ros2-control || true
+            sudo apt-get install -y ros-humble-ros-gzharmonic ros-humble-gz-ros2-control || true
         fi
         echo "⏭ Reuse $GZ_VERSION"
     fi

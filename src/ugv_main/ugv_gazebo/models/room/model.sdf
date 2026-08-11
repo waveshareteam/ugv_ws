@@ -222,6 +222,11 @@
           <scale>0.03 0.03 0.03</scale>
         </mesh>
         </geometry>
+        <material>
+          <ambient>0.6 0.35 0.15 1</ambient>
+          <diffuse>0.85 0.55 0.25 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
       </visual>
       <collision name='table_Collision'>
         <laser_retro>0</laser_retro>
@@ -249,6 +254,11 @@
           <scale>0.03 0.03 0.03</scale>
         </mesh>
         </geometry>
+<material>
+  <ambient>0.15 0.35 0.55 1</ambient>
+  <diffuse>0.25 0.55 0.85 1</diffuse>
+  <specular>0.1 0.1 0.1 1</specular>
+</material>
       </visual>
       <collision name='table_1_Collision'>
         <laser_retro>0</laser_retro>

@@ -294,49 +294,31 @@
 </gazebo>
 
 <gazebo reference="oak_base">
-  <sensor name="oak_depth" type="depth_camera">
-    <update_rate>10</update_rate>
-    <topic>/oak/depth_image</topic>
+  <sensor name="oak" type="rgbd_camera">
     <gz_frame_id>3d_camera_link</gz_frame_id>
+    <topic>oak</topic>
+    <update_rate>20</update_rate>
+    <always_on>true</always_on>
+    <visualize>false</visualize>
     <camera>
       <horizontal_fov>1.02974</horizontal_fov>
       <image>
         <width>640</width>
         <height>480</height>
-        <format>R_FLOAT32</format>
       </image>
       <clip>
         <near>0.2</near>
-        <far>15.0</far>
+        <far>300.0</far>
       </clip>
+      <depth_camera>
+        <clip>
+          <near>0.2</near>
+          <far>8.0</far>
+        </clip>
+      </depth_camera>
     </camera>
   </sensor>
-  <sensor name="oak_rgbd" type="camera">
-    <gz_frame_id>3d_camera_link</gz_frame_id>
-    <pose>0 0 0 0 -0 0</pose>
-    <topic>/oak/image</topic>
-    <always_on>true</always_on>
-    <visualize>true</visualize>
-    <update_rate>20</update_rate>
-    <camera name="usb_cam">
-      <horizontal_fov>1.02974</horizontal_fov>
-      <image>
-        <width>640</width>
-        <height>480</height>
-        <format>R8G8B8</format>
-      </image>
-      <clip>
-        <near>0.02</near>
-        <far>300</far>
-      </clip>
-      <noise>
-        <type>gaussian</type>
-        <mean>0.0</mean>
-        <stddev>0.007</stddev>
-      </noise>
-    </camera>
-  </sensor>    
-</gazebo> 
+</gazebo>
 
 <gazebo>
   <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
