@@ -138,10 +138,10 @@ The script prints **`[1/6]` … `[6/6]`**. Overview:
 | **[2/6]** | ROS2 Humble desktop, Nav2, Cartographer, RTAB-Map, depthai, v4l2_camera, … | — |
 | *(after 2)* | **Gazebo** Classic / Harmonic / **Skip** | **0–2** |
 | **[3/6]** | Append `source /opt/ros/humble/setup.bash` to `~/.bashrc` | — |
-| **[4/6]** | **`UGV_MODEL`** (`ugv_rover` / `ugv_beast` / `rasp_rover`) | yes |
-| **[5/6]** | **`LDLIDAR_MODEL`** (`ld19` / `ld06` / `stl27l`) | yes |
+| **[4/6]** | **`UGV_MODEL`** + **`LDLIDAR_MODEL`** (select both) | yes |
 | *(prompt)* | Save model / LiDAR to **`~/.bashrc`?** | **y** / **N** |
-| **[6/6]** | **`colcon build`**, finalize `~/.bashrc` | — |
+| **[5/6]** | **`colcon build`** | — |
+| **[6/6]** | Finalize `~/.bashrc` (source install, etc.) | — |
 
 #### Gazebo installation (optional)
 

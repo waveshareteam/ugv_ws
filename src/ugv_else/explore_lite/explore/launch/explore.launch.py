@@ -17,7 +17,7 @@ def generate_launch_description():
     namespace = LaunchConfiguration("namespace")
 
     declare_use_sim_time_argument = DeclareLaunchArgument(
-        "use_sim_time", default_value="true", description="Use simulation/Gazebo clock"
+        "use_sim_time", default_value="false", description="Use simulation/Gazebo clock"
     )
     declare_namespace_argument = DeclareLaunchArgument(
         "namespace",

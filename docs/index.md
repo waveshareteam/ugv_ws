@@ -51,9 +51,9 @@ Before use, set environment variables (pre-set in factory images, or via `build_
 
 | Variable | Values | When | Role |
 |----------|--------|------|------|
-| `UGV_MODEL` | `ugv_rover`, `rasp_rover`, `ugv_beast` | **Always** — every launch | URDF, Nav2 params, Gazebo world |
+| `UGV_MODEL` | `ugv_rover`, `rasp_rover`, `ugv_beast` | **Always** — every launch | URDF / xacro, Gazebo model, wheel odom geometry |
 | `LDLIDAR_MODEL` | `ld06`, `ld19`, `stl27l` | **Always** on real robot | LiDAR driver baud rate and launch include |
-| `GZ_VERSION` | `classic`, `harmonic` | **Gazebo only** | Simulator backend for [Gazebo](gazebo.md); omit on Pi without sim |
+| `GZ_VERSION` | `classic`, `harmonic` | **Gazebo only** — set on **VM / desktop** | Classic vs Harmonic for [Gazebo](gazebo.md). Leave **unset** on the robot (**Pi / Jetson**) — do not run Gazebo there |
 
 After install or editing `~/.bashrc`, verify:
 
@@ -100,7 +100,7 @@ URDF/xacro models, RViz configs, LiDAR and camera frames, TF diagrams.
 - **`ugv_bringup`** node — UART **`/dev/ttyAMA0`** (115200); subscribes **`/cmd_vel`**, pan-tilt, LED topics.
 - **`bringup_lidar.launch.py`** — `ldlidar` (**`/dev/ttyACM0`**) + RF2O + EKF → **`/scan`**, fused **`/odom`**.
 
-SLAM, Nav2, and demo launches **include** this stack (or **`bringup_gazebo.launch.py`** in sim). Run **`bringup_lidar.launch.py`** alone for teleop-only, [Web App](web_app.md) teleop, or [Experimental](experimental.md) voice / Web AI.
+2D/3D SLAM and Nav2 launches **include** this stack on hardware (or **`bringup_gazebo.launch.py`** when you pass **`use_sim_time:=true`**). [LiDAR](lidar.md) and [Vision](vision.md) demos are **hardware only** — they always use **`bringup_lidar`**, not Gazebo. Run **`bringup_lidar.launch.py`** alone for teleop-only, [Web App](web_app.md) teleop, or [Experimental](experimental.md) voice / Web AI.
 
 ### [3. Keyboard & Gamepad Control](teleoperation.md)
 
@@ -128,7 +128,7 @@ USB camera and OAK-D Lite tracking in **`ugv_vision`**. **One camera type per se
 **`ugv_slam`** SLAM launches include bringup — **T0** SLAM + **T1** teleop while driving.
 
 - **2D** — SLAM Toolbox, Gmapping, or Cartographer; save with repo-root **`save_map.sh`** → **`ugv_nav/maps/`**.
-- **RTAB-Map** — 3D + OAK-D (Gazebo **`/oak/*`** in sim); no **`save_map.sh`**; Nav2: **`use_localization:=rtabmap`**.
+- **RTAB-Map** — 3D + OAK-D (Gazebo Harmonic: **`/oak/*`** via bridge; Classic: camera plugin); no **`save_map.sh`**; Nav2: **`use_localization:=rtabmap`**.
 - 2D backends include **`robot_pose_publisher`** → **`/robot_pose`**.
 
 ### [7. Web App](web_app.md)
@@ -147,14 +147,22 @@ Optional Vizanti browser UI in **`ugv_web_app`** — does **not** start the robo
 - Optional **`use_slam:=true`** on **`nav.launch.py`** — map while navigating (not **`use_localization:=slam_toolbox`** on a saved map — see [SLAM Toolbox: which path?](navigation.md#slam-toolbox-paths)); optional **`explore_lite`** in **T1**.
 - Optional **`use_keepout_zones`**. Stop teleop and motion demos before Nav2.
 
-### [9. Experimental](experimental.md)
+### [9. Behavior Command Control](behavior_ctrl.md)
+
+Scripted motion and map-point navigation via the **`/behavior`** action (**`behavior_ctrl`** in **`ugv_tools`**).
+
+- Needs **T0** bringup (or SLAM / Nav) for **`/odom`**; map points need **`/robot_pose`**; **`pub_nav_point`** needs Nav2.
+- Publishes **`/cmd_vel`** — stop other motion sources first.
+- Web AI ([Experimental](experimental.md#web-ai)) talks to the same action; this chapter is CLI / JSON control.
+
+### [10. Experimental](experimental.md)
 
 Optional voice, Ollama LLM, and Web AI — not required for the core Mapping → Navigation path.
 
 - **`ugv_voice`** — KWS / ASR / TTS / voice chat (no **`/cmd_vel`** by default).
 - **`ugv_chat_ai`** + **`behavior_ctrl`** — Web AI on **`:5000`** (LLM → motion). Separate from [Web App](web_app.md).
 
-### [10. Gazebo](gazebo.md)
+### [11. Gazebo](gazebo.md)
 
 **`ugv_gazebo`** — Gazebo Classic or GZ Harmonic (`GZ_VERSION`); **VM or desktop only** — do **not** run on the Pi/Jetson on the physical UGV.
 
@@ -184,9 +192,10 @@ Use separate terminals for real-robot workflows. Factory images: SSH into the co
 | Map (Cartographer) | **T0:** `ros2 launch ugv_slam cartographer.launch.py use_rviz:=true` · **T1:** `keyboard_ctrl` · **T2:** `./save_map.sh` → **`2`** |
 | Map (RTAB-Map) | **T0:** `ros2 launch ugv_slam rtabmap.launch.py use_rviz:=true` · **T1:** `keyboard_ctrl` — no **`save_map.sh`** |
 | Web App (teleop / viz) | **T0:** bringup (or SLAM / Nav) · **T1:** `ros2 launch ugv_web_app bringup.launch.py` · browser `http://<ip>:5100` |
-| Nav (AMCL + TEB) | **T0:** `ros2 launch ugv_nav nav.launch.py use_rviz:=true` (after **`save_map.sh`**) |
+| Nav (AMCL + DWA) | **T0:** `ros2 launch ugv_nav nav.launch.py use_rviz:=true` (after **`save_map.sh`**) |
 | Nav (SLAM + Nav) | **T0:** `ros2 launch ugv_nav nav.launch.py use_rviz:=true use_slam:=true` · **T1** *(optional)*: `ros2 launch explore_lite explore.launch.py` · **T2:** `./save_map.sh` → **`3`** |
 | Nav (RTAB-Map) | **T0:** `ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localization:=rtabmap` |
+| Behavior commands | **T0:** bringup (or SLAM / Nav) · **T1:** `ros2 run ugv_tools behavior_ctrl` — [Behavior Command Control](behavior_ctrl.md) |
 | Web AI | **T0:** bringup · **T1:** `ros2 run ugv_tools behavior_ctrl` · **T2:** `ros2 run ugv_chat_ai app --ros-args -p server_url:=http://<ollama-ip>:11434/api/chat` · browser `http://<ip>:5000` |
 | Simulation only *(VM / desktop)* | **T0:** `ros2 launch ugv_gazebo bringup_gazebo.launch.py use_rviz:=true`; SLAM/Nav add `use_sim_time:=true` — not on the physical robot |
 
@@ -207,5 +216,6 @@ Use separate terminals for real-robot workflows. Factory images: SSH into the co
 | 9 | [Mapping](mapping.md) | SLAM + save map |
 | 10 | [Web App](web_app.md) | Browser teleop / viz (optional) |
 | 11 | [Navigation](navigation.md) | Nav2 on saved map |
-| 12 | [Experimental](experimental.md) | Voice, Ollama, Web AI (optional) |
-| 13 | [Gazebo](gazebo.md) | Simulation without hardware |
+| 12 | [Behavior Command Control](behavior_ctrl.md) | Scripted `/behavior` motion and map points |
+| 13 | [Experimental](experimental.md) | Voice, Ollama, Web AI (optional) |
+| 14 | [Gazebo](gazebo.md) | Simulation without hardware |

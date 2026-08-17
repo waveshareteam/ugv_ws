@@ -57,7 +57,7 @@ def launch_setup(context, *args, **kwargs):
         ('rpp'): rpp_param_path,
         ('mppi'): mppi_param_path,
     }
-    param_file = config_map.get((use_localplan), teb_param_path)
+    param_file = config_map.get(use_localplan, dwa_param_path)
 
     # Get the map yaml path
     map_yaml_path = LaunchConfiguration('map', default=os.path.join(ugv_nav_dir, 'maps', 'map.yaml'))
@@ -117,7 +117,10 @@ def launch_setup(context, *args, **kwargs):
     # Include the robot_pose_publisher launch description
     robot_pose_publisher_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('robot_pose_publisher'), 'launch'),
-         '/robot_pose_publisher_launch.py'])
+         '/robot_pose_publisher_launch.py']),
+        launch_arguments={
+            'use_sim_time': use_sim_time,
+        }.items(),
     ) 
     
     if use_localization_text=='rtabmap':

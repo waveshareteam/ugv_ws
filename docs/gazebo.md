@@ -81,7 +81,7 @@ Same workflow as [Mapping](mapping.md) and [Navigation](navigation.md): **T0** l
 | Input | Command |
 |-------|---------|
 | Keyboard | `ros2 run ugv_tools keyboard_ctrl` |
-| Gamepad | `ros2 launch ugv_tools teleop_twist_joy.launch.py` — default **`angular_speed_limit:=0.5`**; increase only if turns feel too slow |
+| Gamepad | `ros2 launch ugv_tools teleop_twist_joy.launch.py` — default **`angular_speed_limit:=1.0`**; lower if turns feel too fast |
 
 ### Mapping
 
@@ -90,7 +90,7 @@ Same workflow as [Mapping](mapping.md) and [Navigation](navigation.md): **T0** l
 | SLAM Toolbox | `ros2 launch ugv_slam slam_toolbox.launch.py use_slam:=sync use_rviz:=true use_sim_time:=true` | **`save_map.sh`** option **`3`** — [Mapping — SLAM Toolbox](mapping.md#slam-toolbox) |
 | Gmapping | `ros2 launch ugv_slam gmapping.launch.py use_rviz:=true use_sim_time:=true` | **`save_map.sh`** option **`1`** — [Mapping — Gmapping](mapping.md#gmapping) |
 | Cartographer | `ros2 launch ugv_slam cartographer.launch.py use_rviz:=true use_sim_time:=true` | **`save_map.sh`** option **`2`** — [Mapping — Cartographer](mapping.md#cartographer) |
-| RTAB-Map | `ros2 launch ugv_slam rtabmap.launch.py use_rviz:=true use_sim_time:=true` | No **`save_map.sh`**; uses Gazebo **`/oak/*`** + **`/scan`** (no OAK hardware) — [Mapping — RTAB-Map](mapping.md#rtab-map). Optional: **`use_viz:=true`**, **`use_odom:=icp`** or **`rgbd`** |
+| RTAB-Map | `ros2 launch ugv_slam rtabmap.launch.py use_rviz:=true use_sim_time:=true` | No **`save_map.sh`**; uses Gazebo **`/oak/*`** + **`/scan`** (no OAK hardware) — [Mapping — RTAB-Map](mapping.md#rtab-map). **Harmonic:** via **`ros_gz_bridge`**; **Classic:** camera plugin. Optional: **`use_viz:=true`**. Sim uses Gazebo odom TF — do not set **`use_odom:=icp|rgbd`** (conflicts; those options are for hardware only). |
 
 Verify **`/scan`** (all backends) before **T1** teleop. RTAB-Map: also check **`/oak/image_raw`**.
 
@@ -129,7 +129,7 @@ Stop teleop and motion demos before Nav2.
 | Real robot + sim both moving | Mixed bringup | Stop hardware **`bringup_lidar`** — sim uses **`bringup_gazebo`** only |
 | Gazebo on Pi/Jetson / UGV | Wrong machine | Run Gazebo on VM or desktop only; on hardware use [Hardware Driver](bringup.md) |
 | RTAB-Map: no depth in sim | Camera bridge not up | Check **`/oak/image_raw`**; see [Mapping — RTAB-Map](mapping.md#rtab-map) |
-| Teleop too sluggish in sim | Default angular cap | Gamepad: increase **`angular_speed_limit`** — see [Tutorial parity](#tutorial-parity) |
+| Teleop turns too fast / slow in sim | Angular speed cap | Gamepad: change **`angular_speed_limit`** (default **`1.0`**) — see [Tutorial parity](#tutorial-parity) |
 
 ---
 

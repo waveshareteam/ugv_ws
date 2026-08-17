@@ -12,6 +12,7 @@
   <test_depend>ament_pep257</test_depend>
   <test_depend>python3-pytest</test_depend>
   <depend>rclpy</depend>
+  <depend>ament_index_python</depend>
   <depend>rcl_interfaces</depend>
   <depend>std_msgs</depend>
   <depend>ugv_msgs</depend>

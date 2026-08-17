@@ -2,7 +2,7 @@
 
 USB camera and OAK-D Lite tracking demos in **`ugv_vision`**.
 
-**`demo.launch.py`** includes **`bringup_lidar.launch.py`** on hardware plus **one** vision node — no separate bringup terminal.
+**`demo.launch.py`** includes **`bringup_lidar.launch.py`** on hardware plus **one** vision node — no separate bringup terminal. **Hardware only** — do **not** use Gazebo / **`use_sim_time:=true`** for these demos (OAK opens DepthAI; USB vision demos are not supported in sim).
 
 - **USB demos** — also starts **`camera.launch.py`** (`v4l2_camera` → **`/image_raw`**).
 - **OAK demos** — the node opens the OAK-D camera via **DepthAI** internally; no **`oak_d_lite.launch.py`** needed.
@@ -66,8 +66,8 @@ Each demo uses the same launch file; only **`exe`** changes.
 |----------|---------|-------------|
 | **`exe`** | *(required)* | Vision node executable (see [USB camera](#usb-camera), [OAK-D Lite](#oak-d-lite), [Pan-tilt tracking](#pan-tilt-tracking)) |
 | `use_rviz` | `false` | RViz with `view_slam_2d.rviz` (only when `use_bringup:=true`) |
-| `use_bringup` | `true` | Include `ugv_bringup` / `ugv_gazebo` bringup. Set **`false`** when another base driver (e.g. **`ugv_roarm_bringup`**) is already running |
-| `use_sim_time` | `false` | Gazebo clock; selects `ugv_gazebo` bringup instead of `ugv_bringup` |
+| `use_bringup` | `true` | Include **`bringup_lidar`**. Set **`false`** when another base driver (e.g. **`ugv_roarm_bringup`**) is already running |
+| `track_id` | `12` | COCO class id for **`oak_object_track`** (ignored by other `exe`s) |
 
 ### Launch nodes
 
@@ -260,8 +260,7 @@ Track a COCO object class by ID. Set **`track_id`** to the class index (e.g. `12
 **Launch:**
 
 ```bash
-ros2 launch ugv_vision demo.launch.py exe:=oak_object_track use_rviz:=true \
-  --ros-args -p track_id:=12
+ros2 launch ugv_vision demo.launch.py exe:=oak_object_track use_rviz:=true track_id:=12
 ```
 
 ---
@@ -334,7 +333,7 @@ ros2 launch ugv_vision demo.launch.py exe:=pt_gesture_ctrl use_rviz:=true
 | [Robot Description](description.md) | Camera and LiDAR mounts |
 | [Keyboard & Gamepad Control](teleoperation.md) | Manual driving (do not run with motion tracking) |
 | [Mapping](mapping.md) | SLAM; OAK via `oak_d_lite.launch.py` for RTAB-Map |
-| [Navigation](navigation.md) | Waypoints with Nav2 running — **hardware only** (not Gazebo demos) |
+| [Navigation](navigation.md) | Waypoints with Nav2 (hardware or Gazebo with **`use_sim_time:=true`**) — not with vision demos |
 | [Experimental](experimental.md) | Voice and LLM control |
 
 **Next:** [Mapping](mapping.md).

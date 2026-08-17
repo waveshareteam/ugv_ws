@@ -42,9 +42,9 @@ Auxiliary packages for LiDAR drivers, odometry, mapping, localization, planning,
 |---------|-------------|
 | `cartographer` | 2D SLAM and pure localization |
 | `costmap_converter` | Convert costmaps to polygons for local planners |
-| `emcl2_ros2` | EMCL Monte Carlo localization |
+| `emcl2` | EMCL Monte Carlo localization |
 | `explore_lite` | Autonomous frontier exploration — use with Nav2 **`use_slam:=true`**; see [Navigation — SLAM while navigating](navigation.md#slam-while-navigating) |
-| `gmapping` | 2D SLAM with GMapping |
+| `openslam_gmapping` / `slam_gmapping` | 2D SLAM with GMapping |
 | `gz_ros2_control` | `ros2_control` integration with Gazebo Harmonic |
 | `ldlidar` | LD-series LiDAR driver |
 | `rf2o_laser_odometry` | Laser odometry (RF2O) |

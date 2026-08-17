@@ -39,7 +39,7 @@ ugv_description/
 │   ├── wheels/                   # rover / beast wheel STLs
 │   └── sensors/                  # LiDAR, OAK, pan-tilt STLs
 ├── config/
-│   ├── ros2_controllers.yaml     # Gazebo ros2_control (pan-tilt)
+│   ├── ros2_controllers.yaml     # Pan-tilt ros2_control (hardware bringup + Gazebo)
 │   └── initial_positions.yaml
 ├── launch/
 │   └── display.launch.py         # URDF + RViz (use_rviz:=true)
@@ -54,7 +54,7 @@ ugv_description/
 | `urdf/gazebo/` | Simulation plugins when **`use_gazebo:=true`** ([Gazebo](gazebo.md)) |
 | `meshes/` | STL visual/collision geometry |
 | `launch/display.launch.py` | `robot_state_publisher` + optional joint GUI or `ros2_control` |
-| `config/ros2_controllers.yaml` | Pan-tilt controller config for simulation |
+| `config/ros2_controllers.yaml` | Pan-tilt controller config — used whenever **`ros2_control`** starts (see below) |
 
 Main xacro entry (expanded at launch time):
 
@@ -146,7 +146,7 @@ Change **`UGV_MODEL`** and relaunch if the chassis in RViz does not match your h
 | `joint_state_publisher_gui` | Joint slider window when **`rviz_config:=description`** (default) |
 | `robot_state_publisher` | Publishes TF from URDF + `joint_states` (always started) |
 | `rviz2` | 3D visualization when **`use_rviz:=true`** (default is `false`) |
-| `ros2_control` + spawners | Pan-tilt controllers when **`rviz_config`** is not `description` (Gazebo / sim bringup) |
+| `ros2_control` + spawners | Pan-tilt controllers when **`rviz_config`** is **not** `description`. That includes **hardware** [bringup](bringup.md) / SLAM / Nav (`rviz_config:=bringup`, `slam_*`, `nav_*`) and **Gazebo** bringup — so the real gimbal (or sim PT) can be driven via **`pt_joint_position_controller`**. Standalone **`display.launch.py`** with default **`rviz_config:=description`** uses the joint GUI instead. |
 
 Sliders publish on **`/joint_states`**. **`robot_state_publisher`** updates TF immediately; with **`use_rviz:=true`**, the RViz model follows the same angles.
 

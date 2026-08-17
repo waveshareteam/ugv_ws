@@ -5,9 +5,11 @@ import queue
 import re
 import threading
 import time
+from pathlib import Path
 
 import rclpy
 from action_msgs.msg import GoalStatus
+from ament_index_python.packages import get_package_share_directory
 from geometry_msgs.msg import Pose, PoseStamped, Twist
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import Odometry
@@ -25,8 +27,33 @@ ANGULAR_SPEED = 0.3
 YAW_TOLERANCE_RAD = math.radians(2.0)
 DISTANCE_TOLERANCE_M = 0.02
 NAV_SERVER_TIMEOUT_SEC = 5.0
-DEFAULT_MAP_POINTS_FILE = '/home/ws/ugv_ws/map_points.json'
-LEGACY_MAP_POINTS_FILE = '/home/ws/ugv_ws/map_points.txt'
+
+
+def _ugv_ws_root():
+    """ugv_ws workspace root (directory that contains src/)."""
+    candidates = []
+    try:
+        share = Path(get_package_share_directory('ugv_tools')).resolve()
+        # .../ugv_ws/install/ugv_tools/share/ugv_tools -> parents[3] == ugv_ws
+        if len(share.parents) >= 3 and share.parents[2].name == 'install':
+            candidates.append(share.parents[3])
+        candidates.extend(share.parents)
+    except Exception:
+        pass
+    candidates.extend(Path(__file__).resolve().parents)
+    candidates.append(Path.cwd())
+    for path in candidates:
+        if (path / 'src').is_dir() and (
+            (path / 'src' / 'ugv_main').is_dir()
+            or (path / 'src' / 'ugv_tools').is_dir()
+        ):
+            return path
+    return Path.cwd()
+
+
+def _map_points_paths():
+    root = _ugv_ws_root()
+    return root / 'map_points.json', root / 'map_points.txt'
 
 
 def _normalize_angle(angle):
@@ -113,7 +140,9 @@ class BehaviorController(Node):
         self._yaw = 0.0
         self._map_pose = None
 
-        self.map_points_file = DEFAULT_MAP_POINTS_FILE
+        json_path, legacy_path = _map_points_paths()
+        self.map_points_file = str(json_path)
+        self.legacy_map_points_file = str(legacy_path)
         self.points = {}
         self._points_lock = threading.Lock()
         self.load_points_from_file()
@@ -577,14 +606,14 @@ class BehaviorController(Node):
             )
             return
 
-        if os.path.exists(LEGACY_MAP_POINTS_FILE):
-            loaded = self._load_legacy_points(LEGACY_MAP_POINTS_FILE)
+        if os.path.exists(self.legacy_map_points_file):
+            loaded = self._load_legacy_points(self.legacy_map_points_file)
             with self._points_lock:
                 self.points = loaded
             if loaded:
                 self.save_points_to_file(loaded)
                 self.get_logger().info(
-                    f'Migrated {len(loaded)} points from {LEGACY_MAP_POINTS_FILE} '
+                    f'Migrated {len(loaded)} points from {self.legacy_map_points_file} '
                     f'to {self.map_points_file}'
                 )
             return

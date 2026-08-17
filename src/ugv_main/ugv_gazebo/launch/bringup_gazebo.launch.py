@@ -3,7 +3,14 @@ import xacro
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, OpaqueFunction, SetEnvironmentVariable
+from launch.actions import (
+    IncludeLaunchDescription,
+    DeclareLaunchArgument,
+    OpaqueFunction,
+    SetEnvironmentVariable,
+    RegisterEventHandler,
+)
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch.conditions import IfCondition
@@ -182,6 +189,20 @@ def launch_setup(context, *args, **kwargs):
         output="screen"
     )
 
+    # Spawn finishes → joint_state_broadcaster → PT controller
+    delay_joint_state_broadcaster_after_spawn = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=urdf_spawn_node if GZ_VERSION == 'classic' else spawn_robot_node,
+            on_exit=[joint_state_broadcaster_spawner],
+        )
+    )
+    delay_pt_controller_after_joint_state_broadcaster = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=joint_state_broadcaster_spawner,
+            on_exit=[pt_joint_position_controller_spawner],
+        )
+    )
+
     nodes = [        
         robot_state_publisher_node,
     ]
@@ -203,8 +224,8 @@ def launch_setup(context, *args, **kwargs):
         ])
 
     nodes.extend([        
-        joint_state_broadcaster_spawner,
-        pt_joint_position_controller_spawner,
+        delay_joint_state_broadcaster_after_spawn,
+        delay_pt_controller_after_joint_state_broadcaster,
         rviz2_node,
     ])
 

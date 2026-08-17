@@ -117,7 +117,7 @@ Goal `command` is a JSON **array**. Each item:
 
 Default speeds (open-loop): linear **0.2 m/s**, angular **0.3 rad/s**.
 
-Map points file: **`/home/ws/ugv_ws/map_points.json`** (legacy `map_points.txt` is migrated once on startup).
+Map points file: **`<ugv_ws>/map_points.json`** (workspace root; legacy `map_points.txt` is migrated once on startup).
 
 ---
 
@@ -192,7 +192,7 @@ ros2 action send_goal /behavior ugv_msgs/action/Behavior \
 Inspect the file:
 
 ```bash
-cat /home/ws/ugv_ws/map_points.json
+cat "$(ros2 pkg prefix ugv_tools)/../../map_points.json"
 ```
 
 ### Navigate to a saved point (needs Nav2)

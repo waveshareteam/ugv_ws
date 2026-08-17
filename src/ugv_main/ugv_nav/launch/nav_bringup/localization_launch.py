@@ -161,7 +161,7 @@ def launch_setup(context, *args, **kwargs):
                 name='emcl2',
                 package='emcl2',
                 executable='emcl2_node',
-                parameters=[params_file],
+                parameters=[emcl2_params_file, {'use_sim_time': use_sim_time}],
                 output='screen',
                 condition=LaunchConfigurationEquals('use_localization', 'emcl')),
             Node(
@@ -240,7 +240,7 @@ def launch_setup(context, *args, **kwargs):
                 name='emcl2',
                 package='emcl2',
                 executable='emcl2_node',
-                parameters=[params_file],
+                parameters=[emcl2_params_file, {'use_sim_time': use_sim_time}],
                 output='screen',
                 condition=LaunchConfigurationEquals('use_localization', 'emcl')),
             Node(

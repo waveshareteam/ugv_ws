@@ -383,7 +383,6 @@ behavior_server:
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
     rotational_acc_lim: 3.2
-    enable_stamped_cmd_vel: true  # default false in Jazzy or older
 
 robot_state_publisher:
   ros__parameters:

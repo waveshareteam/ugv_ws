@@ -51,7 +51,10 @@ def generate_launch_description():
     # Include launch description for robot_pose_publisher_launch.py
     robot_pose_publisher_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('robot_pose_publisher'), 'launch'),
-         '/robot_pose_publisher_launch.py'])     
+         '/robot_pose_publisher_launch.py']),
+        launch_arguments={
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+        }.items(),
     ) 
         
     # Return launch description

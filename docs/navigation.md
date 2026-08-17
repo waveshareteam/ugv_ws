@@ -39,7 +39,7 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
 | Pick **one** localization + **one** local planner per session | Two Nav2 launches at once |
 | Stop other **`/cmd_vel`** sources before Nav2 | Teleop, LiDAR/vision demos, Web Teleop, Web AI — see [One motion source at a time](teleoperation.md#one-motion-source-at-a-time) |
 
-**RTAB-Map** localization needs **OAK-D Lite** — do not run USB-camera vision demos together; see [Vision — USB camera](vision.md#usb-camera).
+**RTAB-Map** localization needs **OAK-D Lite** on hardware (Gazebo uses sim **`/oak/*`** — [Gazebo](gazebo.md)). Do not run USB-camera vision demos together on hardware; see [Vision — USB camera](vision.md#usb-camera).
 
 ### What is Nav2?
 
@@ -175,7 +175,7 @@ Argument: **`use_localization`**. Pick **one** option below. Default local plann
 | **`emcl`** | `map.yaml` | AMCL alternative |
 | **`cartographer`** | `map.yaml` + **`map.pbstream`** | Prefer **DWA**; see tip above |
 | **`slam_toolbox`** | `map.yaml` + **`map.posegraph`** | Saved-map localization only |
-| **`rtabmap`** | RTAB-Map / 3D workflow | Needs OAK-D Lite |
+| **`rtabmap`** | RTAB-Map / 3D workflow | OAK-D on hardware; Gazebo **`/oak/*`** in sim |
 
 ### AMCL
 
@@ -225,7 +225,7 @@ ros2 launch ugv_nav nav.launch.py use_rviz:=true use_localization:=slam_toolbox
 
 ### RTAB-Map
 
-3D localization — **OAK-D Lite** required. Uses **`view_nav_3d.rviz`**. Map from [RTAB-Map mapping](mapping.md#rtab-map). Do not run USB-camera vision demos at the same time.
+3D localization — **OAK-D Lite** on hardware; Gazebo uses bridged/plugin **`/oak/*`** ([Gazebo](gazebo.md)). Uses **`view_nav_3d.rviz`**. Map from [RTAB-Map mapping](mapping.md#rtab-map). On hardware, do not run USB-camera vision demos at the same time.
 
 **T0:**
 

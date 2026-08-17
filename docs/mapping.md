@@ -57,7 +57,7 @@ Pick **one** row — launch command under [2D SLAM](#2d-slam) or [RTAB-Map](#rta
 | SLAM Toolbox | `slam_toolbox.launch.py` | **`3`** | `use_slam:=sync` or `async` |
 | Gmapping | `gmapping.launch.py` | **`1`** | 2D grid map |
 | Cartographer | `cartographer.launch.py` | **`2`** | also saves **`map.pbstream`** |
-| RTAB-Map | `rtabmap.launch.py` | — | 3D; OAK-D required; Nav2: `use_localization:=rtabmap` |
+| RTAB-Map | `rtabmap.launch.py` | — | 3D; OAK-D on hardware (Gazebo uses sim `/oak/*`); Nav2: `use_localization:=rtabmap` |
 
 Source launches: `src/ugv_main/ugv_slam/launch/`.
 
@@ -124,7 +124,7 @@ RTAB-Map uses its own database / export flow — not **`save_map.sh`**.
 | `use_rviz` | `false` | all | RViz — `view_slam_2d.rviz` (2D) or `view_slam_3d.rviz` (RTAB-Map) |
 | `use_slam` | `sync` | SLAM Toolbox only | `sync` or `async` — **not** **`nav.launch.py`** `use_slam:=true` ([Navigation — SLAM while navigating](navigation.md#slam-while-navigating)) |
 | `use_viz` | `false` | RTAB-Map | Launch `rtabmap_viz` |
-| `use_odom` | `none` | RTAB-Map | Optional: `none`, `icp`, `rgbd` |
+| `use_odom` | `none` | RTAB-Map | Hardware: `none` uses bringup **EKF** `/odom`; `icp` / `rgbd` replace EKF with visual/ICP odom. Sim: leave `none` (Gazebo odom). |
 | `use_sim_time` | `false` | all | `true` — Gazebo; see [Gazebo](gazebo.md) |
 
 ### Launch nodes
@@ -202,7 +202,7 @@ Save: **`save_map.sh`** option **`2`**.
 
 ## RTAB-Map {#rtab-map}
 
-3D SLAM via **`rtabmap.launch.py`**. **OAK-D Lite** on hardware; in Gazebo uses bridged **`/oak/*`** topics — see [Gazebo](gazebo.md). No **`save_map.sh`**.
+3D SLAM via **`rtabmap.launch.py`**. **OAK-D Lite** on hardware; in Gazebo (**Harmonic**) uses **`ros_gz_bridge`** topics **`/oak/*`** — see [Gazebo](gazebo.md). Classic Gazebo publishes OAK via the camera plugin (not the bridge). No **`save_map.sh`**.
 
 **T0** (OAK-D Lite connected):
 
@@ -210,7 +210,9 @@ Save: **`save_map.sh`** option **`2`**.
 ros2 launch ugv_slam rtabmap.launch.py use_rviz:=true
 ```
 
-Optional RTAB-Map GUI: **`use_viz:=true`**. Optional odometry: **`use_odom:=icp`** or **`rgbd`**.
+On **hardware**, bringup starts **EKF** by default so **`/odom`** and `odom→base_footprint` are available (`use_odom:=none`). Optional visual/ICP odometry: **`use_odom:=icp`** or **`rgbd`** (then EKF is turned off so the two do not fight over TF). Sim uses Gazebo odom — leave **`use_odom:=none`**.
+
+Optional RTAB-Map GUI: **`use_viz:=true`**.
 
 !!! note "RViz vs RTAB-Map Viz"
     Do **not** run **`rtabmap_viz`** (`use_viz:=true`) together with RViz (`use_rviz:=true`) — both 3D views are heavy and often cause stutter on Pi/Jetson. While **driving and building the map**, use **`use_rviz:=true`** only (2D laser + map). 

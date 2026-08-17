@@ -2,7 +2,7 @@
 
 Interactive demos in **`ugv_slam`** that use `/scan` to drive the robot — follow, guard, and obstacle avoidance. These are **not** SLAM or Nav2; they publish `/cmd_vel` directly from laser data.
 
-**`demo.launch.py`** starts the full base stack (**`bringup_lidar.launch.py`** on hardware) plus **one** demo node — no separate bringup terminal.
+**`demo.launch.py`** starts the full base stack (**`bringup_lidar.launch.py`**) plus **one** demo node — no separate bringup terminal. **Hardware only** — do **not** use Gazebo for these demos.
 
 For 2D mapping, see [Mapping](mapping.md). For camera tracking, see [Vision](vision.md).
 

@@ -37,6 +37,7 @@ Tutorials live in [`docs/`](docs/). On GitHub, open any `.md` file to read the r
 | Mapping | [docs/mapping.md](docs/mapping.md) |
 | Web App | [docs/web_app.md](docs/web_app.md) |
 | Navigation | [docs/navigation.md](docs/navigation.md) |
+| Behavior Command Control | [docs/behavior_ctrl.md](docs/behavior_ctrl.md) |
 | Experimental | [docs/experimental.md](docs/experimental.md) |
 | Gazebo | [docs/gazebo.md](docs/gazebo.md) |
 
