@@ -158,8 +158,8 @@ Gazebo is heavy — skip unless you need [Gazebo](gazebo.md).
 | Model | Chassis | Notes |
 |-------|---------|-------|
 | **`ugv_rover`** | 6-wheel 4WD | UGV Rover series |
-| **`rasp_rover`** | 4WD | RaspRover series |
 | **`ugv_beast`** | Tracked | UGV Beast series |
+| **`rasp_rover`** | 4WD | RaspRover series |
 
 #### LiDAR model (`LDLIDAR_MODEL`)
 

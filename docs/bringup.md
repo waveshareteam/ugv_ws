@@ -52,7 +52,7 @@ If devices enumerate differently, edit `serial_port` in `bringup_lidar.launch.py
 
 ---
 
-## Data flow
+## Data transfer process
 
 ```mermaid
 flowchart LR

@@ -39,7 +39,7 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
 | Pick **one** localization + **one** local planner per session | Two Nav2 launches at once |
 | Stop other **`/cmd_vel`** sources before Nav2 | Teleop, LiDAR/vision demos, Web Teleop, Web AI — see [One motion source at a time](teleoperation.md#one-motion-source-at-a-time) |
 
-**RTAB-Map** localization needs **OAK-D Lite** on hardware (Gazebo uses sim **`/oak/*`** — [Gazebo](gazebo.md)). Do not run USB-camera vision demos together on hardware; see [Vision — USB camera](vision.md#usb-camera).
+**RTAB-Map** localization needs **OAK-D Lite** on hardware (Gazebo uses sim **`/oak/*`** — [Gazebo](gazebo.md)). **`rasp_rover`** has no OAK in the default URDF — use AMCL / 2D localization instead. Do not run USB-camera vision demos together on hardware; see [Vision — USB camera](vision.md#usb-camera).
 
 ### What is Nav2?
 
@@ -150,7 +150,7 @@ Do **not** use **`use_localization:=slam_toolbox`** without a saved **`map.poseg
 
 Details: [Hardware Driver](bringup.md).
 
-**Data path:**
+**Data transfer process**
 
 ```mermaid
 flowchart LR

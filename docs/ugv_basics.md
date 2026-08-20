@@ -19,6 +19,8 @@ WaveShare UGV robots use a **host + slave** architecture:
 
 ROS2 nodes on the host talk to the ESP32 over **UART** (`/dev/ttyAMA0` by default). The LiDAR connects separately over USB (`/dev/ttyACM0`).
 
+**Data transfer process**
+
 ```mermaid
 flowchart LR
   RViz[RViz / Nav2 / teleop]
@@ -27,10 +29,14 @@ flowchart LR
   ESP[ESP32 motor board]
   LIDAR[ldlidar]
   SCAN["/scan"]
+  EKF[robot_localization]
+  ODOM["/odom"]
 
   RViz --> CMD --> BR --> ESP
   LIDAR --> SCAN
-  BR --> ODOM["/odom"]
+  BR --> EKF
+  SCAN --> EKF
+  EKF --> ODOM
 ```
 
 ---
@@ -61,8 +67,8 @@ Model suffixes on the shop:
 | `UGV_MODEL` | Chassis | Max speed (typical) | Example product |
 |-------------|---------|---------------------|-----------------|
 | `ugv_rover` | 6-wheel 4WD | ~1.3 m/s | [UGV Rover PT ROS2 Kit](https://www.waveshare.com/ugv-rover-pt-jetson-orin-ros2-kit.htm) |
-| `rasp_rover` | 4WD | ~0.65 m/s | [RaspRover PT AI Kit](https://www.waveshare.com/rasprover.htm); add LiDAR for ROS2 |
 | `ugv_beast` | Tracked | ~0.35 m/s | [UGV Beast PT ROS2 Kit](https://www.waveshare.com/ugv-beast-pt-jetson-orin-ros2-kit.htm) |
+| `rasp_rover` | 4WD | ~0.65 m/s | [RaspRover PT AI Kit](https://www.waveshare.com/rasprover.htm); add LiDAR for ROS2 |
 
 `LDLIDAR_MODEL` (`ld06`, `ld19`, `stl27l`) must match the LiDAR on your kit.
 

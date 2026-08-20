@@ -1,2 +1,5 @@
 mkdocs>=1.6,<2
 pymdown-extensions>=10.0
+# pymdownx 11 + superfences need Pygments 2.12+; older versions
+# fail fence highlighting and show a stray "bash" label above code blocks.
+Pygments>=2.12

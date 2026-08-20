@@ -55,7 +55,7 @@ Each demo below uses the same launch file; only **`exe`** changes.
 | Argument | Default | Description |
 |----------|---------|-------------|
 | **`exe`** | *(required)* | Demo node: `lidar_follow`, `lidar_guard`, or `lidar_obstacle_avoidance` |
-| `use_rviz` | `false` | RViz with `view_slam_2d.rviz` |
+| `use_rviz` | `false` | RViz with `view_bringup.rviz` |
 
 ### Launch nodes
 
@@ -70,7 +70,7 @@ Each demo below uses the same launch file; only **`exe`** changes.
 | `lidar_follow` / `lidar_guard` / `lidar_obstacle_avoidance` | **`exe`** demo — **`/scan`** → **`/cmd_vel`** (avoidance also uses **`/odom`**) |
 | `rviz2` | RViz (`use_rviz:=true`) |
 
-**Data path:**
+**Data transfer process**
 
 ```mermaid
 flowchart LR

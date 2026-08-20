@@ -100,6 +100,7 @@ def launch_setup(context, *args, **kwargs):
         name='rviz2',
         output='screen',
         arguments=['-d', rviz_config_file],
+        parameters=[{'use_sim_time': True}],
         condition=IfCondition(LaunchConfiguration('use_rviz'))
     )
 

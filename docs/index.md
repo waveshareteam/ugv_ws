@@ -10,8 +10,8 @@ WaveShare shop names and this repo use different labels for the same hardware:
 | Your hardware (WaveShare) | `UGV_MODEL` | Notes |
 |-----------------------------|-------------|-------|
 | UGV Rover (6-wheel 4WD) | `ugv_rover` | e.g. [UGV Rover PT ROS2 Kit](https://www.waveshare.com/ugv-rover-pt-jetson-orin-ros2-kit.htm) |
-| RaspRover (4WD) | `rasp_rover` | e.g. [RaspRover PT AI Kit](https://www.waveshare.com/rasprover.htm); add LiDAR for ROS2 |
 | UGV Beast (tracked) | `ugv_beast` | e.g. [UGV Beast PT ROS2 Kit](https://www.waveshare.com/ugv-beast-pt-jetson-orin-ros2-kit.htm) |
+| RaspRover (4WD) | `rasp_rover` | e.g. [RaspRover PT AI Kit](https://www.waveshare.com/rasprover.htm); add LiDAR for ROS2 |
 
 | Shop kit type | What it includes |
 |---------------|------------------|
@@ -28,13 +28,13 @@ WaveShare shop names and this repo use different labels for the same hardware:
 </figure>
 
 <figure>
-<img class="img-zoom" alt="RaspRover 4WD" src="https://github.com/user-attachments/assets/2882f71e-82a6-4dff-ba2f-a66897e83355" />
-<figcaption>RaspRover<br/><code>rasp_rover</code></figcaption>
+<img class="img-zoom" alt="UGV Beast tracked" src="https://github.com/user-attachments/assets/6ad04d98-2e9b-43f2-96bc-4fd758d7fbaa" />
+<figcaption>UGV Beast<br/><code>ugv_beast</code></figcaption>
 </figure>
 
 <figure>
-<img class="img-zoom" alt="UGV Beast tracked" src="https://github.com/user-attachments/assets/6ad04d98-2e9b-43f2-96bc-4fd758d7fbaa" />
-<figcaption>UGV Beast<br/><code>ugv_beast</code></figcaption>
+<img class="img-zoom" alt="RaspRover 4WD" src="https://github.com/user-attachments/assets/2882f71e-82a6-4dff-ba2f-a66897e83355" />
+<figcaption>RaspRover<br/><code>rasp_rover</code></figcaption>
 </figure>
 
 </div>
@@ -51,7 +51,7 @@ Before use, set environment variables (pre-set in factory images, or via `build_
 
 | Variable | Values | When | Role |
 |----------|--------|------|------|
-| `UGV_MODEL` | `ugv_rover`, `rasp_rover`, `ugv_beast` | **Always** — every launch | URDF / xacro, Gazebo model, wheel odom geometry |
+| `UGV_MODEL` | `ugv_rover`, `ugv_beast`, `rasp_rover` | **Always** — every launch | URDF / xacro, Gazebo model, wheel odom geometry |
 | `LDLIDAR_MODEL` | `ld06`, `ld19`, `stl27l` | **Always** on real robot | LiDAR driver baud rate and launch include |
 | `GZ_VERSION` | `classic`, `harmonic` | **Gazebo only** — set on **VM / desktop** | Classic vs Harmonic for [Gazebo](gazebo.md). Leave **unset** on the robot (**Pi / Jetson**) — do not run Gazebo there |
 
@@ -90,7 +90,7 @@ Most real-robot workflows use **T0** for the robot stack (bringup, SLAM, Nav2, o
 
 URDF/xacro models, RViz configs, LiDAR and camera frames, TF diagrams.
 
-- **`ugv_description`** — xacro for `ugv_rover`, `rasp_rover`, `ugv_beast`.
+- **`ugv_description`** — xacro for `ugv_rover`, `ugv_beast`, `rasp_rover`.
 - **`display.launch.py`** — `robot_state_publisher` + RViz; visualize the model without powering motors.
 
 ### [2. Hardware Driver](bringup.md)

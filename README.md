@@ -8,12 +8,11 @@
 
 ## Documentation
 
-Tutorials live in [`docs/`](docs/). On GitHub, open any `.md` file to read the rendered preview — no Wiki required.
+Tutorials live in [`docs/`](docs/). On GitHub, open any `.md` file to read the rendered preview — no Wiki or separate site required.
 
 | | |
 |---|---|
 | **Browse on GitHub** | [docs/](https://github.com/waveshareteam/ugv_ws/tree/ros2-humble-develop-251125/docs) — start with [index.md](https://github.com/waveshareteam/ugv_ws/blob/ros2-humble-develop-251125/docs/index.md) |
-| **Online site** | [https://waveshareteam.github.io/ugv_ws](https://waveshareteam.github.io/ugv_ws) |
 | **Optional local site** | `pip install -r docs/requirements.txt` then `mkdocs serve` (sidebar nav + copy buttons; same source files) |
 
 ### Getting Started
@@ -64,8 +63,8 @@ sudo bash build_first.sh
 | Hardware | `UGV_MODEL` | `LDLIDAR_MODEL` |
 |----------|-------------|-----------------|
 | UGV Rover (6-wheel 4WD) | `ugv_rover` | `ld06` / `ld19` / `stl27l` |
-| RaspRover (4WD) | `rasp_rover` | per your kit |
 | UGV Beast (tracked) | `ugv_beast` | per your kit |
+| RaspRover (4WD) | `rasp_rover` | per your kit |
 
 See [UGV Basics](docs/ugv_basics.md) for AI Kit vs ROS2 Kit naming.
 

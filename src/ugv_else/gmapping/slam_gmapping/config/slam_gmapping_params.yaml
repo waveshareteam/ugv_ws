@@ -1,7 +1,7 @@
 slam_gmapping:
   ros__parameters:
     throttle_scans: 1
-    base_frame: "base_link"
+    base_frame: "base_footprint"
     map_frame: "map"
     odom_frame: "odom"
     transform_publish_period: 0.05

@@ -34,7 +34,7 @@ ros2 launch ugv_bringup bringup_lidar.launch.py use_rviz:=true
   ros2 topic pub /cmd_vel geometry_msgs/msg/Twist --once
   ```
 
-  Or send a behavior **`stop`** goal (see [Commands](#commands)).
+  Or send a behavior **`stop`** goal (see [Command JSON](#command-json)).
 
 ---
 
@@ -60,7 +60,7 @@ ros2 action info /behavior
 ros2 interface show ugv_msgs/action/Behavior
 ```
 
-### Data path
+### Data transfer process
 
 ```mermaid
 flowchart LR

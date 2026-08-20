@@ -48,7 +48,7 @@ def generate_launch_description():
              '/bringup_lidar.launch.py']),
         launch_arguments={
             'use_rviz': LaunchConfiguration('use_rviz'),
-            'rviz_config': 'slam_2d',
+            'rviz_config': 'bringup',
         }.items(),
         condition=IfCondition(LaunchConfiguration('use_bringup')),
     )

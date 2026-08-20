@@ -144,7 +144,7 @@ RTAB-Map uses its own database / export flow — not **`save_map.sh`**.
 
 Details: [Hardware Driver](bringup.md).
 
-**Data path:**
+**Data transfer process**
 
 ```mermaid
 flowchart LR

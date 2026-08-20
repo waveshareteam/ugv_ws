@@ -8,6 +8,12 @@ setup(
     name=package_name,
     version='0.0.0',
     packages=find_packages(exclude=['test']),
+    package_data={
+        'ugv_vision': [
+            'models/oak/*.blob',
+            'models/ultraface-ncnn/*',
+        ],
+    },
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),

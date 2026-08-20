@@ -19,8 +19,8 @@ ugv_description/
 ├── urdf/
 │   ├── bases/
 │   │   ├── ugv_rover.xacro       # 6-wheel 4WD (UGV_MODEL=ugv_rover)
-│   │   ├── rasp_rover.xacro      # 4WD (UGV_MODEL=rasp_rover)
 │   │   ├── ugv_beast.xacro       # tracked (UGV_MODEL=ugv_beast)
+│   │   ├── rasp_rover.xacro      # 4WD (UGV_MODEL=rasp_rover)
 │   │   └── empty.urdf            # optional extras hook
 │   ├── wheels/
 │   │   ├── rover_wheel.xacro     # ugv_rover / rasp_rover wheels
@@ -31,8 +31,8 @@ ugv_description/
 │   │   └── pt.xacro              # pan-tilt gimbal joints
 │   ├── gazebo/                   # Gazebo plugins & transmissions (sim)
 │   │   ├── ugv_rover.gazebo
-│   │   ├── rasp_rover.gazebo
-│   │   └── ugv_beast.gazebo
+│   │   ├── ugv_beast.gazebo
+│   │   └── rasp_rover.gazebo
 │   └── materials.xacro
 ├── meshes/
 │   ├── bases/                    # chassis STL per model
@@ -76,14 +76,14 @@ echo $UGV_MODEL $LDLIDAR_MODEL
 
 | Variable | Values | Effect |
 |----------|--------|--------|
-| **`UGV_MODEL`** | `ugv_rover`, `rasp_rover`, `ugv_beast` | Loads `urdf/bases/<model>.xacro` — chassis mesh, wheels, sensor mounts |
+| **`UGV_MODEL`** | `ugv_rover`, `ugv_beast`, `rasp_rover` | Loads `urdf/bases/<model>.xacro` — chassis mesh, wheels, sensor mounts |
 | **`LDLIDAR_MODEL`** | `ld06`, `ld19`, `stl27l` | **LiDAR driver** baud rate in `ldlidar` — does **not** change URDF; frame is always **`base_lidar_link`** |
 
 | Hardware (WaveShare) | `UGV_MODEL` | Typical `LDLIDAR_MODEL` |
 |----------------------|-------------|------------------------|
 | [UGV Rover PT ROS2 Kit](https://www.waveshare.com/ugv-rover-pt-jetson-orin-ros2-kit.htm) — 6-wheel 4WD | `ugv_rover` | `ld06` / `ld19` / `stl27l` (match your LiDAR) |
-| [RaspRover PT AI Kit](https://www.waveshare.com/rasprover.htm) — 4WD | `rasp_rover` | Set when LiDAR is added for ROS2 workflows |
 | [UGV Beast PT ROS2 Kit](https://www.waveshare.com/ugv-beast-pt-jetson-orin-ros2-kit.htm) — tracked | `ugv_beast` | `ld06` / `ld19` / `stl27l` (match your LiDAR) |
+| [RaspRover PT AI Kit](https://www.waveshare.com/rasprover.htm) — 4WD | `rasp_rover` | Set when LiDAR is added for ROS2 workflows |
 
 See also [index — Product names vs environment variables](index.md#product-names-vs-environment-variables).
 
@@ -159,10 +159,18 @@ If [Hardware Driver](bringup.md) is running, **`ugv_bringup`** also listens to *
 
 **Data transfer process**
 
-```
-Joint State Publisher GUI  →  /joint_states  →  robot_state_publisher  →  TF  →  RViz model
-                              ↓
-                         ugv_bringup (if running)  →  pan-tilt on hardware
+```mermaid
+flowchart LR
+  GUI[Joint State Publisher GUI]
+  JS["/joint_states"]
+  RSP[robot_state_publisher]
+  TF[TF]
+  RVIZ[RViz model]
+  BR[ugv_bringup if running]
+  PT[pan-tilt hardware]
+
+  GUI --> JS --> RSP --> TF --> RVIZ
+  JS --> BR --> PT
 ```
 
 1. Drag a **slider** → the node publishes joint angles on **`/joint_states`** (`sensor_msgs/JointState`).
@@ -184,8 +192,8 @@ Main entry files:
 
 ```text
 ugv_description/urdf/bases/ugv_rover.xacro    # if UGV_MODEL=ugv_rover
-ugv_description/urdf/bases/rasp_rover.xacro  # if UGV_MODEL=rasp_rover
 ugv_description/urdf/bases/ugv_beast.xacro    # if UGV_MODEL=ugv_beast
+ugv_description/urdf/bases/rasp_rover.xacro  # if UGV_MODEL=rasp_rover
 ```
 
 Each base xacro **includes** wheel, LiDAR, and (when enabled) pan-tilt and OAK-D macros from `urdf/wheels/` and `urdf/sensors/`.  
@@ -221,7 +229,7 @@ Each link can define:
 
 #### UGV links
 
-Shared across **`ugv_rover`**, **`rasp_rover`**, and **`ugv_beast`** (ROS2 Kit):
+Shared across **`ugv_rover`**, **`ugv_beast`**, and **`rasp_rover`** (ROS2 Kit):
 
 | Link | Role |
 |------|------|

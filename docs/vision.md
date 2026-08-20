@@ -65,7 +65,7 @@ Each demo uses the same launch file; only **`exe`** changes.
 | Argument | Default | Description |
 |----------|---------|-------------|
 | **`exe`** | *(required)* | Vision node executable (see [USB camera](#usb-camera), [OAK-D Lite](#oak-d-lite), [Pan-tilt tracking](#pan-tilt-tracking)) |
-| `use_rviz` | `false` | RViz with `view_slam_2d.rviz` (only when `use_bringup:=true`) |
+| `use_rviz` | `false` | RViz with `view_bringup.rviz` (only when `use_bringup:=true`) |
 | `use_bringup` | `true` | Include **`bringup_lidar`**. Set **`false`** when another base driver (e.g. **`ugv_roarm_bringup`**) is already running |
 | `track_id` | `12` | COCO class id for **`oak_object_track`** (ignored by other `exe`s) |
 
@@ -83,7 +83,9 @@ Each demo uses the same launch file; only **`exe`** changes.
 | *`exe` node* | Vision demo — see sections below |
 | `rviz2` | RViz (`use_rviz:=true`) |
 
-**Data path (motion tracking):**
+**Data transfer process**
+
+Chassis-driving demos publish **`/cmd_vel`**. Pan-tilt-only exes (`pt_*`) command the gimbal instead — they do not drive the base.
 
 ```mermaid
 flowchart LR
@@ -91,10 +93,13 @@ flowchart LR
   IMG["/image_raw or DepthAI"]
   DEMO["vision exe"]
   CV["/cmd_vel"]
+  PT["pt_joint_position_controller"]
   BR[ugv_bringup]
   ESP[ESP32]
 
-  CAM --> IMG --> DEMO --> CV --> BR --> ESP
+  CAM --> IMG --> DEMO
+  DEMO --> CV --> BR --> ESP
+  DEMO -.-> PT
 ```
 
 Base stack details: [Hardware Driver](bringup.md). Sensor mounts: [Robot Description](description.md).
