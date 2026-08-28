@@ -78,7 +78,7 @@ class VoiceCtrl(Node):
                 this_path,
                 "models",
                 "asr",
-                "sherpa-ncnn-streaming-zipformer-zh-14M-2023-02-23"
+                "sherpa-ncnn-streaming-zipformer-bilingual-zh-en-2023-02-13"
             )
 
         self.asr = asr_sherpa_ncnn(asr_model_dir)

@@ -114,10 +114,13 @@ Use this path when developing on a clean Ubuntu 22.04 machine without the factor
 
 ```bash
 sudo apt update
-sudo apt install -y git
+sudo apt install -y git git-lfs
+git lfs install
 git clone -b ros2-humble-develop-251125 https://github.com/waveshareteam/ugv_ws.git
 cd ugv_ws
 ```
+
+Voice ASR/TTS weights are stored with **Git LFS**. Install `git-lfs` before cloning, or run `git lfs pull` after clone (`build_first.sh` also does this).
 
 Tutorials assume **`ugv_ws`** at **`/home/ws/ugv_ws`**. If you cloned elsewhere, adjust paths in `~/.bashrc` later.
 
@@ -140,6 +143,7 @@ The script prints **`[1/6]` … `[6/6]`**. Overview:
 | **[3/6]** | Append `source /opt/ros/humble/setup.bash` to `~/.bashrc` | — |
 | **[4/6]** | **`UGV_MODEL`** + **`LDLIDAR_MODEL`** (select both) | yes |
 | *(prompt)* | Save model / LiDAR to **`~/.bashrc`?** | **y** / **N** |
+| *(before 5)* | **`git lfs pull`** (ASR / TTS / vision weights) | — |
 | **[5/6]** | **`colcon build`** | — |
 | **[6/6]** | Finalize `~/.bashrc` (source install, etc.) | — |
 

@@ -54,11 +54,103 @@ Source: `src/ugv_main/ugv_voice/`, `ugv_chat_ai/`, `ugv_tools/behavior_ctrl.py`.
 
 ## Voice
 
-Argument: **`language`** — **`zh`** or **`en`**.
+Package **`ugv_voice`**. Neither node publishes **`/cmd_vel`**.
+
+| Node | Default `language` | What it does |
+|------|--------------------|--------------|
+| **`voice_ctrl`** | **`en`** | Manual KWS / ASR / TTS over topics. Wake word and recognition only **print to the terminal** — they do not start a dialog or move the robot. |
+| **`voice_chat`** | **`zh`** | KWS starts on launch. After a wake word, the node replies, listens (~10 s), sends the transcript to Ollama, and speaks the answer. |
+
+Parameter: **`language`** — **`zh`** or **`en`**. That chooses the wake-word list and the ASR model. Chinese TTS uses the VITS model; English TTS uses **pyttsx3** / eSpeak.
+
+Capture device is hardcoded to **`plughw:2,0`** (`arecord`). Check with **`arecord -l`**. Do not run **`voice_ctrl`** and **`voice_chat`** at the same time — both open the mic.
+
+ASR/TTS weights are Git LFS files. If `language:=zh` fails on a missing **`encoder_jit_trace-pnnx.ncnn.bin`**, install **git-lfs** and run **`git lfs pull`** ([Installation](installation.md#build-from-source)).
+
+### Wake words
+
+Say **one** of the phrases below (same list for **`voice_ctrl`** and **`voice_chat`**). Match **`language`**.
+
+#### Chinese (`language:=zh`)
+
+| Say | Notes |
+|-----|--------|
+| **小爱同学** | Default example |
+| **小薇小薇** | Repeat the name |
+| **小艺小艺** | Repeat the name |
+| **张伟张伟** | Repeat the name |
+
+#### English (`language:=en`)
+
+| Say |
+|-----|
+| **hello world** |
+| **hi google** |
+| **hey siri** |
+| **alexa** |
+| **love and peace** |
+| **play music** |
+| **go home** |
+| **happy new year** |
+| **merry christmas** |
+
+Readable copies: **`keywords_raw.txt`** next to each model. The node loads only the encoded **`keywords.txt`**. Editing **`keywords_raw.txt`** by itself does nothing.
+
+### Change the wake-word list
+
+`sherpa-onnx-cli` is installed with the **`sherpa_onnx`** pip package (`build_first.sh` / `requirements.txt`). With **`--symlink-install`**, edit the files under **`src/`** and **restart the node** — no rebuild.
+
+**1. Edit the raw list** (one phrase per line). Chinese: no spaces in the phrase; you can append **`@显示名`**. Optional **`:score`** (boost) and **`#threshold`** (trigger):
+
+```text
+小爱同学
+你好小车 @你好小车
+小薇小薇 :2.0 #0.25 @小薇小薇
+```
+
+English (uppercase is typical for this BPE model):
+
+```text
+HELLO WORLD
+HEY ROBOT
+```
+
+**2. Encode into `keywords.txt`.**
+
+Chinese (`language:=zh`), **ppinyin**:
+
+```bash
+cd /home/ws/ugv_ws/src/ugv_main/ugv_voice/ugv_voice/models/kws/sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01
+
+sherpa-onnx-cli text2token \
+  --tokens tokens.txt \
+  --tokens-type ppinyin \
+  keywords_raw.txt keywords.txt
+```
+
+English (`language:=en`), **bpe** (needs **`bpe.model`**):
+
+```bash
+cd /home/ws/ugv_ws/src/ugv_main/ugv_voice/ugv_voice/models/kws/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01
+
+sherpa-onnx-cli text2token \
+  --tokens tokens.txt \
+  --tokens-type bpe \
+  --bpe-model bpe.model \
+  keywords_raw.txt keywords.txt
+```
+
+**3. Restart** **`voice_ctrl`** or **`voice_chat`**.
+
+Do not hand-edit **`keywords.txt`** unless you know the token alphabet. The node also applies **`keywords_score=2.0`** and **`keywords_threshold=0.25`** in `kws_sherpa_onnx.py`; if a phrase false-triggers or never fires, change that line's **`:score`** / **`#threshold`** or those two arguments, then restart.
+
+Upstream: [sherpa-onnx KWS](https://k2-fsa.github.io/sherpa/onnx/kws/pretrained_models/index.html).
+
+---
 
 ### Voice control
 
-Keyword spotting, speech recognition, and text-to-speech. Does **not** publish **`/cmd_vel`**.
+Keyword spotting, speech recognition, and text-to-speech as **separate** switches. Useful to test the mic and models. Does **not** call the LLM and does **not** turn a wake word into ASR automatically.
 
 **Launch:**
 
@@ -66,34 +158,44 @@ Keyword spotting, speech recognition, and text-to-speech. Does **not** publish *
 ros2 run ugv_voice voice_ctrl --ros-args -p language:=en
 ```
 
-Control sub-features via topics:
-
-| Feature | Start | Stop |
-|---------|-------|------|
-| KWS | `ros2 topic pub /kws std_msgs/Bool "{data: true}" --once` | `data: false` |
-| ASR | `ros2 topic pub /asr std_msgs/Bool "{data: true}" --once` | `data: false` |
-| TTS | `ros2 topic pub /tts std_msgs/String "{data: 'Hello robot'}" --once` | — |
-
 Chinese: `-p language:=zh`.
 
-If the program no longer needs to run, press **`Ctrl+C`**.
+KWS and ASR are **off** until you publish:
+
+| Feature | Start | Stop | When it fires |
+|---------|-------|------|----------------|
+| KWS | `ros2 topic pub /kws std_msgs/Bool "{data: true}" --once` | `data: false` | Wake word → terminal: `Keyword Spotting` |
+| ASR | `ros2 topic pub /asr std_msgs/Bool "{data: true}" --once` | `data: false` | Speech → terminal: `voice reconize …` |
+| TTS | `ros2 topic pub /tts std_msgs/String "{data: 'Hello robot'}" --once` | — | Speaks the string |
+
+Typical test: enable **`/kws`**, say a [wake word](#wake-words), confirm the log line; then enable **`/asr`** and speak a sentence.
+
+Press **`Ctrl+C`** to stop.
 
 ---
 
 ### Voice chat
 
-Spoken dialog through Ollama. Does **not** drive the chassis by default.
+Wake word → listen → Ollama → speak. Does **not** drive the chassis.
 
 **Launch:**
 
 ```bash
 ros2 run ugv_voice voice_chat \
   --ros-args \
-  -p language:=en \
+  -p language:=zh \
   -p server_url:=http://<ollama-ip>:11434/api/chat
 ```
 
-Requires **`qwen3:8b`** (or compatible model) on the Ollama server.
+Requires **`qwen3:8b`** (or set **`llm_model`**) on the Ollama server. Optional: **`prompt_file`** (default `ugv_voice/prompt.txt`).
+
+Flow after launch (KWS is already on):
+
+1. Say a [wake word](#wake-words). You can also publish **`/kws`** `{data: true}` once.
+2. Robot speaks **「我在，你说」** (zh) or **I'm listening** (en).
+3. Speak a sentence. ASR waits up to **10 s**.
+4. Transcript goes to Ollama; the reply is spoken.
+5. If nothing is recognized: **「没有听清，请再说一遍」** / **Sorry, I didn't catch that**, then KWS starts again.
 
 ---
 
@@ -145,7 +247,10 @@ Requires Ollama with **`qwen3:8b`**. Parsed JSON from the LLM is sent to **`beha
 
 | Symptom | Likely cause | What to try |
 |---------|--------------|-------------|
-| Voice node silent | KWS / ASR not enabled | Publish **`/kws`** or **`/asr`** **`true`** |
+| Voice node silent | **`voice_ctrl`**: KWS / ASR still off | Publish **`/kws`** or **`/asr`** **`true`** |
+| Wake word ignored | Wrong **`language`**, or phrase not in the [list](#wake-words) | Use **`zh`** vs **`en`** phrases; say the full phrase clearly |
+| `encoder_jit_….bin does not exist` | Git LFS weights not pulled | `git lfs pull` ([Installation](installation.md#build-from-source)) |
+| `arecord` / no capture | Mic is not **`plughw:2,0`** | `arecord -l`; USB audio device index may differ |
 | Voice chat / Web AI fails | Ollama unreachable | Check **`server_url`**, firewall, **`qwen3:8b`** pulled |
 | Web AI no motion | **`behavior_ctrl`** not running | Start **T1** before **T2** |
 | Robot moves unexpectedly | Teleop / Nav2 still up | Stop other **`/cmd_vel`** sources |

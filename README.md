@@ -51,12 +51,14 @@ Suggested order: [docs/index.md — Suggested reading order](docs/index.md#sugge
 **Ubuntu 22.04** + **ROS2 Humble**. Factory images: run `bash ros2.sh` and SSH into the container.
 
 ```bash
+sudo apt install -y git git-lfs
+git lfs install
 git clone -b ros2-humble-develop-251125 https://github.com/waveshareteam/ugv_ws.git
 cd ugv_ws
 sudo bash build_first.sh
 ```
 
-`build_first.sh` installs dependencies, prompts for `UGV_MODEL` and `LDLIDAR_MODEL`, and runs `colcon build`. Details: [Installation](docs/installation.md).
+`build_first.sh` installs dependencies (including **git-lfs**), pulls voice/vision model weights, prompts for `UGV_MODEL` and `LDLIDAR_MODEL`, and runs `colcon build`. Details: [Installation](docs/installation.md).
 
 ### Model settings
 

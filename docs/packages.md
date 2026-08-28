@@ -26,7 +26,7 @@ ugv_ws
 
 | File | Purpose |
 |------|---------|
-| `build_first.sh` | Initial dependency install, model selection, full workspace build |
+| `build_first.sh` | Initial dependency install, Git LFS model pull, model selection, full workspace build |
 | `build_common.sh` | Interactive selective `colcon` build |
 | `requirements.txt` | Python packages for vision, voice, and AI features |
 | `ros2.sh` | Container lifecycle and SSH on robot or VM |
@@ -67,7 +67,7 @@ Auxiliary packages for LiDAR drivers, odometry, mapping, localization, planning,
 | `ugv_slam` | SLAM launch files; **`demo.launch.py`** (bringup + LiDAR demo); `lidar_follow`, `lidar_guard`, `lidar_obstacle_avoidance` |
 | `ugv_tools` | Keyboard/gamepad teleop, behavior control |
 | `ugv_vision` | **`demo.launch.py`** (bringup + vision node; USB also starts `camera.launch.py`; OAK opens camera in-node); tracking, WebRTC preview |
-| `ugv_voice` | KWS, ASR, TTS, and voice chat |
+| `ugv_voice` | KWS / ASR / TTS / voice chat; wake-word lists in [Experimental](experimental.md#wake-words) |
 | `ugv_web_app` | Vizanti web app — teleop, visualization, Nav widgets ([Web App](web_app.md)) |
 
 ---

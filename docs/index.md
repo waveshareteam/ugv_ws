@@ -159,7 +159,7 @@ Scripted motion and map-point navigation via the **`/behavior`** action (**`beha
 
 Optional voice, Ollama LLM, and Web AI — not required for the core Mapping → Navigation path.
 
-- **`ugv_voice`** — KWS / ASR / TTS / voice chat (no **`/cmd_vel`** by default).
+- **`ugv_voice`** — KWS / ASR / TTS / voice chat (no **`/cmd_vel`**). Wake words: [Experimental — Wake words](experimental.md#wake-words).
 - **`ugv_chat_ai`** + **`behavior_ctrl`** — Web AI on **`:5000`** (LLM → motion). Separate from [Web App](web_app.md).
 
 ### [11. Gazebo](gazebo.md)

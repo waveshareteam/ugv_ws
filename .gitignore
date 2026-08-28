@@ -2,5 +2,3 @@ build/
 install/
 log/
 site/
-src/ugv_main/ugv_voice/ugv_voice/models/sherpa-onnx-vits-zh-ll/*.onnx
-src/ugv_main/ugv_voice/ugv_voice/models/asr/sherpa-ncnn-streaming-zipformer-bilingual-zh-en-2023-02-13

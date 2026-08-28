@@ -231,7 +231,8 @@ sudo apt-get install -y \
   software-properties-common \
   curl \
   lsb-release \
-  gnupg
+  gnupg \
+  git-lfs
 
 # ---------- Python deps ----------
 echo
@@ -414,6 +415,16 @@ else
     export LDLIDAR_MODEL
     echo "✔ Model selection exported for current shell only"
 fi
+
+# ---------- Git LFS model weights ----------
+echo
+echo "Pulling Git LFS model weights..."
+cd "$WS" || exit 1
+if ! command -v git-lfs >/dev/null 2>&1; then
+    echo "❌ git-lfs is not installed"
+    exit 1
+fi
+git lfs pull
 
 # ---------- Build ----------
 echo

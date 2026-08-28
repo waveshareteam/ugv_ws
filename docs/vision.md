@@ -66,7 +66,7 @@ Each demo uses the same launch file; only **`exe`** changes.
 |----------|---------|-------------|
 | **`exe`** | *(required)* | Vision node executable (see [USB camera](#usb-camera), [OAK-D Lite](#oak-d-lite), [Pan-tilt tracking](#pan-tilt-tracking)) |
 | `use_rviz` | `false` | RViz with `view_bringup.rviz` (only when `use_bringup:=true`) |
-| `use_bringup` | `true` | Include **`bringup_lidar`**. Set **`false`** when another base driver (e.g. **`ugv_roarm_bringup`**) is already running |
+| `use_bringup` | `true` | Include **`bringup_lidar`**. Set **`false`** for camera-only tools (`color_select`, WebRTC) or when another base driver is already running |
 | `track_id` | `12` | COCO class id for **`oak_object_track`** (ignored by other `exe`s) |
 
 ### Launch nodes
@@ -131,7 +131,7 @@ Source: `src/ugv_main/ugv_vision/ugv_vision/`.
 | `exe` | Motion | Description |
 |-------|--------|-------------|
 | `cam_webrtc` | No | WebRTC stream — browser preview at `:8889/cam/` |
-| `color_select` | No | Pick HSV thresholds; saves to `config/lab_tool_colors.json` |
+| `color_select` | No | LAB color picker GUI; saves to `config/lab_tool_colors.json` |
 | `color_ball_track` | Yes | Follow a colored ball |
 | `color_line_follow` | Yes | Follow a colored line |
 | `face_track` | Yes | Face tracking |
@@ -150,17 +150,58 @@ ros2 launch ugv_vision demo.launch.py exe:=cam_webrtc use_rviz:=true
 
 ### Color calibration (`color_select`)
 
-Calibrate HSV thresholds before **`color_ball_track`** or **`color_line_follow`**. Saves to **`config/lab_tool_colors.json`**.
+Tune **LAB** thresholds (not HSV) before USB **`color_ball_track`**, **`color_line_follow`**, or **`pt_color_ball_track`**. The GUI writes **`src/ugv_main/ugv_vision/config/lab_tool_colors.json`**.
+
+Chassis bringup is **not** required — only the USB camera.
 
 **Launch:**
 
 ```bash
-ros2 launch ugv_vision demo.launch.py exe:=color_select use_rviz:=true
+ros2 launch ugv_vision demo.launch.py exe:=color_select use_bringup:=false
 ```
+
+#### LAB tool GUI
+
+Window title **LAB_Tool 1.0**. Use **English** (see **7**) so labels match this screenshot. Numbers **1–9** are on the figure:
+
+**Click an image for full-screen view** — click outside, press **Esc**, or **×** to close.
+
+<img class="img-zoom" alt="LAB_Tool" src="https://github.com/user-attachments/assets/e856d103-8436-43d5-89b8-d1dc3f531ec8" />
+
+<p><em>Yellow tape in <strong>2</strong> matches the white strip in <strong>1</strong>. Profile <strong>5</strong> is <code>yellow</code>. Coverage <strong>4</strong> is 1.7%. <strong>3</strong> is <code>L[0,255] a[97,135] b[164,255]</code>.</em></p>
+
+| # | Control | What to do |
+|---|---------|------------|
+| **1** | **Mask** | Result. **White** = inside the LAB range; **black** = ignored. When tuned, the white shape should match the target in **2**. |
+| **2** | **Original** | Live camera. Put the ball or tape in view before moving sliders. |
+| **3** | **L / A / B sliders** | Each channel has two sliders: **top = lower**, **bottom = upper** (0–255). **L\*** lightness, **A\*** green–red, **B\*** blue–yellow. This shot keeps L full range `[0, 255]`, tightens A to `[97, 135]` (drops gray carpet), and B to `[164, 255]` (keeps yellow). Adjust A/B first, then L if lighting is the problem. |
+| **4** | **Coverage** | Legend plus live `Coverage` and `L[…] a[…] b[…]`. A thin tape is often ~1–few percent (here **1.7%**). `0%` means nothing is selected; tens of percent with nothing large in view means the range is too wide. |
+| **5** | **Color list** | Profile name. This shot is **`yellow`**. USB trackers must use the same **`color`** key (default is **`green`**). |
+| **6** | **Add** | Prompts for a new name and stores the **current** sliders under that name in memory. Click **Save** or they are not written to disk. |
+| | **Delete** | Removes the selected profile and **writes the JSON immediately**. |
+| | **Save** | Writes the current sliders into the selected name in **`lab_tool_colors.json`**. Without **Save**, slider moves are lost when the window closes. |
+| **7** | **中文 / English** | UI language. This screenshot is **English**. |
+| **8** | **Quit** | Close the tool. Unsaved slider moves are discarded. |
+| **9** | **a\*b\* map** | Hint of the A/B plane. Do not click here — use sliders **3**. |
+
+**Suggested order**
+
+1. Check **2** — the target is in frame.
+2. In **5**, pick an existing name, or **Add** in **6**.
+3. Move sliders in **3** until **1** is white on the target only.
+4. Click **Save** in **6**. Restart the tracking node afterwards.
+
+USB trackers read that JSON. Parameter **`color`** selects the profile (default **`green`**). `demo.launch.py` does not pass **`color`**; after launch:
+
+```bash
+ros2 param set /color_track_pid color yellow
+```
+
+or run the tracker with **`-p color:=yellow`**.
 
 ### Color ball track (`color_ball_track`)
 
-Follow a colored ball using calibrated HSV thresholds. Chassis publishes **`/cmd_vel`**.
+Follow a colored ball. Chassis publishes **`/cmd_vel`**.
 
 **Launch:**
 
@@ -221,7 +262,7 @@ Each node opens the OAK-D RGB camera via **DepthAI** — no **`camera.launch.py`
 | `exe` | Motion | Description |
 |-------|--------|-------------|
 | `cam_oak_webrtc` | No | OAK WebRTC preview at `:8889/cam/` |
-| `oak_color_select` | No | OAK color calibration (GUI) |
+| `oak_color_select` | No | OAK LAB picker (same GUI / JSON as USB) |
 | `oak_color_ball_track` | Yes | Follow a colored ball |
 | `oak_object_track` | Yes | COCO object tracking (`track_id` param) |
 
@@ -240,23 +281,28 @@ ros2 launch ugv_vision demo.launch.py exe:=cam_oak_webrtc use_rviz:=true
 
 ### Color calibration (`oak_color_select`)
 
-Calibrate before **`oak_color_ball_track`**.
+Same **LAB_Tool** GUI and JSON as [USB `color_select`](#color-calibration-color_select) (same numbered screenshot). Opens the OAK-D camera via DepthAI — no **`camera.launch.py`**, no chassis bringup.
 
 **Launch:**
 
 ```bash
-ros2 launch ugv_vision demo.launch.py exe:=oak_color_select use_rviz:=true
+ros2 run ugv_vision oak_color_select
 ```
+
+Or: `ros2 launch ugv_vision demo.launch.py exe:=oak_color_select use_bringup:=false`.
 
 ### Color ball track (`oak_color_ball_track`)
 
-Follow a colored ball on OAK-D. Run [Color calibration (`oak_color_select`)](#color-calibration-oak_color_select) first.
+Follow a colored ball on OAK-D. Chassis publishes **`/cmd_vel`**.
 
-**Launch:**
+This node **does not load** **`lab_tool_colors.json`**. After calibrating, copy the saved **lower / upper** into ROS parameters **`lower_l` `lower_a` `lower_b`** and **`upper_l` `upper_a` `upper_b`**. Example (stock JSON **green**):
 
 ```bash
-ros2 launch ugv_vision demo.launch.py exe:=oak_color_ball_track use_rviz:=true
+ros2 launch ugv_vision demo.launch.py exe:=oak_color_ball_track use_rviz:=true \
+  --ros-args -p lower_l:=0 -p lower_a:=0 -p lower_b:=130 -p upper_l:=255 -p upper_a:=110 -p upper_b:=255
 ```
+
+You can also **`ros2 param set`** those six names on the running node.
 
 ### Object track (`oak_object_track`)
 
@@ -282,6 +328,8 @@ USB camera demos that move the gimbal only (**`pt_joint_position_controller/comm
 | `pt_gesture_ctrl` | Gesture on pan-tilt |
 
 ### Ball track (`pt_color_ball_track`)
+
+Uses the USB **`color`** profile from [Color calibration](#color-calibration-color_select). Gimbal only.
 
 **Launch:**
 
@@ -323,7 +371,8 @@ ros2 launch ugv_vision demo.launch.py exe:=pt_gesture_ctrl use_rviz:=true
 | Black USB image | Camera not detected | Check cable; [`ros2 topic hz /image_raw`](#verify-before-driving) |
 | OAK node fails to open | USB / power / USB cam still running | Stop USB `demo.launch.py` first; reseat OAK-D cable; only one DepthAI app at a time |
 | No WebRTC preview | WebRTC node not running | Use `exe:=cam_webrtc` or `exe:=cam_oak_webrtc` |
-| Track misses target | Colors not calibrated | Run `color_select` / `oak_color_select` first |
+| LAB GUI empty / no window | No **`DISPLAY`**, or no camera | USB: `use_bringup:=false` so `v4l2_camera` still starts; OAK: run `oak_color_select` on a machine with X11 |
+| Track misses target | LAB range not saved, or wrong **`color`** | Calibrate, click **Save**; USB: `color:=green` (default) must match the JSON key; OAK ball track needs **`lower_*` / `upper_*`** params, not the JSON |
 | Robot does not move | No base stack / wrong demo | Use `demo.launch.py`; pick a **Motion: Yes** `exe` |
 | Conflicts with teleop / LiDAR / Nav2 | Multiple motion sources | Stop other nodes first — see [Before you start](#before-you-start) |
 
