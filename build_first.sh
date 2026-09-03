@@ -259,15 +259,19 @@ sudo apt-get install -y \
     ros-humble-desktop \
     ros-humble-joint-state-publisher \
     ros-humble-joint-state-publisher-gui \
-    ros-humble-position-controllers \
+    ros-humble-libg2o \
     ros-humble-navigation2 \
     ros-humble-nav2-bringup \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
     ros-humble-rosbridge-suite \
     ros-humble-rqt \
     ros-humble-rqt-common-plugins \
     ros-humble-rtabmap-ros \
     ros-humble-v4l2-camera \
     ros-humble-robot-localization \
+    ros-humble-xacro \
+    libsuitesparse-dev \
     ros-humble-depthai-bridge \
     ros-humble-depthai-ros-driver \
     ros-humble-depthai-ros-msgs \
