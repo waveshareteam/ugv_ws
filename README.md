@@ -50,15 +50,23 @@ Suggested order: [docs/index.md — Suggested reading order](docs/index.md#sugge
 
 **Ubuntu 22.04** + **ROS2 Humble**. Factory images: run `bash ros2.sh` and SSH into the container.
 
+Clone **on the host** (install **git-lfs** and pull weights **now**). Then run **`build_first.sh` inside Docker** — that script does not pull LFS, and running `git lfs pull` as **root** in the container can break host file permissions.
+
 ```bash
 sudo apt install -y git git-lfs
 git lfs install
 git clone -b ros2-humble-develop-251125 https://github.com/waveshareteam/ugv_ws.git
 cd ugv_ws
+git lfs pull
+```
+
+Inside the container:
+
+```bash
 sudo bash build_first.sh
 ```
 
-`build_first.sh` installs dependencies (including **git-lfs**), pulls voice/vision model weights, prompts for `UGV_MODEL` and `LDLIDAR_MODEL`, and runs `colcon build`. Details: [Installation](docs/installation.md).
+`build_first.sh` installs dependencies, prompts for `UGV_MODEL` and `LDLIDAR_MODEL`, and runs `colcon build`. Gazebo is optional (default: skip). Details: [Installation](docs/installation.md).
 
 ### Model settings
 

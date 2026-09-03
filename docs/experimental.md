@@ -65,7 +65,7 @@ Parameter: **`language`** — **`zh`** or **`en`**. That chooses the wake-word l
 
 Capture device is hardcoded to **`plughw:2,0`** (`arecord`). Check with **`arecord -l`**. Do not run **`voice_ctrl`** and **`voice_chat`** at the same time — both open the mic.
 
-ASR/TTS weights are Git LFS files. If `language:=zh` fails on a missing **`encoder_jit_trace-pnnx.ncnn.bin`**, install **git-lfs** and run **`git lfs pull`** ([Installation](installation.md#build-from-source)).
+ASR/TTS weights are Git LFS files. Pull them **on the host when you clone** (`git lfs install` then `git lfs pull`) — not as root in Docker. If `language:=zh` fails on a missing **`encoder_jit_trace-pnnx.ncnn.bin`**, see [Installation](installation.md#clone-on-the-host-git-lfs).
 
 ### Wake words
 
@@ -249,7 +249,7 @@ Requires Ollama with **`qwen3:8b`**. Parsed JSON from the LLM is sent to **`beha
 |---------|--------------|-------------|
 | Voice node silent | **`voice_ctrl`**: KWS / ASR still off | Publish **`/kws`** or **`/asr`** **`true`** |
 | Wake word ignored | Wrong **`language`**, or phrase not in the [list](#wake-words) | Use **`zh`** vs **`en`** phrases; say the full phrase clearly |
-| `encoder_jit_….bin does not exist` | Git LFS weights not pulled | `git lfs pull` ([Installation](installation.md#build-from-source)) |
+| `encoder_jit_….bin does not exist` | Git LFS weights not pulled on the host | On the **host**: `git lfs install` and `git lfs pull` ([Installation](installation.md#clone-on-the-host-git-lfs)) |
 | `arecord` / no capture | Mic is not **`plughw:2,0`** | `arecord -l`; USB audio device index may differ |
 | Voice chat / Web AI fails | Ollama unreachable | Check **`server_url`**, firewall, **`qwen3:8b`** pulled |
 | Web AI no motion | **`behavior_ctrl`** not running | Start **T1** before **T2** |

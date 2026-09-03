@@ -26,7 +26,7 @@ ugv_ws
 
 | File | Purpose |
 |------|---------|
-| `build_first.sh` | Initial dependency install, Git LFS model pull, model selection, full workspace build |
+| `build_first.sh` | Initial dependency install, model selection, optional Gazebo, full workspace build |
 | `build_common.sh` | Interactive selective `colcon` build |
 | `requirements.txt` | Python packages for vision, voice, and AI features |
 | `ros2.sh` | Container lifecycle and SSH on robot or VM |

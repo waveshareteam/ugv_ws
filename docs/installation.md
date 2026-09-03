@@ -2,7 +2,7 @@
 
 Install **`ugv_ws`** on **Ubuntu 22.04** with **ROS2 Humble**.
 
-Most users start with the **factory Docker image** on the robot or VM — no compile step. Developers clone the repo and run **`build_first.sh`** once to install dependencies, set `UGV_MODEL` / `LDLIDAR_MODEL` (and optional `GZ_VERSION`), and run `colcon build`.
+Most users start with the **factory Docker image** on the robot or VM — no compile step. Developers **clone on the host** (install **git-lfs** and run **`git lfs pull`** there), then run **`build_first.sh`** **inside the container** to install dependencies, set `UGV_MODEL` / `LDLIDAR_MODEL`, and run `colcon build`. Gazebo is optional — skip it unless you need [simulation](gazebo.md).
 
 **Factory image:** workflow depends on hardware — **robot** (Pi / Jetson) uses SSH into the container; **VM** uses two local terminals (`xhost +` + `ros2.sh`). See [Factory image](#factory-image-recommended) below.
 
@@ -108,9 +108,11 @@ VM images include Gazebo Classic and Harmonic; `GZ_VERSION` in `~/.bashrc` selec
 
 ## Build from source
 
-Use this path when developing on a clean Ubuntu 22.04 machine without the factory container.
+Typical flow: **clone on the host**, then run **`build_first.sh` inside Docker** (container user is **root**). Do **Git LFS on the host** as the user who cloned — not as root in the container, or `.git` / model files become root-owned and the host checkout breaks.
 
-### ROS workspace setup
+### Clone on the host (Git LFS)
+
+Voice / vision weights are **Git LFS** files. Install **git-lfs** and pull them **when you download the code**, on the **host**, **without sudo**:
 
 ```bash
 sudo apt update
@@ -118,13 +120,16 @@ sudo apt install -y git git-lfs
 git lfs install
 git clone -b ros2-humble-develop-251125 https://github.com/waveshareteam/ugv_ws.git
 cd ugv_ws
+git lfs pull
 ```
 
-Voice ASR/TTS weights are stored with **Git LFS**. Install `git-lfs` before cloning, or run `git lfs pull` after clone (`build_first.sh` also does this).
+`build_first.sh` does **not** run `git lfs pull`. If you skip this step, ASR/TTS (and some vision weights) are pointer files and those nodes fail.
 
 Tutorials assume **`ugv_ws`** at **`/home/ws/ugv_ws`**. If you cloned elsewhere, adjust paths in `~/.bashrc` later.
 
 ### Initial setup with `build_first.sh`
+
+Run this **inside the container** (or on a native Humble install). Do not run `git lfs pull` here as root.
 
 ```bash
 cd /home/ws/ugv_ws
@@ -139,20 +144,21 @@ The script prints **`[1/6]` … `[6/6]`**. Overview:
 | **[1/6]** | Basic apt deps (pip, colcon-argcomplete, screen, speech, GStreamer RTSP, …) | — |
 | *(after 1)* | Optional **`pip install -r requirements.txt`** | **y** / **N** |
 | **[2/6]** | ROS2 Humble desktop, Nav2, Cartographer, RTAB-Map, depthai, v4l2_camera, … | — |
-| *(after 2)* | **Gazebo** Classic / Harmonic / **Skip** | **0–2** |
+| *(after 2)* | **Gazebo** — default **Skip** (`0`); Classic / Harmonic only if you need sim | **Enter** / **0–2** |
 | **[3/6]** | Append `source /opt/ros/humble/setup.bash` to `~/.bashrc` | — |
 | **[4/6]** | **`UGV_MODEL`** + **`LDLIDAR_MODEL`** (select both) | yes |
 | *(prompt)* | Save model / LiDAR to **`~/.bashrc`?** | **y** / **N** |
-| *(before 5)* | **`git lfs pull`** (ASR / TTS / vision weights) | — |
 | **[5/6]** | **`colcon build`** | — |
 | **[6/6]** | Finalize `~/.bashrc` (source install, etc.) | — |
 
 #### Gazebo installation (optional)
 
+You do **not** need Gazebo. On the robot or when installing in Docker, press **Enter** or **`0`** — `GZ_VERSION` stays unset.
+
 | Choice | When to use | Sets `GZ_VERSION` |
 |--------|-------------|-------------------|
-| **0** Skip | Raspberry Pi / robot board | *(not set)* |
-| **1** Classic | Desktop / VM | `classic` |
+| **0** Skip *(default)* | Robot / Docker / no simulation | *(not set)* |
+| **1** Classic | Desktop / VM that needs sim | `classic` |
 | **2** Harmonic | `gz-sim` on Ubuntu 22.04 | `harmonic` |
 
 Gazebo is heavy — skip unless you need [Gazebo](gazebo.md).

@@ -11,8 +11,8 @@ Never run Gazebo bringup and **`bringup_lidar.launch.py`** at the same time.
 
 ## Prerequisites
 
-1. **Gazebo installed** during `build_first.sh` ([Installation](installation.md)).
-2. **`GZ_VERSION`** set in `~/.bashrc` (`classic` or `harmonic`).
+1. **Gazebo is optional.** Skip it in `build_first.sh` (default) unless you need this chapter. On a VM / desktop, choose Classic or Harmonic ([Installation](installation.md)).
+2. **`GZ_VERSION`** set in `~/.bashrc` (`classic` or `harmonic`) **only if** Gazebo was installed. Empty is normal on the robot.
 3. **`UGV_MODEL`** matches your kit.
 
 !!! warning "Safety"
@@ -137,7 +137,7 @@ Stop teleop and motion demos before Nav2.
 
 | Chapter | What it adds |
 |---------|----------------|
-| [Installation](installation.md) | Install Gazebo via `build_first.sh` |
+| [Installation](installation.md) | Optional Gazebo via `build_first.sh` (default: skip) |
 | [Mapping](mapping.md) | SLAM backends + `use_sim_time:=true` |
 | [Navigation](navigation.md) | Nav2 in sim |
 | [Hardware Driver](bringup.md) | Real robot (do not mix with Gazebo bringup) |

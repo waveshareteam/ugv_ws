@@ -134,7 +134,7 @@ After `ros2.sh` starts the container, SSH again into the ROS environment:
 
 Container name depends on platform — see [Installation — `ros2.sh` by platform](installation.md#ros2sh-by-platform).
 
-Developers who clone the repo and run `build_first.sh` get the same software without Docker — see [Installation](installation.md).
+Developers who **clone on the host** (with **git-lfs** / **`git lfs pull`**) and run **`build_first.sh` inside the container** get the same software — see [Installation](installation.md).
 
 ---
 

@@ -231,8 +231,7 @@ sudo apt-get install -y \
   software-properties-common \
   curl \
   lsb-release \
-  gnupg \
-  git-lfs
+  gnupg
 
 # ---------- Python deps ----------
 echo
@@ -343,14 +342,14 @@ elif [ -n "$DETECTED_GZ" ]; then
     fi
 
 else
-    echo "Select Gazebo version to install:"
-    echo "  [1] Gazebo Classic (gazebo11)"
-    echo "  [2] Gazebo Harmonic (gz-sim 8)"
-    echo "  [0] Skip Gazebo installation"
+    echo "Gazebo is optional — skip on the robot / in Docker (default)."
+    echo "  [0] Skip (no Gazebo, GZ_VERSION unset)  ← recommended"
+    echo "  [1] Gazebo Classic (gazebo11)           — VM / desktop sim"
+    echo "  [2] Gazebo Harmonic (gz-sim 8)          — VM / desktop sim"
     echo
-    read -p "Your choice [0-2]: " GAZEBO_CHOICE
+    read -p "Your choice [0-2] (default 0): " GAZEBO_CHOICE
 
-    case "$GAZEBO_CHOICE" in
+    case "${GAZEBO_CHOICE:-0}" in
       1)
         install_gazebo_classic
         GZ_VERSION="classic"
@@ -366,7 +365,7 @@ else
         GZ_VERSION=""
         ;;
       *)
-        echo "❌ Invalid choice, skipping Gazebo installation"
+        echo "⏭ Invalid choice, skipping Gazebo installation"
         GZ_VERSION=""
         ;;
     esac
@@ -415,16 +414,6 @@ else
     export LDLIDAR_MODEL
     echo "✔ Model selection exported for current shell only"
 fi
-
-# ---------- Git LFS model weights ----------
-echo
-echo "Pulling Git LFS model weights..."
-cd "$WS" || exit 1
-if ! command -v git-lfs >/dev/null 2>&1; then
-    echo "❌ git-lfs is not installed"
-    exit 1
-fi
-git lfs pull
 
 # ---------- Build ----------
 echo
