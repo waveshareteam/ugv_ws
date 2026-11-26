@@ -8,7 +8,7 @@ for UGV robot</p>
   </description>
   <author>TODO</author>
   <maintainer email="TODO@email.com" />
-  <license>BSD</license>
+  <license>Apache-2.0</license>
   <depend>robot_state_publisher</depend>
   <depend>rviz2</depend>
   <depend>joint_state_publisher_gui</depend>
